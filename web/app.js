@@ -582,8 +582,10 @@ function verCodigo(id) {
     if (b.dataset.qr === "imagen") return compartirImagen(id);
     await navigator.clipboard.writeText(
       b.dataset.qr === "clave" ? buscar(id).clave : mensajeDe(id));
+    // No se cierra solo: quien copia suele querer mirar el código después.
+    const antes = b.textContent;
     b.textContent = b.dataset.qr === "clave" ? t("copiada_clave") : t("copiado");
-    setTimeout(cerrar, 900);
+    setTimeout(() => { b.textContent = antes; }, 1600);
   }));
 
   document.body.appendChild(capa);
