@@ -208,21 +208,27 @@ function sobreChico(marca) {
 }
 
 function sobreLacrado(inicial) {
-  // Sobre de solapa cerrada con el lacre encima del pico. El borde del lacre
-  // va irregular a propósito: la cera nunca sale redonda.
+  // La cera va dibujada dos veces y recortada por mitades, para poder
+  // partirla al abrir. El corte no es recto: la cera nunca se parte recta.
+  const cera = `<path d="M0-31c9-4 15 2 21 5s13 1 15 10-4 13-3 20-2 14-10 16-12 8-20 7-13-6-21-8-15-4-17-13 3-12 2-19 1-15 9-17 15-7 24-1z" fill="var(--lacre)"/>
+    <circle r="20" fill="none" stroke="var(--lacre-borde)" stroke-width="1.4" opacity=".8"/>
+    <text y="8" text-anchor="middle" font-family="Georgia,serif" font-size="24"
+          font-weight="700" fill="var(--lacre-letra)">${inicial}</text>`;
+
   return `<svg class="sobre" viewBox="0 0 260 168" role="img" aria-hidden="true">
+    <defs>
+      <clipPath id="izq"><path d="M-40-40 L4-40 L-2 0 L6 40 L-40 40Z"/></clipPath>
+      <clipPath id="der"><path d="M4-40 L40-40 L40 40 L6 40 L-2 0Z"/></clipPath>
+    </defs>
     <rect x="1" y="1" width="258" height="166" rx="7"
           fill="var(--sobre)" stroke="var(--sobre-linea)" stroke-width="1.4"/>
-    <path d="M1 12 L130 104 L259 12" fill="var(--sobre-solapa)"
+    <path class="solapa" d="M1 12 L130 104 L259 12" fill="var(--sobre-solapa)"
           stroke="var(--sobre-linea)" stroke-width="1.4" stroke-linejoin="round"/>
     <path d="M1 158 L96 84 M259 158 L164 84" fill="none"
           stroke="var(--sobre-linea)" stroke-width="1.2" opacity=".65"/>
     <g transform="translate(130,100)">
-      <path d="M0-31c9-4 15 2 21 5s13 1 15 10-4 13-3 20-2 14-10 16-12 8-20 7-13-6-21-8-15-4-17-13 3-12 2-19 1-15 9-17 15-7 24-1z"
-            fill="var(--lacre)"/>
-      <circle r="20" fill="none" stroke="var(--lacre-borde)" stroke-width="1.4" opacity=".8"/>
-      <text y="8" text-anchor="middle" font-family="Georgia,serif" font-size="24"
-            font-weight="700" fill="var(--lacre-letra)">${inicial}</text>
+      <g class="cera izq" clip-path="url(#izq)">${cera}</g>
+      <g class="cera der" clip-path="url(#der)">${cera}</g>
     </g>
   </svg>`;
 }
@@ -582,9 +588,17 @@ async function compartir() {
     const a = e.target.closest("a");
     if (!a || a.host !== location.host || a.pathname.startsWith("/imprimir")) return;
     e.preventDefault();
-    history.pushState({}, "", a.pathname);
-    pintar();
-    scrollTo(0, 0);
+
+    const ir = () => { history.pushState({}, "", a.pathname); pintar(); scrollTo(0, 0); };
+
+    // Si lo que se pulsa es un sobre lacrado, primero se rompe.
+    const quieto = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const sobre = a.classList.contains("tapada") ? a.querySelector(".sobre") : null;
+    if (sobre && !quieto) {
+      sobre.classList.add("rompiendo");
+      return setTimeout(ir, 620);
+    }
+    ir();
   });
   addEventListener("popstate", pintar);
   addEventListener("scroll", () => {
