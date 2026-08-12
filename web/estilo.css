@@ -1,0 +1,127 @@
+:root{
+  --fondo:#0e0d0c;
+  --panel:#171514;
+  --tinta:#e8e2d6;
+  --suave:#8b8378;
+  --acento:#c9a05e;
+  --linea:#2a2622;
+}
+
+@media (prefers-color-scheme: light){
+  :root{
+    --fondo:#f7f4ee; --panel:#fff; --tinta:#171512;
+    --suave:#6d655b; --acento:#8a6d3b; --linea:#e0d9cc;
+  }
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+
+body{
+  background:var(--fondo); color:var(--tinta);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; padding:0 20px 70px;
+  -webkit-font-smoothing:antialiased;
+}
+a{ color:inherit; }
+
+/* ---------------- Barra ---------------- */
+.barra{
+  display:flex; align-items:center; gap:16px;
+  max-width:660px; margin:0 auto; padding:24px 0 22px;
+}
+.marca{ font-size:19px; font-weight:700; letter-spacing:.02em; text-decoration:none; }
+.marca span{ color:var(--acento); }
+.barra nav{ margin-left:auto; display:flex; align-items:center; gap:14px; }
+.barra nav a, .barra nav button{
+  font-family:system-ui,sans-serif; font-size:12.5px; letter-spacing:.04em;
+  color:var(--suave); text-decoration:none; background:none; border:0;
+  cursor:pointer; padding:4px 2px;
+}
+.barra nav a:hover, .barra nav button:hover{ color:var(--acento); }
+
+main{ max-width:660px; margin:0 auto; }
+
+h1,h2{
+  font-family:system-ui,sans-serif; font-size:11.5px; font-weight:600;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--suave);
+}
+
+/* ---------------- La cara ---------------- */
+.hoy{ padding:26px 0 34px; }
+.hoy h1{ margin-bottom:16px; }
+
+.cara, .hoy-cara{
+  display:block; text-decoration:none;
+  background:var(--panel); border:1px solid var(--linea); border-radius:14px;
+  padding:34px 30px;
+}
+.hoy-cara{ transition:border-color .2s; }
+.hoy-cara:hover{ border-color:var(--acento); }
+.hoy-cara.tapada{ text-align:center; padding:52px 30px; }
+
+.frase{ font-size:23px; line-height:1.28; letter-spacing:-.01em; }
+.pregunta{ font-size:21px; font-style:italic; color:var(--acento); margin-top:12px; }
+
+.sello{ color:var(--linea); font-style:normal; }
+.sello.grande{ font-size:40px; line-height:1; }
+.invita{
+  font-family:system-ui,sans-serif; font-size:12.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--suave); margin-top:18px;
+}
+.racha{ font-family:system-ui,sans-serif; font-size:12.5px; color:var(--suave); margin-top:14px; }
+
+/* ---------------- Una carta ---------------- */
+.unacarta{ padding:26px 0 0; }
+
+blockquote{ border-left:2px solid var(--acento); padding:2px 0 2px 20px; margin:30px 0; }
+blockquote p{ font-size:17px; }
+blockquote cite{
+  display:block; margin-top:11px; font-style:normal;
+  font-family:system-ui,sans-serif; font-size:12px; letter-spacing:.07em; color:var(--suave);
+}
+
+.acciones{ display:flex; flex-wrap:wrap; gap:9px; margin-bottom:40px; }
+.acciones a, .acciones button{
+  font-family:system-ui,sans-serif; font-size:13px; font-weight:550;
+  padding:9px 15px; border-radius:9px; border:1px solid var(--linea);
+  background:var(--panel); color:inherit; text-decoration:none; cursor:pointer;
+}
+.acciones .principal{ background:var(--acento); border-color:var(--acento); color:#141210; }
+.acciones a:hover, .acciones button:hover{ border-color:var(--acento); color:var(--acento); }
+.acciones .principal:hover{ filter:brightness(1.1); color:#141210; }
+
+/* ---------------- Las trece ---------------- */
+.coleccion{ padding:32px 0; border-top:1px solid var(--linea); }
+.marcador{ font-family:system-ui,sans-serif; font-size:12.5px; color:var(--suave); margin:8px 0 18px; }
+
+.malla{ display:grid; grid-template-columns:repeat(auto-fill,minmax(146px,1fr)); gap:9px; }
+
+.mini{
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  min-height:84px; padding:14px 12px; text-decoration:none;
+  background:var(--panel); border:1px solid var(--linea); border-radius:11px;
+  font-size:14.5px; line-height:1.3; font-style:italic; color:var(--acento);
+  transition:border-color .2s;
+}
+.mini .sello{ font-size:19px; }
+.mini:hover{ border-color:var(--acento); }
+.mini.hallada{ border-color:color-mix(in srgb, var(--acento) 45%, var(--linea)); }
+.mini.hoy{ box-shadow:0 0 0 1px var(--acento); }
+
+/* ---------------- Pie ---------------- */
+.explica{ padding:30px 0; border-top:1px solid var(--linea); color:var(--suave); }
+.explica p{ margin-bottom:11px; }
+.explica a{ color:var(--acento); }
+
+footer{
+  max-width:660px; margin:36px auto 0; padding-top:20px; border-top:1px solid var(--linea);
+  font-family:system-ui,sans-serif; font-size:12px; color:var(--suave);
+}
+footer a{ color:var(--acento); }
+footer .lema{ display:block; margin-top:5px; font-style:italic; }
+
+@media (max-width:520px){
+  .frase{ font-size:20px; }
+  .pregunta{ font-size:18px; }
+  .malla{ grid-template-columns:repeat(auto-fill,minmax(124px,1fr)); }
+}

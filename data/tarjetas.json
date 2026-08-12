@@ -1,0 +1,109 @@
+{
+  "audio": "https://vedabase.cc/media/audio/bhajan.mp3",
+  "vedabase": "https://vedabase.cc",
+  "idiomas": {
+    "es": {
+      "nombre": "Español",
+      "ruta": "es/bg",
+      "lema": "Un QR al día no hace daño",
+      "pie_gita": "Leerlo gratis, en castellano",
+      "textos": {
+        "carta_dia": "La carta de hoy",
+        "coleccion": "Tu colección",
+        "encontradas": "Has encontrado {n} de {total}",
+        "leer": "Leer el verso entero",
+        "clases": "Prabhupāda habla de este verso",
+        "imprimir": "Imprime tus favoritas",
+        "compartir": "Mandársela a alguien",
+        "sin_descubrir": "Sin descubrir",
+        "racha": "{n} días seguidos",
+        "volver": "Todas las cartas"
+      }
+    },
+    "en": {
+      "nombre": "English",
+      "ruta": "en/bg",
+      "lema": "A QR a day keeps the māyā away",
+      "pie_gita": "Read it free, in English",
+      "textos": {
+        "carta_dia": "Today's card",
+        "coleccion": "Your collection",
+        "encontradas": "You've found {n} of {total}",
+        "leer": "Read the whole verse",
+        "clases": "Prabhupāda speaks on this verse",
+        "imprimir": "Print your favourites",
+        "compartir": "Send it to someone",
+        "sin_descubrir": "Not found yet",
+        "racha": "{n} days in a row",
+        "volver": "All the cards"
+      }
+    }
+  },
+  "tarjetas": [
+    {
+      "id": "1", "cap": 2, "ver": 13,
+      "es": ["De niño tenías otro cuerpo.", "Y sigues diciendo «yo».", "¿Quién es ese?"],
+      "en": ["As a child you had another body.", "And you still say “I”.", "Who is that?"]
+    },
+    {
+      "id": "2", "cap": 6, "ver": 35,
+      "es": ["Llevas años intentando", "controlar tu cabeza.", "¿Quién manda ahí?"],
+      "en": ["You’ve spent years trying", "to control your mind.", "Who’s winning?"]
+    },
+    {
+      "id": "3", "cap": 3, "ver": 39,
+      "es": ["Consigues lo que querías.", "A los tres días, otra cosa.", "¿Por qué nunca basta?"],
+      "en": ["You get what you wanted.", "Three days later, you want more.", "Why is it never enough?"]
+    },
+    {
+      "id": "4", "cap": 2, "ver": 47,
+      "es": ["Haces el trabajo.", "El resultado no depende de ti.", "¿Entonces qué es tuyo?"],
+      "en": ["You do the work.", "The result isn’t up to you.", "So what is yours?"]
+    },
+    {
+      "id": "5", "cap": 8, "ver": 6,
+      "es": ["Tu vida tendrá un", "último pensamiento.", "¿Cuál quieres que sea?"],
+      "en": ["Your life will have", "a last thought.", "Which one do you want?"]
+    },
+    {
+      "id": "6", "cap": 11, "ver": 32,
+      "es": ["Todo lo que ves hoy", "habrá desaparecido.", "¿Y tú?"],
+      "en": ["Everything you see today", "will be gone.", "And you?"]
+    },
+    {
+      "id": "7", "cap": 13, "ver": 23,
+      "es": ["Algo dentro de ti", "te observa pensar.", "¿Quién es?"],
+      "en": ["Something in you", "watches you think.", "Who is it?"]
+    },
+    {
+      "id": "8", "cap": 2, "ver": 20,
+      "es": ["Le tienes miedo a morir.", "Pero eso le pasa al cuerpo.", "¿Y a ti?"],
+      "en": ["You’re afraid to die.", "But that happens to the body.", "What about you?"]
+    },
+    {
+      "id": "9", "cap": 2, "ver": 62,
+      "es": ["Quieres algo.", "Acabas enfadado.", "¿Cómo se llega ahí?"],
+      "en": ["You want something.", "You end up angry.", "How did that happen?"]
+    },
+    {
+      "id": "10", "cap": 18, "ver": 38,
+      "es": ["Lo que ayer te dio placer,", "hoy te pasa factura.", "¿Por qué acaba siempre igual?"],
+      "en": ["What gave you pleasure once", "costs you now.", "Why does it always end the same?"]
+    },
+    {
+      "id": "11", "cap": 15, "ver": 8,
+      "es": ["Es la única cita", "que no vas a poder cambiar.", "¿Qué pasa cuando mueres?"],
+      "en": ["It’s the one appointment", "you can’t reschedule.", "What happens when you die?"]
+    },
+    {
+      "id": "12", "cap": 13, "ver": 21,
+      "es": ["Le pasan cosas malas", "a la gente buena.", "¿Por qué?"],
+      "en": ["Bad things happen", "to good people.", "Why?"]
+    },
+    {
+      "id": "13", "cap": 3, "ver": 39,
+      "es": ["Ya no te habla como antes.", "Tú tampoco.", "¿Por qué tu mujer te odia?"],
+      "en": ["She doesn’t talk to you like before.", "Neither do you.", "Why does your wife hate you?"]
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Genera las tarjetas QR listas para imprenta.
 
-Diez preguntas por idioma. Cada tarjeta lleva al verso del Bhagavad-gītā que
-responde a su pregunta, y a un canto en sánscrito.
+Diez preguntas por idioma. Un solo código por tarjeta, que lleva al verso del
+Bhagavad-gītā que responde a su pregunta.
 
 Salida en dist/, un juego por idioma:
   tarjetas-A4-<idioma>.pdf   A4 con 10 tarjetas y marcas de corte
@@ -26,7 +26,7 @@ PREVIEW = RAIZ / "preview"
 
 # --- Medidas (mm) ---
 ANCHO, ALTO = 85, 55          # tarjeta estándar de cartera
-QR = 23.5                     # lado del código impreso
+QR = 30                       # lado del código impreso
 COLS, FILAS = 2, 5            # 10 huecos por A4
 MARGEN_X, MARGEN_Y = 10, 11
 MARCA, SEPARACION = 4, 1.2    # marcas de corte: largo y separación
@@ -36,7 +36,6 @@ MARCA, SEPARACION = 4, 1.2    # marcas de corte: largo y separación
 # 0,71 mm por celda. Por debajo de 0,5 un móvil falla con luz de interior.
 MODULO_MINIMO = 0.50
 
-AUDIO = "https://vedabase.cc/media/audio/bhajan.mp3"
 BASE = "https://vedabase.cc"
 
 # Cada pregunta: (línea 1, línea 2, cierre, capítulo, verso)
@@ -45,8 +44,6 @@ IDIOMAS = {
         "html_lang": "es",
         "ruta": "es/bg",
         "pie_gita": "Leerlo gratis, en castellano",
-        "titulo_audio": "Canto s&aacute;nscrito",
-        "pie_audio": "20 minutos",
         "preguntas": [
             ("De ni&ntilde;o ten&iacute;as otro cuerpo.", "Y sigues diciendo &laquo;yo&raquo;.", "&iquest;Qui&eacute;n es ese?", 2, 13),
             ("Llevas a&ntilde;os intentando", "controlar tu cabeza.", "&iquest;Qui&eacute;n manda ah&iacute;?", 6, 35),
@@ -58,14 +55,15 @@ IDIOMAS = {
             ("Le tienes miedo a morir.", "Pero eso le pasa al cuerpo.", "&iquest;Y a ti?", 2, 20),
             ("Quieres algo.", "Acabas enfadado.", "&iquest;C&oacute;mo se llega ah&iacute;?", 2, 62),
             ("Lo que ayer te dio placer,", "hoy te pasa factura.", "&iquest;Por qu&eacute; acaba siempre igual?", 18, 38),
+            ("Es la &uacute;nica cita", "que no vas a poder cambiar.", "&iquest;Qu&eacute; pasa cuando mueres?", 15, 8),
+            ("Le pasan cosas malas", "a la gente buena.", "&iquest;Por qu&eacute;?", 13, 21),
+            ("Ya no te habla como antes.", "T&uacute; tampoco.", "&iquest;Por qu&eacute; tu mujer te odia?", 3, 39),
         ],
     },
     "en": {
         "html_lang": "en",
         "ruta": "en/bg",
         "pie_gita": "Read it free, in English",
-        "titulo_audio": "Sanskrit chant",
-        "pie_audio": "20 minutes",
         "preguntas": [
             ("As a child you had another body.", "And you still say &ldquo;I&rdquo;.", "Who is that?", 2, 13),
             ("You&rsquo;ve spent years trying", "to control your mind.", "Who&rsquo;s winning?", 6, 35),
@@ -77,6 +75,9 @@ IDIOMAS = {
             ("You&rsquo;re afraid to die.", "But that happens to the body.", "What about you?", 2, 20),
             ("You want something.", "You end up angry.", "How did that happen?", 2, 62),
             ("What gave you pleasure once", "costs you now.", "Why does it always end the same?", 18, 38),
+            ("It&rsquo;s the one appointment", "you can&rsquo;t reschedule.", "What happens when you die?", 15, 8),
+            ("Bad things happen", "to good people.", "Why?", 13, 21),
+            ("She doesn&rsquo;t talk to you like before.", "Neither do you.", "Why does your wife hate you?", 3, 39),
         ],
     },
 }
@@ -94,8 +95,8 @@ ESTILO = f"""
   }}
   .titulo{{ font-size:10.6pt; line-height:1.2; letter-spacing:-.005em; }}
   .pregunta{{ font-style:italic; color:var(--acento); }}
-  .codigos{{ margin-top:2.5mm; display:grid; grid-template-columns:1fr 1fr; gap:4mm; align-items:end; }}
-  .codigo{{ text-align:center; min-width:0; }}
+  .codigos{{ margin-top:3mm; text-align:center; }}
+  .codigo{{ display:inline-block; text-align:center; }}
   .codigo svg{{ width:{QR}mm; height:{QR}mm; display:block; margin:0 auto 1mm; }}
   .codigo .que{{ font-size:6.8pt; font-weight:600; letter-spacing:.03em; line-height:1.12; white-space:nowrap; }}
   .codigo .sub{{ font-size:5.8pt; color:var(--suave); margin-top:.4mm; line-height:1.15; }}
@@ -127,14 +128,11 @@ def tarjeta_html(cfg, pregunta):
     linea1, linea2, cierre, capitulo, verso = pregunta
     url = f"{BASE}/{cfg['ruta']}/{capitulo}/{verso}/"
     qr_gita, mod_gita = qr_svg(url)
-    qr_audio, mod_audio = qr_svg(AUDIO)
     comprobar(url, mod_gita)
-    comprobar(AUDIO, mod_audio)
     return f"""<div class="tarjeta">
   <div class="titulo">{linea1}<br>{linea2}<br><span class="pregunta">{cierre}</span></div>
   <div class="codigos">
-    <div class="codigo">{qr_gita}<div class="que">Bhagavad-g&#299;t&#257; {capitulo}.{verso}</div><div class="sub">{cfg['pie_gita']}</div></div>
-    <div class="codigo">{qr_audio}<div class="que">{cfg['titulo_audio']}</div><div class="sub">{cfg['pie_audio']}</div></div>
+    <div class="codigo">{qr_gita}</div>
   </div>
 </div>"""
 
@@ -169,19 +167,25 @@ def construir(idioma, cfg):
     (PREVIEW / f"tarjeta-1up-{idioma}.html").write_text(suelta)
     HTML(string=suelta).write_pdf(DIST / f"tarjeta-1up-{idioma}.pdf")
 
-    # Pliego A4: los huecos se llenan girando por la lista de preguntas.
+    # Pliego A4: tantas páginas como hagan falta. La última se completa girando
+    # por la lista, para no mandar a imprenta media hoja en blanco.
     huecos = COLS * FILAS
-    rejilla = "".join(tarjetas[i % len(tarjetas)] for i in range(huecos))
-    sobrantes = huecos % len(tarjetas)
-    if sobrantes:
-        repes = [cfg["preguntas"][i % len(cfg["preguntas"])][2] for i in range(len(tarjetas), huecos)]
-        print(f"  {huecos} huecos y {len(tarjetas)} preguntas: se repiten {', '.join(repes)}")
+    paginas = -(-len(tarjetas) // huecos)
+    total = paginas * huecos
+    if total > len(tarjetas):
+        repes = [cfg["preguntas"][i % len(cfg["preguntas"])][2] for i in range(len(tarjetas), total)]
+        print(f"  {len(tarjetas)} preguntas en {paginas} hoja(s): se repiten {', '.join(repes)}")
+    hojas = []
+    for p in range(paginas):
+        rejilla = "".join(tarjetas[(p * huecos + i) % len(tarjetas)] for i in range(huecos))
+        hojas.append(f'<div class="hoja"><div class="rejilla">{rejilla}</div>{marcas_de_corte()}</div>')
 
     pliego = f"""<!doctype html><html lang="{cfg['html_lang']}"><head><meta charset="utf-8">
 <title>A4 {idioma}</title><style>
 @page {{ size: A4 portrait; margin:0; }}
 {ESTILO}
-.hoja{{ position:relative; width:210mm; height:297mm; }}
+.hoja{{ position:relative; width:210mm; height:297mm; page-break-after:always; }}
+.hoja:last-child{{ page-break-after:auto; }}
 .rejilla{{
   position:absolute; left:{MARGEN_X}mm; top:{MARGEN_Y}mm;
   display:grid; grid-template-columns:repeat({COLS},{ANCHO}mm); grid-template-rows:repeat({FILAS},{ALTO}mm);
@@ -190,10 +194,7 @@ def construir(idioma, cfg):
 .m.v{{ width:.25pt; height:{MARCA}mm; }}
 .m.h{{ height:.25pt; width:{MARCA}mm; }}
 </style></head><body>
-<div class="hoja">
-  <div class="rejilla">{rejilla}</div>
-  {marcas_de_corte()}
-</div>
+{''.join(hojas)}
 </body></html>"""
     (PREVIEW / f"pliego-{idioma}.html").write_text(pliego)
     HTML(string=pliego).write_pdf(DIST / f"tarjetas-A4-{idioma}.pdf")
