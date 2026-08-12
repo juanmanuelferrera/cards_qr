@@ -128,14 +128,18 @@
         <label><small>Capítulo</small><input id="cap" type="number" min="1" max="18"></label>
         <label><small>Verso</small><input id="ver" type="number" min="1"></label>
       </div>
+      <label><small>URL del código <span id="marcaManual"></span></small><input id="url" spellcheck="false"></label>
     </div>
+    <div class="botones">
+      <button class="mini" id="probar">Abrir y comprobar</button>
+      <button class="mini" id="recalcular">Recalcular</button>
+    </div>
+    <div id="diagnostico"></div>
     <div class="botones">
       <button class="mini" id="anterior">← Anterior</button>
       <button class="mini" id="siguiente">Siguiente →</button>
       <button class="mini" id="copiarTodas">Copiar a todas</button>
     </div>
-    <div id="diagnostico"></div>
-    <p class="ayuda" id="destino" style="word-break:break-all"></p>
 
     <h2>Textos fijos y medidas</h2>
     <div class="campos">
@@ -236,7 +240,8 @@ function qr(texto, mm){
 // ---------------- Tarjeta ----------------
 const esc = t => String(t).replace(/[&<>]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;" }[c]));
 const mmQR = () => parseFloat($("qrmm").value) || 23.5;
-const urlVerso = t => `${$("base").value.replace(/\/$/, "")}/${$("ruta").value}/${t[3]}/${t[4]}/`;
+const urlAuto = t => `${$("base").value.replace(/\/$/, "")}/${$("ruta").value}/${t[3]}/${t[4]}/`;
+const urlVerso = t => (t[5] && t[5].trim()) ? t[5].trim() : urlAuto(t);
 
 function tarjetaHtml(t){
   const mm = mmQR();
@@ -275,6 +280,11 @@ function cargarCampos(){
   Object.entries(CAMPOS).forEach(([id, i]) => $(id).value = t[i]);
   $("cual").textContent = `${sel + 1} de ${HUECOS}`;
 
+  const manual = !!(t[5] && t[5].trim());
+  $("url").value = urlVerso(t);
+  $("marcaManual").textContent = manual ? "· escrita a mano" : "· se rellena sola";
+  $("marcaManual").style.color = manual ? "var(--aviso)" : "var(--suave)";
+
   const mm = mmQR();
   const peor = Math.max(qr(urlVerso(t), mm).modulos, qr($("urlAudio").value, mm).modulos);
   const celda = mm / peor;
@@ -286,7 +296,6 @@ function cargarCampos(){
     dia.className = "ok";
     dia.textContent = `${celda.toFixed(2)} mm por celda (${peor} módulos). Tamaño correcto.`;
   }
-  $("destino").textContent = urlVerso(t);
 }
 
 function seleccionar(i){
@@ -346,8 +355,26 @@ $("hoja").addEventListener("click", e => {
 Object.entries(CAMPOS).forEach(([id, i]) => {
   $(id).addEventListener("input", () => {
     tarjetas[sel][i] = (i === 3 || i === 4) ? (parseInt($(id).value, 10) || 1) : $(id).value;
+    // Tocar capítulo o verso vuelve a poblar la URL: manda lo que acabas de escribir.
+    if (i === 3 || i === 4) tarjetas[sel][5] = "";
     refrescar();
   });
+});
+
+$("url").addEventListener("input", () => {
+  const escrita = $("url").value.trim();
+  tarjetas[sel][5] = (escrita === urlAuto(tarjetas[sel])) ? "" : escrita;
+  refrescar();
+});
+
+$("recalcular").addEventListener("click", () => {
+  tarjetas[sel][5] = "";
+  refrescar();
+  aviso("URL recalculada desde el capítulo y el verso.");
+});
+
+$("probar").addEventListener("click", () => {
+  window.open(urlVerso(tarjetas[sel]), "_blank", "noopener");
 });
 
 AJUSTES.forEach(k => $(k).addEventListener("input", refrescar));
