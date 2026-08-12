@@ -31,6 +31,7 @@ const T = {
     codigo: "Pásaselo a alguien",
     copiar: "Copiar el mensaje",
     imagen: "Imagen para compartir",
+    imagen_bajar: "Descargar la imagen",
     copiada_clave: "Clave copiada",
     consejo: "Con esta clave, o con el QR, cualquiera abre este sobre. A ti no te lo quita.",
     camiseta: "En camiseta",
@@ -96,6 +97,7 @@ const T = {
     codigo: "Pass it on",
     copiar: "Copy the message",
     imagen: "Image to share",
+    imagen_bajar: "Download the image",
     copiada_clave: "Key copied",
     consejo: "With this key, or the QR, anyone can open this envelope. You keep yours.",
     camiseta: "On a shirt",
@@ -277,68 +279,78 @@ function mensajeDe(id) {
 
 // Imagen cuadrada: la pregunta grande y el código debajo. Es lo que circula
 // por los estados y las historias, donde nadie pincha un enlace.
-function imagenParaCompartir(id) {
-  const c = buscar(id);
-  const [l1, l2, preg] = c[idioma];
-  const L = 1080;
-  const lienzo = document.createElement("canvas");
-  lienzo.width = lienzo.height = L;
-  const g = lienzo.getContext("2d");
+//
+// Se prepara al pintar la carta, no al pulsar: navigator.share exige que se
+// le llame dentro del gesto del usuario, y montar el lienzo se lo come.
+let imagenLista = { id: null, fichero: null };
 
-  g.fillStyle = "#12100e";
-  g.fillRect(0, 0, L, L);
+function dibujarImagen(id) {
+  return new Promise(resolver => {
+    const c = buscar(id);
+    const [l1, l2, preg] = c[idioma];
+    const L = 1080;
+    const lienzo = document.createElement("canvas");
+    lienzo.width = lienzo.height = L;
+    const g = lienzo.getContext("2d");
 
-  const serif = '"Iowan Old Style", Palatino, Georgia, serif';
-  const margen = 96;
-  let y = 190;
+    g.fillStyle = "#12100e";
+    g.fillRect(0, 0, L, L);
 
-  const escribir = (texto, tam, color, cursiva) => {
-    g.font = `${cursiva ? "italic " : ""}${tam}px ${serif}`;
-    g.fillStyle = color;
-    const palabras = texto.split(" ");
-    let linea = "";
-    for (const w of palabras) {
-      const prueba = linea ? linea + " " + w : w;
-      if (g.measureText(prueba).width > L - margen * 2 && linea) {
-        g.fillText(linea, margen, y);
-        y += tam * 1.24;
-        linea = w;
-      } else linea = prueba;
-    }
-    if (linea) { g.fillText(linea, margen, y); y += tam * 1.24; }
-  };
+    const serif = '"Iowan Old Style", Palatino, Georgia, serif';
+    const margen = 96;
+    let y = 190;
 
-  escribir(l1 + " " + l2, 44, "#8b8378", false);
-  y += 22;
-  escribir(preg, 76, "#c9a05e", true);
-
-  const qr = new Image();
-  qr.onload = () => {
-    const lado = 300, x = (L - lado) / 2, arriba = L - lado - 150;
-    g.fillStyle = "#fff";
-    g.fillRect(x - 16, arriba - 16, lado + 32, lado + 32);
-    g.drawImage(qr, x, arriba, lado, lado);
-
-    g.font = `28px ui-monospace, Menlo, monospace`;
-    g.fillStyle = "#8b8378";
-    g.textAlign = "center";
-    g.fillText("qr.vedicvault.org", L / 2, L - 74);
-
-    lienzo.toBlob(async b => {
-      const fichero = new File([b], `qrveda-${id}.png`, { type: "image/png" });
-      // En el móvil se abre la hoja de compartir con la imagen dentro; en el
-      // escritorio, donde eso no existe, se descarga.
-      if (navigator.canShare && navigator.canShare({ files: [fichero] })) {
-        try {
-          await navigator.share({ files: [fichero], text: mensajeDe(id) });
-          return;
-        } catch (e) { if (e.name === "AbortError") return; }
+    const escribir = (texto, tam, color, cursiva) => {
+      g.font = `${cursiva ? "italic " : ""}${tam}px ${serif}`;
+      g.fillStyle = color;
+      let linea = "";
+      for (const w of texto.split(" ")) {
+        const prueba = linea ? linea + " " + w : w;
+        if (g.measureText(prueba).width > L - margen * 2 && linea) {
+          g.fillText(linea, margen, y);
+          y += tam * 1.24;
+          linea = w;
+        } else linea = prueba;
       }
-      bajar(b, `qrveda-${id}.png`);
-    }, "image/png");
-  };
-  qr.src = "data:image/svg+xml;base64," +
-           btoa(unescape(encodeURIComponent(svgDelCodigo(enlaceCarta(id), "#111", 3))));
+      if (linea) { g.fillText(linea, margen, y); y += tam * 1.24; }
+    };
+
+    escribir(l1 + " " + l2, 44, "#8b8378", false);
+    y += 22;
+    escribir(preg, 76, "#c9a05e", true);
+
+    const qr = new Image();
+    qr.onload = () => {
+      const lado = 300, x = (L - lado) / 2, arriba = L - lado - 150;
+      g.fillStyle = "#fff";
+      g.fillRect(x - 16, arriba - 16, lado + 32, lado + 32);
+      g.drawImage(qr, x, arriba, lado, lado);
+      g.font = "28px ui-monospace, Menlo, monospace";
+      g.fillStyle = "#8b8378";
+      g.textAlign = "center";
+      g.fillText("qr.vedicvault.org", L / 2, L - 74);
+      lienzo.toBlob(b => resolver(new File([b], `qrveda-${id}.png`, { type: "image/png" })),
+                    "image/png");
+    };
+    qr.src = "data:image/svg+xml;base64," +
+             btoa(unescape(encodeURIComponent(svgDelCodigo(enlaceCarta(id), "#111", 3))));
+  });
+}
+
+async function prepararImagen(id) {
+  imagenLista = { id, fichero: await dibujarImagen(id) };
+}
+
+const sePuedeCompartirImagen = f =>
+  !!(navigator.canShare && f && navigator.canShare({ files: [f] }));
+
+async function compartirImagen(id) {
+  const f = (imagenLista.id === id && imagenLista.fichero) || await dibujarImagen(id);
+  if (sePuedeCompartirImagen(f)) {
+    try { return await navigator.share({ files: [f], text: mensajeDe(id) }); }
+    catch (e) { if (e.name === "AbortError") return; }
+  }
+  bajar(f, f.name);
 }
 
 /* ---------------- Piezas ---------------- */
@@ -525,7 +537,7 @@ function carta(id) {
       <div class="lienzo">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
       <div class="menu">
         <button data-qr="copiar">${t("copiar")}</button>
-        <button data-qr="imagen">${t("imagen")}</button>
+        <button data-qr="imagen">${navigator.canShare ? t("imagen") : t("imagen_bajar")}</button>
         <a href="/imprimir/">${t("imprimir")}</a>
         <button data-camiseta="${id}">${t("camiseta")}</button>
       </div>
@@ -553,7 +565,7 @@ function verCodigo(id) {
   addEventListener("keydown", e => { if (e.key === "Escape") cerrar(); }, { once: true });
 
   capa.querySelectorAll("[data-qr]").forEach(b => b.addEventListener("click", async () => {
-    if (b.dataset.qr === "imagen") return imagenParaCompartir(id);
+    if (b.dataset.qr === "imagen") return compartirImagen(id);
     await navigator.clipboard.writeText(
       b.dataset.qr === "clave" ? buscar(id).clave : mensajeDe(id));
     b.textContent = b.dataset.qr === "clave" ? t("copiada_clave") : t("copiado");
@@ -721,6 +733,9 @@ function pintar() {
   const boton = document.getElementById("compartir");
   if (boton) boton.addEventListener("click", compartir);
 
+  const conImagen = document.querySelector('[data-qr="imagen"]');
+  if (conImagen) prepararImagen(location.pathname.replace(/\//g, ""));
+
   const copia = document.getElementById("copia");
   if (copia) {
     copia.addEventListener("click", async () => {
@@ -760,7 +775,7 @@ function pintar() {
   }
 
   document.querySelectorAll("[data-qr]").forEach(b => b.addEventListener("click", async () => {
-    if (b.dataset.qr === "imagen") return imagenParaCompartir(id);
+    if (b.dataset.qr === "imagen") return compartirImagen(id);
     await navigator.clipboard.writeText(mensajeDe(id));
     const antes = b.textContent;
     b.textContent = t("copiado");
