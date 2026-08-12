@@ -42,6 +42,7 @@ const T = {
     intro: "Trece sobres. Cada día se puede abrir uno.",
     intro2: "Los demás se abren con su clave. Si alguien te pasa la suya, la escribes aquí y el sobre es tuyo.",
     su_codigo: "Ver la clave",
+    clave_barra: "Clave",
     clave_titulo: "¿Te han pasado una clave?",
     clave_pie: "Escríbela y se abre su sobre, sea su día o no.",
     clave_abrir: "Abrir",
@@ -96,6 +97,7 @@ const T = {
     intro: "Thirteen envelopes. Each day you can open one.",
     intro2: "The others open with their key. If someone passes you theirs, type it here and the envelope is yours.",
     su_codigo: "See the key",
+    clave_barra: "Key",
     clave_titulo: "Someone passed you a key?",
     clave_pie: "Type it and its envelope opens, whatever day it is.",
     clave_abrir: "Open",
@@ -290,7 +292,7 @@ function niveles() {
       <p class="marcador">${hecho ? t("completo") : t("encontradas").replace("{n}", n).replace("{total}", lote.tarjetas.length)}</p>
       <div class="malla">${piezas}</div>
     </section>`;
-  }).join("") + (quedanCerrados() ? cajaClave() : "");
+  }).join("");
 }
 
 // La caja va pegada a la colección: es donde se ven los sobres cerrados y
@@ -454,12 +456,14 @@ function llevarA(selector) {
 }
 
 // Una clave acertada merece ver cómo se derrite la cera.
+function irA(ruta) {
+  history.pushState({}, "", ruta);
+  pintar();
+  scrollTo(0, 0);
+}
+
 function derretirYEntrar(id) {
-  const ir = () => {
-    history.pushState({}, "", "/" + id);
-    pintar();
-    scrollTo(0, 0);
-  };
+  const ir = () => irA("/" + id);
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return ir();
 
   const capa = document.createElement("div");
@@ -540,20 +544,6 @@ function pintar() {
 
   document.querySelectorAll("[data-ver]").forEach(b =>
     b.addEventListener("click", e => { e.preventDefault(); verCodigo(b.dataset.ver); }));
-
-  const cajaClave = document.getElementById("clave");
-  if (cajaClave) {
-    const probar = () => {
-      const v = cajaClave.value.trim().toUpperCase();
-      const c = datos.tarjetas.find(x => x.clave === v);
-      if (!c) { cajaClave.value = ""; cajaClave.placeholder = t("clave_mal"); return cajaClave.focus(); }
-      estado.claves = (estado.claves || []).concat(c.id);
-      guardar();
-      derretirYEntrar(c.id);
-    };
-    document.getElementById("abrirclave").addEventListener("click", probar);
-    cajaClave.addEventListener("keydown", e => { if (e.key === "Enter") probar(); });
-  }
 
   const boton = document.getElementById("compartir");
   if (boton) boton.addEventListener("click", compartir);
@@ -646,6 +636,8 @@ async function compartir() {
   if (!T[idioma]) idioma = "es";
   estado.idioma = idioma;
   guardar();
+
+  document.getElementById("pedirclave").addEventListener("click", pedirClave);
 
   document.getElementById("idioma").addEventListener("click", () => {
     idioma = idioma === "es" ? "en" : "es";

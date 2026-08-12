@@ -391,28 +391,6 @@ details.respaldo > *:not(summary){ margin-top:14px; }
 }
 body.rodado .masabajo{ opacity:0; transition:opacity .3s; }
 
-/* ---------------- La clave de un sobre ---------------- */
-.clave{ padding:30px 0; border-top:1px solid var(--linea); }
-.clave h2{ margin-bottom:14px; }
-.clave .menu{ display:flex; gap:8px; }
-.clave input{
-  flex:0 1 190px; padding:11px 15px; border-radius:9px;
-  border:1px solid var(--linea); background:var(--panel); color:inherit;
-  font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:19px;
-  letter-spacing:.28em; text-transform:uppercase;
-}
-.clave input:focus{ outline:1px solid var(--acento); border-color:transparent; }
-.clave input::placeholder{ letter-spacing:.1em; font-size:12px; text-transform:none; }
-.clave button{
-  font-family:system-ui,sans-serif; font-size:13px; font-weight:550;
-  padding:0 18px; border-radius:9px; border:1px solid var(--acento);
-  background:var(--acento); color:#141210; cursor:pointer;
-}
-.clave button:hover{ filter:brightness(1.1); }
-.clave .nota{
-  font-family:system-ui,sans-serif; font-size:12px; color:var(--suave);
-  margin-top:12px; max-width:46ch;
-}
 
 .visor .clave-suya{
   display:flex; align-items:baseline; justify-content:center; gap:10px; margin-top:16px;
@@ -585,4 +563,30 @@ body.quieto{ overflow:hidden; }
   .rollo{ padding:52px 20px 50px; }
   .rollo blockquote p{ font-size:17.5px; }
   .rollo p{ font-size:16.5px; }
+}
+
+/* ---------------- Meter una clave ---------------- */
+.barra nav .conllave{ color:var(--acento); font-weight:600; }
+.barra nav .conllave::before{ content:"◈ "; }
+
+.visor.clave{ max-width:340px; }
+.visor.clave h2{ margin-bottom:16px; }
+.visor.clave .menu{ display:flex; gap:8px; }
+.visor.clave input{
+  flex:1 1 auto; min-width:0; padding:12px 14px; border-radius:9px;
+  border:1px solid var(--linea); background:var(--fondo); color:inherit;
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:20px;
+  letter-spacing:.26em; text-transform:uppercase; text-align:center;
+}
+.visor.clave input:focus{ outline:1px solid var(--acento); border-color:transparent; }
+.visor.clave input::placeholder{ letter-spacing:.14em; font-size:13px; text-transform:none; }
+.visor.clave button{
+  flex:0 0 auto; padding:0 18px; border-radius:9px; cursor:pointer;
+  border:1px solid var(--acento); background:var(--acento); color:#141210;
+  font-family:system-ui,sans-serif; font-size:13px; font-weight:550;
+}
+.visor.clave button:hover{ filter:brightness(1.1); }
+.visor.clave .nota{
+  font-family:system-ui,sans-serif; font-size:12px; color:var(--suave);
+  margin-top:14px; line-height:1.5;
 }
