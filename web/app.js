@@ -164,6 +164,22 @@ function bajarPng(url, id, px) {
 
 
 /* ---------------- El sobre lacrado ---------------- */
+function sobreChico(marca) {
+  // El mismo sobre, reducido a lo esencial, para las cartas por descubrir.
+  return `<svg class="sobrecito" viewBox="0 0 120 78" role="img" aria-hidden="true">
+    <rect x="1" y="1" width="118" height="76" rx="5"
+          fill="var(--sobre)" stroke="var(--sobre-linea)" stroke-width="1.2"/>
+    <path d="M1 8 L60 50 L119 8" fill="var(--sobre-solapa)"
+          stroke="var(--sobre-linea)" stroke-width="1.2" stroke-linejoin="round"/>
+    <g transform="translate(60,48)">
+      <path d="M0-15c4-2 7 1 10 2s6 1 7 5-2 6-1 9-1 7-5 8-6 4-10 3-6-3-10-4-7-2-8-6 1-6 1-9 0-7 4-8 7-4 12 0z"
+            fill="var(--lacre)"/>
+      <text y="5" text-anchor="middle" font-family="Georgia,serif" font-size="14"
+            font-weight="700" fill="var(--lacre-letra)">${marca}</text>
+    </g>
+  </svg>`;
+}
+
 function sobreLacrado(inicial) {
   // Sobre de solapa cerrada con el lacre encima del pico. El borde del lacre
   // va irregular a propósito: la cera nunca sale redonda.
@@ -213,7 +229,7 @@ function niveles() {
       const clases = ["mini", abierta ? "hallada" : "", id === hoy ? "hoy" : ""].join(" ");
       const dentro = abierta
         ? `<span class="preg">${esc(c[idioma][2])}</span>`
-        : `<span class="sello">◇</span>`;
+        : sobreChico(esc(id));
       return `<a class="${clases}" href="/${id}">${dentro}</a>`;
     }).join("");
 
@@ -237,7 +253,7 @@ function portada() {
   const tarjeta = hallada(c.id)
     ? `<a class="hoy-cara" href="/${c.id}">${cara(c)}</a>`
     : `<a class="hoy-cara tapada" href="/${c.id}">
-         <p class="sello grande">◇</p>
+         ${sobreLacrado(esc(c.id))}
          <p class="invita">${t("ver")}</p>
        </a>`;
 
