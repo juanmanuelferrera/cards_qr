@@ -24,11 +24,11 @@ const T = {
     ganada: "Sobre {n} abierto",
     compartir: "Mandársela a alguien",
     copiado: "Copiado",
-    codigo: "La clave de este sobre",
+    codigo: "Pásaselo a alguien",
     svg: "Vector (camisetas)",
     png: "Imagen grande",
     copiar: "Copiar el enlace",
-    consejo: "El QR es esta misma clave. Pásasela a quien quieras.",
+    consejo: "Con esta clave, o con el QR, cualquiera abre este sobre. A ti no te lo quita.",
     coleccion: "Las trece",
     encontradas: "{n} de {total}",
     racha: "{n} días seguidos",
@@ -38,8 +38,8 @@ const T = {
     intro: "Trece sobres. Cada día se puede abrir uno.",
     intro2: "Los demás se abren con su clave. Si alguien te pasa la suya, la escribes aquí y el sobre es tuyo.",
     su_codigo: "Ver la clave",
-    clave_titulo: "Escribe una clave",
-    clave_pie: "Cuatro caracteres. Abre su sobre cualquier día.",
+    clave_titulo: "¿Te han pasado una clave?",
+    clave_pie: "Escríbela y se abre su sobre, sea su día o no.",
     clave_abrir: "Abrir",
     clave_mal: "Esa clave no es de ningún sobre",
     tu_clave: "Clave del sobre {n}",
@@ -74,11 +74,11 @@ const T = {
     ganada: "Envelope {n} opened",
     compartir: "Send it to someone",
     copiado: "Copied",
-    codigo: "This envelope\u2019s key",
+    codigo: "Pass it on",
     svg: "Vector (for shirts)",
     png: "Large image",
     copiar: "Copy the link",
-    consejo: "The QR is this same key. Pass it on to whoever you like.",
+    consejo: "With this key, or the QR, anyone can open this envelope. You keep yours.",
     coleccion: "The thirteen",
     encontradas: "{n} of {total}",
     racha: "{n} days in a row",
@@ -88,8 +88,8 @@ const T = {
     intro: "Thirteen envelopes. Each day you can open one.",
     intro2: "The others open with their key. If someone passes you theirs, type it here and the envelope is yours.",
     su_codigo: "See the key",
-    clave_titulo: "Type a key",
-    clave_pie: "Four characters. Opens its envelope any day.",
+    clave_titulo: "Someone passed you a key?",
+    clave_pie: "Type it and its envelope opens, whatever day it is.",
     clave_abrir: "Open",
     clave_mal: "That key doesn't match any envelope",
     tu_clave: "Key to envelope {n}",
@@ -282,11 +282,14 @@ function niveles() {
       <p class="marcador">${hecho ? t("completo") : t("encontradas").replace("{n}", n).replace("{total}", lote.tarjetas.length)}</p>
       <div class="malla">${piezas}</div>
     </section>`;
-  }).join("") + cajaClave();
+  }).join("") + (quedanCerrados() ? cajaClave() : "");
 }
 
 // La caja va pegada a la colección: es donde se ven los sobres cerrados y
 // donde apetece abrir uno. Al estar dentro, sale en todas las pantallas.
+const quedanCerrados = () =>
+  datos.tarjetas.some(c => !hallada(c.id) && !paso(c.id).respuesta && !conClave(c.id));
+
 function cajaClave() {
   return `<section class="clave">
     <h2>${t("clave_titulo")}</h2>

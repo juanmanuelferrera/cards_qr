@@ -1,42 +1,71 @@
 # qrveda
 
-Trece preguntas. Cada una tiene su respuesta en un verso del *Bhagavad-gītā*.
+Trece sobres lacrados. Cada uno guarda una pregunta y el verso del *Bhagavad-gītā* que la responde.
 
-Dos cosas que se alimentan entre sí: **tarjetas de papel** con una pregunta y un código, y una **web** donde ese código abre el verso y va completando una colección. Las cartas que faltan solo aparecen encontrando más tarjetas.
+**https://qrveda.pages.dev**
 
 > Un QR al día no hace daño
 
-## Qué hay aquí
+---
+
+## Las reglas
+
+**1. Cada día se puede abrir un sobre.** El mismo para todo el mundo. Cambia a medianoche.
+
+**2. Los demás están cerrados.** Se ven en la colección, con su número, pero no se pueden tocar.
+
+**3. Un sobre cerrado se abre con su clave.** Cuatro caracteres. Quien ya lo abrió puede dárselos a quien quiera: de palabra, por mensaje, en una tarjeta impresa o en una camiseta. El QR es esa misma clave, escaneada.
+
+**4. Para quedarte un sobre hay que hacer dos cosas.** Primero contestar la pregunta con tus palabras, antes de leer nada. Después abrir el verso entero con su significado. Con las dos, el sobre es tuyo.
+
+**5. Solo se reparte lo que se ha abierto.** No puedes dar la clave de un sobre que no tienes.
+
+**6. Al completar un mazo se abre el siguiente.** Hay tres: Sambandha, Abhidheya y Prayojana — quién eres, qué se hace con eso, a dónde lleva.
+
+Sin cuentas, sin registro y sin recoger datos de nadie. La colección vive en el navegador de cada uno.
+
+---
+
+## Por qué está montado así
+
+**Contestar antes de leer.** Es lo que hace que la pregunta caiga encima en vez de resbalar. Al final del mazo tienes trece preguntas con lo que tú respondiste al lado de lo que dice el verso.
+
+**Uno al día, y el resto por clave.** Sin esa regla la colección se completa sola en veinte minutos y no queda nada. Con ella, trece días encerrado en casa o dos tardes si hay gente alrededor. Eso premia el reparto sin obligar a nadie a compartir para avanzar.
+
+**Regalar no cuesta nada.** Dar tu clave no te quita el sobre. Al contrario que con los cromos, aquí regalar es gratis y aun así el que recibe siente que le han dado algo.
+
+**Nada de peajes.** No hay que compartir para seguir jugando, ni cuenta atrás, ni notificaciones que empujen. Lo que tiene que aguantar el interés son las preguntas.
+
+---
+
+## Qué hay en el repositorio
 
 ```
-data/     las preguntas, los versos y las URLs
-web/      el sitio: html y javascript planos, sin dependencias
-gui/      el creador de tarjetas (el mismo que se sirve en /imprimir/)
-src/      generadores de los PDF de imprenta y del caché de versos
-dist/     PDF listos para mandar
+data/      las preguntas, sus versos y sus claves
+web/       el sitio: html y javascript planos, sin dependencias
+functions/ la copia de seguridad por código (Cloudflare Pages Functions)
+gui/       el creador de tarjetas, servido también en /imprimir/
+src/       generadores de los PDF de imprenta y del caché de versos
+dist/      PDF listos para mandar a la imprenta
 ```
 
 ## La web
 
-`web/` es HTML y JavaScript sin framework, sin build y sin base de datos. Cuatro archivos:
+Cuatro archivos, sin framework ni compilación:
 
 | | |
 |---|---|
 | `index.html` | el armazón |
-| `app.js` | rutas, colección, idioma y compartir |
+| `app.js` | rutas, colección, claves, idioma y descargas |
 | `estilo.css` | oscuro por defecto, claro si el sistema lo pide |
-| `datos.json` | las trece preguntas con su verso ya dentro |
-| `qrcode.min.js` | generador de códigos, para las descargas |
+| `datos.json` | las trece preguntas con su verso y su clave |
+| `qrcode.min.js` | generador de códigos |
 
-**Una URL por carta, para los dos idiomas:** `qrveda.com/7`. El idioma se detecta del navegador y se puede cambiar en la barra, así que un mismo código impreso sirve en español y en inglés. Eso mantiene el QR corto y evita imprimir dos juegos.
+**Una URL por sobre, para los dos idiomas:** `qrveda.pages.dev/7`. El idioma se detecta del navegador y se cambia en la barra, así que un mismo código impreso sirve en español y en inglés.
 
-Lo que colecciona cada visitante vive en su navegador: sin cuentas, sin servidor y sin analítica.
+**El sobre del día** sale del número de día, no del azar.
 
-**La carta del día** sale del número de día, no del azar: es la misma para todo el mundo y cambia a medianoche.
-
-**El código de cada carta** se muestra en su página con un menú: descargarlo en vector para camisetas, en PNG de 2000 px para imprentas que no aceptan vector, copiar el enlace o pasar al creador de tarjetas. El código lleva de vuelta a `qrveda.com/7`, no a vedabase, para que quien lo escanee entre por el juego.
-
-Para camisetas: a la espalda y de 8 a 10 cm. En el pecho nadie se atreve a acercar el móvil; en una cola, la espalda de quien va delante se escanea sola. Oscuro sobre tela clara, plano y sin arrugas.
+**Los códigos** se descargan desde cada carta ganada: vector de 100 mm para camisetas, PNG de 2000 px para imprentas que no aceptan vector, o el enlace. Para camisetas, a la espalda y de 8 a 10 cm — en el pecho nadie se atreve a acercar el móvil, y en una cola la espalda de quien va delante se escanea sola.
 
 ### Probarla en local
 
@@ -44,29 +73,39 @@ Para camisetas: a la espalda y de 8 a 10 cm. En el pecho nadie se atreve a acerc
 python3 src/servir.py
 ```
 
-Abre <http://localhost:8899/>. Ese servidor aplica la misma regla que `web/_redirects`, así que `/7` funciona igual que en producción. Con `python3 -m http.server` no: devuelve 404 en todo lo que no sea un archivo real.
+Abre <http://localhost:8899/>. Ese servidor aplica la misma regla que `web/_redirects`, así que `/7` funciona igual que en producción. Con `python3 -m http.server` no.
 
 ### Desplegar
 
-Cloudflare Pages, carpeta `web/`, sin comando de compilación. `_redirects` manda cualquier ruta a `index.html`, salvo `/imprimir/`.
+```bash
+wrangler pages deploy
+```
+
+Lee `wrangler.toml`: carpeta `web/`, sin compilación, con el almacén KV de las copias. `_redirects` manda cualquier ruta a `index.html` salvo `/imprimir/`, y `_headers` desactiva la caché para que cada despliegue se vea al recargar.
+
+## La copia de seguridad
+
+La colección vive en el navegador. Eso basta y evita cuentas, pero tiene tres agujeros: cada aparato va por su cuenta, se pierde al borrar datos de navegación, y **Safari en iOS borra el almacenamiento a los siete días sin visitar el sitio**.
+
+Por eso el sitio pide almacenamiento persistente al cargar, y ofrece guardar la colección bajo un **código de seis caracteres** (`functions/api/copia.js`, guardado en KV). Ese código no abre sobres: recupera la colección entera en otro aparato. Al restaurar se fusiona, no se pisa.
 
 ## El creador de tarjetas
 
-`gui/index.html`, y en la web bajo `/imprimir/`. Abre con doble clic, no necesita conexión ni instalación.
+`gui/index.html`, y en la web bajo `/imprimir/`. Doble clic, sin instalar nada y sin conexión.
 
 Enseña la hoja A4 entera con las diez tarjetas. Pinchas una y la editas: las dos líneas, la pregunta, el capítulo y el verso. La URL se rellena sola y se puede escribir a mano; **Abrir y comprobar** la abre en otra pestaña.
 
-Zoom en la barra, flechas ← → para saltar de tarjeta, y **Guardar PDF para imprenta**, que abre el diálogo de impresión — elige *Guardar como PDF*, escala 100 % y sin «ajustar al papel».
+**Guardar PDF para imprenta** abre el diálogo de impresión: *Guardar como PDF*, escala 100 %, sin «ajustar al papel».
 
 ## Las tarjetas
 
 85 × 55 mm, tamaño de cartera, a una sola cara. Diez por hoja A4 con marcas de corte en los márgenes.
 
-Delante van solo dos cosas: la pregunta y el código. Sin explicación, sin nombres que haya que conocer de antes y sin texto debajo del QR. Lo único que tiene que conseguir la tarjeta es que escaneen.
+Delante van dos cosas: la pregunta y el código. Sin explicación, sin nombres que haya que conocer de antes y sin texto debajo del QR.
 
-**Los códigos** se generan con corrección de error M, no H: con H salen más densos y las celdas se quedan pequeñas al imprimir. Con las URLs actuales son 33 módulos, y a 30 mm dan 0,9 mm por celda. El generador avisa si alguna combinación baja de 0,5 mm, que es donde un móvil empieza a fallar con luz de interior.
+**Los códigos** se generan con corrección de error M, no H: con H salen más densos y las celdas se quedan pequeñas al imprimir. Con las URLs actuales son 33 módulos, y a 30 mm dan 0,9 mm por celda. El generador avisa si alguna baja de 0,5 mm, que es donde un móvil empieza a fallar con luz de interior.
 
-Sin sangrado, y es correcto: el fondo es blanco y ningún elemento llega al borde.
+Sin sangrado: el fondo es blanco y ningún elemento llega al borde.
 
 Para repartir en la calle, cartulina de 300 g. En papel normal se dobla el primer día.
 
@@ -74,7 +113,7 @@ Para repartir en la calle, cartulina de 300 g. En papel normal se dobla el prime
 
 El **pliego A4**. Con la hoja ya imposada es un solo archivo: imprimen N copias y guillotinan. Que dentro haya diez diseños distintos o uno repetido les da igual, porque cobran por hojas y por cortes.
 
-Mandar los diez sueltos suele salir más caro: algunas imprentas cobran preparación por diseño y las webs de tarjetas cobran por diseño casi siempre. El `1up` está por si lo piden.
+Mandar los diez sueltos suele salir más caro: algunas imprentas cobran preparación por diseño, y las webs de tarjetas cobran por diseño casi siempre.
 
 ## Regenerar
 
@@ -82,16 +121,6 @@ Mandar los diez sueltos suele salir más caro: algunas imprentas cobran preparac
 pip install segno weasyprint
 python3 src/versos.py      # refresca los versos desde vedabase.cc
 python3 src/build.py       # PDF de imprenta a dist/
-```
-
-`src/versos.py` solo hace falta cuando cambian las preguntas: baja de vedabase.cc la traducción de cada verso y el número de clases de Prabhupāda que hay sobre él.
-
-## Añadir un idioma
-
-Un bloque en `IDIOMAS`, dentro de `src/build.py`, y otro en `data/tarjetas.json`. Comprueba antes que la página existe y trae el verso:
-
-```bash
-curl -sL https://vedabase.cc/pt/bg/2/13/ | grep -o '<title>[^<]*'
 ```
 
 ## Los enlaces
