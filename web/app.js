@@ -316,13 +316,12 @@ function niveles() {
   }).join("");
 }
 
-// La caja va pegada a la colección: es donde se ven los sobres cerrados y
-// donde apetece abrir uno. Al estar dentro, sale en todas las pantallas.
-const quedanCerrados = () =>
-  datos.tarjetas.some(c => !hallada(c.id) && !paso(c.id).respuesta && !conClave(c.id));
-
-function cajaClave() {
-  return `<section class="clave">
+// Vive en la barra, no al final de la página: una clave llega en cualquier
+// momento y no se puede pedir que la gente baje a buscar dónde meterla.
+function pedirClave() {
+  const capa = document.createElement("div");
+  capa.className = "capa";
+  capa.innerHTML = `<div class="visor clave">
     <h2>${t("clave_titulo")}</h2>
     <div class="menu">
       <input id="clave" maxlength="4" autocapitalize="characters" autocomplete="off"
@@ -330,7 +329,29 @@ function cajaClave() {
       <button id="abrirclave">${t("clave_abrir")}</button>
     </div>
     <p class="nota">${t("clave_pie")}</p>
-  </section>`;
+  </div>`;
+
+  const cerrar = () => capa.remove();
+  capa.addEventListener("click", e => { if (e.target === capa) cerrar(); });
+  addEventListener("keydown", e => { if (e.key === "Escape") cerrar(); }, { once: true });
+  document.body.appendChild(capa);
+
+  const caja = capa.querySelector("#clave");
+  caja.focus();
+
+  const probar = () => {
+    const v = caja.value.trim().toUpperCase();
+    const c = datos.tarjetas.find(x => x.clave === v);
+    if (!c) { caja.value = ""; caja.placeholder = t("clave_mal"); return caja.focus(); }
+    // Un sobre que ya tienes no merece repetir la ceremonia.
+    if (hallada(c.id) || conClave(c.id)) { cerrar(); return irA("/" + c.id); }
+    estado.claves = (estado.claves || []).concat(c.id);
+    guardar();
+    cerrar();
+    derretirYEntrar(c.id);
+  };
+  capa.querySelector("#abrirclave").addEventListener("click", probar);
+  caja.addEventListener("keydown", e => { if (e.key === "Enter") probar(); });
 }
 
 function pasos(id) {
