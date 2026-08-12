@@ -28,7 +28,7 @@ const T = {
     svg: "Vector (camisetas)",
     png: "Imagen grande",
     copiar: "Copiar el enlace",
-    consejo: "El QR y la clave abren lo mismo. Para camisetas, a la espalda y de 8 a 10 cm, oscuro sobre tela clara.",
+    consejo: "El QR es esta misma clave. Pásasela a quien quieras.",
     coleccion: "Las trece",
     encontradas: "{n} de {total}",
     racha: "{n} días seguidos",
@@ -36,10 +36,10 @@ const T = {
     sellado: "Sellado",
     completo: "Completo",
     intro: "Trece sobres. Cada día se puede abrir uno.",
-    intro2: "Los demás los tienen quienes ya los abrieron. Cada sobre lleva su código: si alguien te pasa el suyo, se abre.",
-    su_codigo: "La clave de este sobre",
-    clave_titulo: "¿Te han dado una clave?",
-    clave_pie: "Cuatro letras y números. Abre el sobre al que pertenece, sea su día o no.",
+    intro2: "Los demás se abren con su clave. Si alguien te pasa la suya, la escribes aquí y el sobre es tuyo.",
+    su_codigo: "Ver la clave",
+    clave_titulo: "Escribe una clave",
+    clave_pie: "Cuatro caracteres. Abre su sobre cualquier día.",
     clave_abrir: "Abrir",
     clave_mal: "Esa clave no es de ningún sobre",
     tu_clave: "Clave del sobre {n}",
@@ -49,8 +49,8 @@ const T = {
     imprimir_larga: "Puedes imprimir las tuyas y repartirlas.",
     copia: "Guardar con un código",
     restaurar: "Tengo un código de respaldo",
-    aviso_copia: "Tu colección vive en este navegador. Si lo borras o cambias de móvil, se pierde. Guárdala con un código y apúntalo.",
-    aviso_codigo: "Ese código no abre sobres: recupera tu colección entera en otro aparato. Quien lo tenga verá también lo que has escrito.",
+    aviso_copia: "Tu colección vive en este navegador. Guárdala si vas a cambiar de móvil.",
+    aviso_codigo: "Esto no abre sobres. Recupera tu colección entera, con lo que hayas escrito.",
     tu_codigo: "Tu código de respaldo",
     pide_codigo: "Escribe tu código de respaldo",
     guardando: "Guardando…",
@@ -78,7 +78,7 @@ const T = {
     svg: "Vector (for shirts)",
     png: "Large image",
     copiar: "Copy the link",
-    consejo: "The QR and the key open the same thing. For shirts, put it on the back, 8 to 10 cm, dark on light fabric.",
+    consejo: "The QR is this same key. Pass it on to whoever you like.",
     coleccion: "The thirteen",
     encontradas: "{n} of {total}",
     racha: "{n} days in a row",
@@ -86,10 +86,10 @@ const T = {
     sellado: "Sealed",
     completo: "Complete",
     intro: "Thirteen envelopes. Each day you can open one.",
-    intro2: "The others belong to whoever opened them. Each envelope carries its code: if someone passes you theirs, it opens.",
-    su_codigo: "This envelope\u2019s key",
-    clave_titulo: "Someone gave you a key?",
-    clave_pie: "Four letters and numbers. It opens the envelope it belongs to, whatever day it is.",
+    intro2: "The others open with their key. If someone passes you theirs, type it here and the envelope is yours.",
+    su_codigo: "See the key",
+    clave_titulo: "Type a key",
+    clave_pie: "Four characters. Opens its envelope any day.",
     clave_abrir: "Open",
     clave_mal: "That key doesn't match any envelope",
     tu_clave: "Key to envelope {n}",
@@ -99,8 +99,8 @@ const T = {
     imprimir_larga: "You can print your own and hand them out.",
     copia: "Save with a code",
     restaurar: "I have a backup code",
-    aviso_copia: "Your collection lives in this browser. If you clear it or change phones, it is gone. Save it with a code and write it down.",
-    aviso_codigo: "That code opens no envelopes: it restores your whole collection on another device. Whoever has it also sees what you wrote.",
+    aviso_copia: "Your collection lives in this browser. Save it if you are changing phones.",
+    aviso_codigo: "This opens no envelopes. It restores your whole collection, with whatever you wrote.",
     tu_codigo: "Your backup code",
     pide_codigo: "Type your backup code",
     guardando: "Saving…",
@@ -323,15 +323,15 @@ function portada() {
     </div>
     <p class="nota">${t("clave_pie")}</p>
   </section>
-  <section class="respaldo">
-    <p class="nota">${t("aviso_copia")}</p>
+  <details class="respaldo">
+    <summary>${t("aviso_copia")}</summary>
     ${estado.codigo ? `<p class="codigo-mio"><span>${t("tu_codigo")}</span><strong>${esc(estado.codigo)}</strong></p>` : ""}
     <div class="menu">
       <button id="copia">${t("copia")}</button>
       <button id="restaurar">${t("restaurar")}</button>
     </div>
     <p class="nota fina">${t("aviso_codigo")}</p>
-  </section>`;
+  </details>`;
 }
 
 function carta(id) {
@@ -376,6 +376,7 @@ function carta(id) {
     ${p.leido ? `<p class="conseguida">${t("ganada").replace("{n}", id)}</p>` : ""}
     <div class="codigo">
       <h2>${t("codigo")}</h2>
+      <p class="clavegorda">${esc(c.clave)}</p>
       <div class="lienzo">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
       <div class="menu">
         <button data-qr="svg">${t("svg")}</button>

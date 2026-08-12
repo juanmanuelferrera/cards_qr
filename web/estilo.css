@@ -228,7 +228,15 @@ footer .lema{ display:block; margin-top:5px; font-style:italic; }
 }
 
 /* ---------------- Copia de seguridad ---------------- */
-.respaldo{ padding:26px 0; border-top:1px solid var(--linea); }
+details.respaldo{ padding:22px 0 0; border-top:1px solid var(--linea); margin-top:30px; }
+details.respaldo summary{
+  font-family:system-ui,sans-serif; font-size:12px; color:var(--suave);
+  cursor:pointer; list-style:none; max-width:52ch;
+}
+details.respaldo summary::-webkit-details-marker{ display:none; }
+details.respaldo summary::before{ content:"+ "; color:var(--acento); }
+details.respaldo[open] summary::before{ content:"− "; }
+details.respaldo > *:not(summary){ margin-top:14px; }
 .respaldo .nota{
   font-family:system-ui,sans-serif; font-size:12.5px; line-height:1.55;
   color:var(--suave); max-width:52ch; margin-bottom:14px;
@@ -416,4 +424,10 @@ body.rodado .masabajo{ opacity:0; transition:opacity .3s; }
 .visor .clave-suya strong{
   font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:19px;
   letter-spacing:.22em; color:var(--acento);
+}
+
+/* La clave, en grande y antes que el QR: es lo que se pasa de viva voz. */
+.clavegorda{
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:30px;
+  letter-spacing:.3em; color:var(--acento); margin-bottom:16px;
 }
