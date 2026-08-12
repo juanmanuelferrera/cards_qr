@@ -18,7 +18,6 @@ const T = {
     tu: "Lo que contestaste",
     leer: "Leerlo entero en vedabase",
     pendiente: "Falta abrir el verso entero",
-    clases: "Prabhupāda habla de este verso",
     compartir: "Mandársela a alguien",
     copiado: "Copiado",
     codigo: "Su código",
@@ -51,7 +50,6 @@ const T = {
     tu: "What you answered",
     leer: "Read it whole on vedabase",
     pendiente: "Still to open the whole verse",
-    clases: "Prabhupāda speaks on this verse",
     compartir: "Send it to someone",
     copiado: "Copied",
     codigo: "Its code",
@@ -249,9 +247,6 @@ function carta(id) {
   }
 
   const ref = `${c.cap}.${c.ver}`;
-  const clases = c.clases
-    ? `<a href="${esc(c.url[idioma])}" data-leido>${t("clases")} — ${c.clases}</a>` : "";
-
   return `<section class="unacarta">
     ${cara(c)}
     <div class="tuya hecha">
@@ -264,7 +259,6 @@ function carta(id) {
     </blockquote>
     <div class="acciones">
       <a class="principal" href="${esc(c.url[idioma])}" data-leido>${t("leer")}</a>
-      ${clases}
       <button id="compartir">${t("compartir")}</button>
     </div>
     ${p.leido ? "" : `<p class="pendiente">${t("pendiente")}</p>`}
