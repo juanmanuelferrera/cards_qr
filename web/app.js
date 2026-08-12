@@ -18,9 +18,10 @@ const T = {
     tu: "Lo que contestaste",
     leer: "Leerlo entero en vedabase",
     paso1: "Contéstala tú",
-    paso2: "Abre el verso",
-    ganar: "Abrir el verso y quedártela",
-    ganada: "Carta {n} conseguida",
+    paso2: "Rompe el lacre",
+    ganar: "Leerlo con su significado",
+    ganar_pie: "y el sobre {n} es tuyo",
+    ganada: "Sobre {n} abierto",
     compartir: "Mandársela a alguien",
     copiado: "Copiado",
     codigo: "Su código",
@@ -58,9 +59,10 @@ const T = {
     tu: "What you answered",
     leer: "Read it whole on vedabase",
     paso1: "Answer it yourself",
-    paso2: "Open the verse",
-    ganar: "Open the verse and keep it",
-    ganada: "Card {n} is yours",
+    paso2: "Break the seal",
+    ganar: "Read it with the purport",
+    ganar_pie: "and envelope {n} is yours",
+    ganada: "Envelope {n} opened",
     compartir: "Send it to someone",
     copiado: "Copied",
     codigo: "Its code",
@@ -328,7 +330,10 @@ function carta(id) {
       <cite>Bhagavad-gītā ${ref}</cite>
     </blockquote>
     <div class="acciones">
-      <a class="principal${p.leido ? "" : " gana"}" href="${esc(c.url[idioma])}" data-leido>${p.leido ? t("leer") : t("ganar")}</a>
+      <a class="principal${p.leido ? "" : " gana"}" href="${esc(c.url[idioma])}" data-leido>${
+        p.leido ? t("leer")
+                : `<strong>${t("ganar")}</strong><em>${t("ganar_pie").replace("{n}", id)}</em>`
+      }</a>
       <button id="compartir">${t("compartir")}</button>
     </div>
     ${p.leido ? `<p class="conseguida">${t("ganada").replace("{n}", id)}</p>` : ""}

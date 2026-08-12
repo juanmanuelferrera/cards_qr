@@ -281,3 +281,11 @@ footer .lema{ display:block; margin-top:5px; font-style:italic; }
   font-family:system-ui,sans-serif; font-size:12px; letter-spacing:.1em;
   text-transform:uppercase; color:var(--acento); margin:-28px 0 40px;
 }
+
+/* El botón que abre el sobre habla en dos alturas: qué haces y qué te llevas. */
+.acciones .principal.gana{
+  display:flex; flex-direction:column; align-items:flex-start; gap:1px;
+  padding:11px 18px; line-height:1.25;
+}
+.acciones .principal.gana strong{ font-weight:650; font-size:13.5px; }
+.acciones .principal.gana em{ font-style:normal; font-size:11.5px; opacity:.78; }
