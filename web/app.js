@@ -29,11 +29,9 @@ const T = {
     compartir: "Mandársela a alguien",
     copiado: "Copiado",
     codigo: "Pásaselo a alguien",
-    svg: "Vector (camisetas)",
-    png: "Imagen grande",
     copiar: "Copiar el enlace",
     consejo: "Con esta clave, o con el QR, cualquiera abre este sobre. A ti no te lo quita.",
-    camiseta: "¿En camiseta?",
+    camiseta: "En camiseta",
     cam_titulo: "Este sobre, en camiseta",
     cam_donde: "A la espalda y de 8 a 10 cm. En el pecho nadie se atreve a acercar el móvil; en una cola, la espalda de quien va delante se escanea sola. Oscuro sobre tela clara.",
     cam_medida: "¿De qué tamaño?",
@@ -94,11 +92,9 @@ const T = {
     compartir: "Send it to someone",
     copiado: "Copied",
     codigo: "Pass it on",
-    svg: "Vector (for shirts)",
-    png: "Large image",
     copiar: "Copy the link",
     consejo: "With this key, or the QR, anyone can open this envelope. You keep yours.",
-    camiseta: "On a shirt?",
+    camiseta: "On a shirt",
     cam_titulo: "This envelope, on a shirt",
     cam_donde: "On the back, 8 to 10 cm. Nobody points a phone at a stranger's chest; in a queue, the back of the person ahead scans itself. Dark on light fabric.",
     cam_medida: "What size?",
@@ -451,11 +447,9 @@ function carta(id) {
       <p class="clavegorda">${esc(c.clave)}</p>
       <div class="lienzo">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
       <div class="menu">
-        <button data-qr="svg">${t("svg")}</button>
-        <button data-qr="png">${t("png")}</button>
         <button data-qr="copiar">${t("copiar")}</button>
         <a href="/imprimir/">${t("imprimir")}</a>
-        <button class="discreto" data-camiseta="${id}">${t("camiseta")}</button>
+        <button data-camiseta="${id}">${t("camiseta")}</button>
       </div>
       <p class="consejo">${t("consejo")}</p>
     </div>
@@ -470,8 +464,6 @@ function verCodigo(id) {
     <div class="cuadro">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
     <div class="menu">
       <button data-qr="copiar">${t("copiar")}</button>
-      <button data-qr="svg">${t("svg")}</button>
-      <button data-qr="png">${t("png")}</button>
     </div>
     <p class="clave-suya"><span>${t("tu_clave").replace("{n}", id)}</span><strong>${esc(buscar(id).clave)}</strong></p>
     <p class="nota">${t("reparte_pie")}</p>

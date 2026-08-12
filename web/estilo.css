@@ -515,7 +515,6 @@ body.quieto{ overflow:hidden; }
 }
 
 /* ---------------- La camiseta ---------------- */
-.codigo .menu .discreto{ border-style:dashed; }
 
 .visor.camiseta{ max-width:340px; }
 .visor.camiseta h2{ margin-bottom:16px; }
