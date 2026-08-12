@@ -432,37 +432,44 @@ body.rodado .masabajo{ opacity:0; transition:opacity .3s; }
   letter-spacing:.3em; color:var(--acento); margin-bottom:16px;
 }
 
-/* ---------------- Romper el lacre ---------------- */
-.sobre .cera{ transform-origin:130px 100px; }
+
+/* ---------------- Derretir el lacre ---------------- */
+.sobre .cera, .sobre .sello-marca, .sobre .gota{ transform-origin:130px 118px; }
 .sobre .solapa{ transform-origin:130px 12px; }
 
-.sobre.rompiendo .izq{ animation:cae-izq .6s cubic-bezier(.36,.07,.5,1) forwards; }
-.sobre.rompiendo .der{ animation:cae-der .6s cubic-bezier(.36,.07,.5,1) forwards; }
-.sobre.rompiendo .solapa{ animation:abre-solapa .5s .16s ease-in forwards; }
+/* La marca es lo primero que se va: el calor borra el relieve antes que la forma. */
+.sobre.rompiendo .sello-marca{ animation:borra-marca .34s ease-out forwards; }
+.sobre.rompiendo .cera{ animation:derrite .9s cubic-bezier(.55,.02,.6,1) forwards; }
+.sobre.rompiendo .gota{ animation:gotea .9s .2s cubic-bezier(.4,0,.9,1) forwards; }
+.sobre.rompiendo .solapa{ animation:abre-solapa .5s .48s ease-in forwards; }
 
-@keyframes cae-izq{
-  0%  { transform:none; }
-  18% { transform:translate(-3px,-2px) rotate(-4deg); }
-  100%{ transform:translate(-26px,44px) rotate(-32deg); opacity:0; }
+@keyframes borra-marca{
+  0%  { opacity:1; filter:blur(0); }
+  100%{ opacity:0; filter:blur(2px); transform:scale(.92); }
 }
-@keyframes cae-der{
-  0%  { transform:none; }
-  18% { transform:translate(3px,-2px) rotate(4deg); }
-  100%{ transform:translate(26px,46px) rotate(30deg); opacity:0; }
+@keyframes derrite{
+  0%  { transform:none; filter:blur(0); }
+  25% { transform:translateY(2px) scale(1.06,.94); filter:blur(.4px); }
+  60% { transform:translateY(12px) scale(1.3,.5); filter:blur(1px); }
+  100%{ transform:translateY(20px) scale(1.55,.2); filter:blur(1.6px); opacity:.85; }
+}
+@keyframes gotea{
+  0%  { opacity:0; transform:scaleY(0); }
+  35% { opacity:.9; transform:scaleY(.5); }
+  100%{ opacity:.75; transform:translateY(10px) scaleY(1.15); }
 }
 @keyframes abre-solapa{
   0%  { transform:scaleY(1); }
   100%{ transform:scaleY(-.72); }
 }
 
-/* El sobre entero se aparta cuando ya está roto. */
-.hoy-cara.tapada .sobre.rompiendo{ animation:aparta .62s ease-in forwards; }
+.hoy-cara.tapada .sobre.rompiendo{ animation:aparta .9s ease-in forwards; }
 @keyframes aparta{
-  0%  { transform:none; opacity:1; }
-  55% { transform:translateY(-3px) scale(1.015); opacity:1; }
-  100%{ transform:translateY(10px) scale(.97); opacity:.15; }
+  0%  { opacity:1; }
+  70% { opacity:1; }
+  100%{ transform:translateY(8px) scale(.98); opacity:.12; }
 }
 
 @media (prefers-reduced-motion: reduce){
-  .sobre.rompiendo *, .sobre.rompiendo{ animation:none !important; }
+  .sobre.rompiendo, .sobre.rompiendo *{ animation:none !important; }
 }
