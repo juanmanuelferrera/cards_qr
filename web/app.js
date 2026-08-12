@@ -24,11 +24,11 @@ const T = {
     ganada: "Sobre {n} abierto",
     compartir: "Mandársela a alguien",
     copiado: "Copiado",
-    codigo: "Su código",
+    codigo: "La clave de este sobre",
     svg: "Vector (camisetas)",
     png: "Imagen grande",
-    copiar: "Copiar enlace",
-    consejo: "Para camisetas, a la espalda y de 8 a 10 cm. Oscuro sobre tela clara y sin arrugas.",
+    copiar: "Copiar el enlace",
+    consejo: "El QR y la clave abren lo mismo. Para camisetas, a la espalda y de 8 a 10 cm, oscuro sobre tela clara.",
     coleccion: "Las trece",
     encontradas: "{n} de {total}",
     racha: "{n} días seguidos",
@@ -37,22 +37,22 @@ const T = {
     completo: "Completo",
     intro: "Trece sobres. Cada día se puede abrir uno.",
     intro2: "Los demás los tienen quienes ya los abrieron. Cada sobre lleva su código: si alguien te pasa el suyo, se abre.",
-    su_codigo: "Su código",
+    su_codigo: "La clave de este sobre",
     clave_titulo: "¿Te han dado una clave?",
     clave_pie: "Cuatro letras y números. Abre el sobre al que pertenece, sea su día o no.",
     clave_abrir: "Abrir",
     clave_mal: "Esa clave no es de ningún sobre",
-    tu_clave: "Clave",
+    tu_clave: "Clave del sobre {n}",
     reparte_pie: "Solo se reparten los sobres que has abierto.",
     hoy_hecho: "El de hoy ya está abierto. Mañana hay otro.",
     cerrado: "Se abre el día que le toque, o con su clave.",
     imprimir_larga: "Puedes imprimir las tuyas y repartirlas.",
-    copia: "Guardar con código",
-    restaurar: "Tengo un código",
-    aviso_copia: "Todo esto vive en este navegador. Si lo borras o cambias de móvil, se pierde. Guárdalo con un código y apúntalo.",
-    aviso_codigo: "Con el código se recupera en cualquier aparato. Quien lo tenga verá también lo que has escrito.",
-    tu_codigo: "Tu código",
-    pide_codigo: "Escribe tu código",
+    copia: "Guardar con un código",
+    restaurar: "Tengo un código de respaldo",
+    aviso_copia: "Tu colección vive en este navegador. Si lo borras o cambias de móvil, se pierde. Guárdala con un código y apúntalo.",
+    aviso_codigo: "Ese código no abre sobres: recupera tu colección entera en otro aparato. Quien lo tenga verá también lo que has escrito.",
+    tu_codigo: "Tu código de respaldo",
+    pide_codigo: "Escribe tu código de respaldo",
     guardando: "Guardando…",
     restaurado: "Recuperado",
     fallo: "No hay nada con ese código"
@@ -74,11 +74,11 @@ const T = {
     ganada: "Envelope {n} opened",
     compartir: "Send it to someone",
     copiado: "Copied",
-    codigo: "Its code",
+    codigo: "This envelope\u2019s key",
     svg: "Vector (for shirts)",
     png: "Large image",
-    copiar: "Copy link",
-    consejo: "For shirts, put it on the back, 8 to 10 cm. Dark on light fabric, and flat.",
+    copiar: "Copy the link",
+    consejo: "The QR and the key open the same thing. For shirts, put it on the back, 8 to 10 cm, dark on light fabric.",
     coleccion: "The thirteen",
     encontradas: "{n} of {total}",
     racha: "{n} days in a row",
@@ -87,22 +87,22 @@ const T = {
     completo: "Complete",
     intro: "Thirteen envelopes. Each day you can open one.",
     intro2: "The others belong to whoever opened them. Each envelope carries its code: if someone passes you theirs, it opens.",
-    su_codigo: "Its code",
+    su_codigo: "This envelope\u2019s key",
     clave_titulo: "Someone gave you a key?",
     clave_pie: "Four letters and numbers. It opens the envelope it belongs to, whatever day it is.",
     clave_abrir: "Open",
     clave_mal: "That key doesn't match any envelope",
-    tu_clave: "Key",
+    tu_clave: "Key to envelope {n}",
     reparte_pie: "You can only pass on the envelopes you have opened.",
     hoy_hecho: "Today's is open. There's another tomorrow.",
     cerrado: "Opens on its day, or with its key.",
     imprimir_larga: "You can print your own and hand them out.",
     copia: "Save with a code",
-    restaurar: "I have a code",
-    aviso_copia: "All of this lives in this browser. If you clear it or change phones, it is gone. Save it with a code and write it down.",
-    aviso_codigo: "The code restores it on any device. Whoever has it also sees what you wrote.",
-    tu_codigo: "Your code",
-    pide_codigo: "Type your code",
+    restaurar: "I have a backup code",
+    aviso_copia: "Your collection lives in this browser. If you clear it or change phones, it is gone. Save it with a code and write it down.",
+    aviso_codigo: "That code opens no envelopes: it restores your whole collection on another device. Whoever has it also sees what you wrote.",
+    tu_codigo: "Your backup code",
+    pide_codigo: "Type your backup code",
     guardando: "Saving…",
     restaurado: "Restored",
     fallo: "Nothing found with that code"
@@ -393,14 +393,13 @@ function verCodigo(id) {
   const capa = document.createElement("div");
   capa.className = "capa";
   capa.innerHTML = `<div class="visor">
-    <p class="num">${id}</p>
     <div class="cuadro">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
     <div class="menu">
       <button data-qr="copiar">${t("copiar")}</button>
       <button data-qr="svg">${t("svg")}</button>
       <button data-qr="png">${t("png")}</button>
     </div>
-    <p class="clave-suya"><span>${t("tu_clave")}</span><strong>${esc(buscar(id).clave)}</strong></p>
+    <p class="clave-suya"><span>${t("tu_clave").replace("{n}", id)}</span><strong>${esc(buscar(id).clave)}</strong></p>
     <p class="nota">${t("reparte_pie")}</p>
   </div>`;
 
