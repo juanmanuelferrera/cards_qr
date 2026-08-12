@@ -282,7 +282,21 @@ function niveles() {
       <p class="marcador">${hecho ? t("completo") : t("encontradas").replace("{n}", n).replace("{total}", lote.tarjetas.length)}</p>
       <div class="malla">${piezas}</div>
     </section>`;
-  }).join("");
+  }).join("") + cajaClave();
+}
+
+// La caja va pegada a la colección: es donde se ven los sobres cerrados y
+// donde apetece abrir uno. Al estar dentro, sale en todas las pantallas.
+function cajaClave() {
+  return `<section class="clave">
+    <h2>${t("clave_titulo")}</h2>
+    <div class="menu">
+      <input id="clave" maxlength="4" autocapitalize="characters" autocomplete="off"
+             spellcheck="false" placeholder="····">
+      <button id="abrirclave">${t("clave_abrir")}</button>
+    </div>
+    <p class="nota">${t("clave_pie")}</p>
+  </section>`;
 }
 
 function pasos(id) {
@@ -319,15 +333,6 @@ function portada() {
     <p>${t("intro")}</p>
     <p>${t("intro2")}</p>
     <p>${t("imprimir_larga")} <a href="/imprimir/">${t("imprimir")}</a>.</p>
-  </section>
-  <section class="clave">
-    <h2>${t("clave_titulo")}</h2>
-    <div class="menu">
-      <input id="clave" maxlength="4" autocapitalize="characters" autocomplete="off"
-             spellcheck="false" placeholder="····">
-      <button id="abrirclave">${t("clave_abrir")}</button>
-    </div>
-    <p class="nota">${t("clave_pie")}</p>
   </section>
   <details class="respaldo">
     <summary>${t("aviso_copia")}</summary>
