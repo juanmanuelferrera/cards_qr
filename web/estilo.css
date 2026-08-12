@@ -214,13 +214,13 @@ footer .lema{ display:block; margin-top:5px; font-style:italic; }
 :root{
   --sobre:#2a2521; --sobre-solapa:#221e1a; --sobre-linea:#4a4139;
   --sobre-dentro:#100e0c; --carta-papel:#e7dcc6;
-  --lacre:#b8873a; --lacre-borde:#e0b463; --lacre-letra:#2b1f0d;
+  --lacre:#9c3527; --lacre-borde:#c25a48; --lacre-letra:#f3d9c9;
 }
 @media (prefers-color-scheme: light){
   :root{
     --sobre:#efe7d8; --sobre-solapa:#e5dbc9; --sobre-linea:#cdbfa6;
     --sobre-dentro:#b3a184; --carta-papel:#fdfaf2;
-    --lacre:#a8752a; --lacre-borde:#7a5416; --lacre-letra:#fdf3df;
+    --lacre:#9c3527; --lacre-borde:#7a2519; --lacre-letra:#f7e6dc;
   }
 }
 
