@@ -554,6 +554,11 @@ body.quieto{ overflow:hidden; }
 .medidas span{ font-family:system-ui,sans-serif; font-size:11px; color:var(--suave); }
 
 /* ---------------- Derretir el lacre y abrir el sobre ---------------- */
+/* El lienzo va ajustado al sobre, para que en reposo no flote con un hueco
+   encima. La solapa abierta queda por encima de ese lienzo, así que se deja
+   salir en vez de ampliarlo. */
+.sobre{ overflow:visible; }
+.hoy-cara.tapada, .capa.derritiendo .visor, .capa.derritiendo{ overflow:visible; }
 .sobre .cera, .sobre .sello-marca, .sobre .gota,
 .sobre .solapa, .sobre .carta{ transform-box:fill-box; }
 .sobre .cera, .sobre .sello-marca{ transform-origin:50% 92%; }

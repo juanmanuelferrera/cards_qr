@@ -242,7 +242,7 @@ function sobreLacrado(inicial) {
   // Orden de pintado: interior oscuro, la carta que asoma, el cuerpo del
   // sobre, la solapa que se levanta, y encima la cera. Así al abrirse se ve
   // el hueco de dentro en vez de un triángulo girando en el vacío.
-  return `<svg class="sobre" viewBox="0 -92 260 262" role="img" aria-hidden="true">
+  return `<svg class="sobre" viewBox="0 0 260 168" role="img" aria-hidden="true">
     <rect x="1" y="1" width="258" height="166" rx="7" fill="var(--sobre-dentro)"/>
     <g class="carta"><rect x="26" y="26" width="208" height="128" rx="4"
        fill="var(--carta-papel)" stroke="var(--sobre-linea)" stroke-width="1"/></g>
