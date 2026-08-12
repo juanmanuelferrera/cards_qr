@@ -16,7 +16,11 @@ const T = {
     marcador_resp: "Con tus palabras. Se queda en este aparato.",
     guardar: "Guardar y ver el verso",
     tu: "Lo que contestaste",
-    leer: "Leerlo entero en vedabase",
+    leer: "Volver a leerlo",
+    lector_sig: "Significado",
+    lector_fuente: "Texto de vedabase.cc",
+    lector_cerrar: "Cerrar",
+    lector_ir: "Abrirlo en vedabase.cc",
     paso1: "Contéstala tú",
     paso2: "Rompe el lacre",
     ganar: "Leerlo con su significado",
@@ -66,7 +70,11 @@ const T = {
     marcador_resp: "In your own words. It stays on this device.",
     guardar: "Save and see the verse",
     tu: "What you answered",
-    leer: "Read it whole on vedabase",
+    leer: "Read it again",
+    lector_sig: "Purport",
+    lector_fuente: "Text from vedabase.cc",
+    lector_cerrar: "Close",
+    lector_ir: "Open it on vedabase.cc",
     paso1: "Answer it yourself",
     paso2: "Break the seal",
     ganar: "Read it with the purport",
@@ -381,10 +389,10 @@ function carta(id) {
       <cite>Bhagavad-gītā ${ref}</cite>
     </blockquote>
     <div class="acciones">
-      <a class="principal${p.leido ? "" : " gana"}" href="${esc(c.url[idioma])}" target="_blank" rel="noopener" data-leido>${
+      <button class="principal${p.leido ? "" : " gana"}" data-leer="${id}">${
         p.leido ? t("leer")
                 : `<strong>${t("ganar")}</strong><em>${t("ganar_pie").replace("{n}", id)}</em>`
-      }</a>
+      }</button>
       <button id="compartir">${t("compartir")}</button>
     </div>
     ${p.leido ? `<p class="conseguida">${t("ganada").replace("{n}", id)}</p>` : ""}
@@ -460,6 +468,43 @@ function derretirYEntrar(id) {
   setTimeout(() => { capa.remove(); ir(); }, 1000);
 }
 
+// El significado se lee aquí dentro. Sacar a la gente a otra pestaña la
+// perdía: en el móvil casi nadie vuelve.
+async function abrirLector(id) {
+  const c = buscar(id);
+  const capa = document.createElement("div");
+  capa.className = "capa lector";
+  capa.innerHTML = `<div class="hoja-lectura">
+    <button class="cerrar" aria-label="${t("lector_cerrar")}">×</button>
+    <div class="rollo"><p class="cargando">·  ·  ·</p></div>
+  </div>`;
+  const cerrar = () => { capa.remove(); document.body.classList.remove("quieto"); };
+  capa.addEventListener("click", e => { if (e.target === capa) cerrar(); });
+  capa.querySelector(".cerrar").addEventListener("click", cerrar);
+  addEventListener("keydown", e => { if (e.key === "Escape") cerrar(); }, { once: true });
+  document.body.appendChild(capa);
+  document.body.classList.add("quieto");
+
+  let v;
+  try {
+    v = (await (await fetch(`/versos/${c.cap}-${c.ver}.json`)).json())[idioma];
+  } catch (e) {
+    return location.assign(c.url[idioma]);
+  }
+
+  capa.querySelector(".rollo").innerHTML = `
+    <p class="ref">Bhagavad-gītā ${c.cap}.${c.ver}</p>
+    <blockquote><p>${esc(v.traduccion)}</p></blockquote>
+    <h3>${t("lector_sig")}</h3>
+    ${v.significado.map(x => `<p>${esc(x)}</p>`).join("")}
+    <p class="fuente">${t("lector_fuente")} —
+      <a href="${esc(v.url)}" target="_blank" rel="noopener">${t("lector_ir")}</a></p>`;
+
+  // Leerlo aquí es lo que gana el sobre.
+  estado.progreso[id] = Object.assign(paso(id), { leido: true });
+  guardar();
+}
+
 /* ---------------- Pintado ---------------- */
 function pintar() {
   const id = location.pathname.replace(/\//g, "");
@@ -484,11 +529,11 @@ function pintar() {
     });
   }
 
-  // Abrir el verso entero es el segundo paso: con eso la carta ya cuenta.
-  document.querySelectorAll("[data-leido]").forEach(a => a.addEventListener("click", () => {
-    estado.progreso[id] = Object.assign(paso(id), { leido: true });
-    guardar();
-    setTimeout(() => { pintar(); llevarA(".conseguida"); }, 600);
+  // Abrir el significado es el segundo paso: con eso el sobre ya es tuyo.
+  document.querySelectorAll("[data-leer]").forEach(b => b.addEventListener("click", async () => {
+    const yaEra = paso(b.dataset.leer).leido;
+    await abrirLector(b.dataset.leer);
+    if (!yaEra) setTimeout(() => { pintar(); llevarA(".conseguida"); }, 50);
   }));
 
   document.querySelectorAll("[data-ver]").forEach(b =>

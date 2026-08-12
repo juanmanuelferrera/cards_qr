@@ -18,6 +18,11 @@ DATOS = RAIZ / "data"
 
 MARCA = {"es": "Traducción", "en": "Translation"}
 FIN = {"es": "Significado", "en": "Purport"}
+# El significado termina donde empieza la lista de clases, o el pie de página.
+CIERRE = {
+    "es": ["Conferencias de Śrīla Prabhupāda sobre este verso", "Anterior", "Copyright"],
+    "en": ["Śrīla Prabhupāda’s lectures on this verse", "Previous", "Copyright"],
+}
 
 
 def pagina(url):
@@ -34,6 +39,21 @@ def limpiar(t):
 def traduccion(bruto, idioma):
     m = re.search(rf"{MARCA[idioma]}\s*(.{{0,1200}}?)\s*{FIN[idioma]}", limpiar(bruto), re.S)
     return re.sub(r"\s+", " ", m.group(1)).strip() if m else ""
+
+
+def significado(bruto, idioma):
+    t = limpiar(bruto)
+    i = t.find(FIN[idioma])
+    if i < 0:
+        return []
+    trozo = t[i + len(FIN[idioma]):]
+    for marca in CIERRE[idioma]:
+        j = trozo.find(marca)
+        if j > 0:
+            trozo = trozo[:j]
+    # Cada párrafo, una línea suelta y larga; lo corto descarta menús y adornos.
+    return [re.sub(r"\s+", " ", l).strip()
+            for l in trozo.split("\n") if len(l.strip()) > 90]
 
 
 def clases(bruto):
@@ -58,10 +78,14 @@ def main():
             texto = traduccion(bruto, idioma)
             if not texto:
                 raise SystemExit(f"Sin traducción en {url}")
-            salida[referencia][idioma] = {"url": url, "traduccion": texto}
+            parrafos = significado(bruto, idioma)
+            salida[referencia][idioma] = {
+                "url": url, "traduccion": texto, "significado": parrafos,
+            }
             if idioma == "en":
                 salida[referencia]["clases"] = clases(bruto)
-            print(f"  BG {referencia:<6} {idioma}  {len(texto):>4} car")
+            print(f"  BG {referencia:<6} {idioma}  {len(texto):>4} car  "
+                  f"significado: {len(parrafos)} párrafos")
 
     (DATOS / "versos.json").write_text(
         json.dumps(salida, ensure_ascii=False, indent=2) + "\n")
