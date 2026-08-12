@@ -214,13 +214,13 @@ footer .lema{ display:block; margin-top:5px; font-style:italic; }
 :root{
   --sobre:#2a2521; --sobre-solapa:#221e1a; --sobre-linea:#4a4139;
   --sobre-dentro:#100e0c; --carta-papel:#e7dcc6;
-  --lacre:#9c3527; --lacre-borde:#c25a48; --lacre-letra:#f3d9c9;
+  --lacre:#b8873a; --lacre-borde:#e0b463; --lacre-letra:#2b1f0d;
 }
 @media (prefers-color-scheme: light){
   :root{
     --sobre:#efe7d8; --sobre-solapa:#e5dbc9; --sobre-linea:#cdbfa6;
     --sobre-dentro:#b3a184; --carta-papel:#fdfaf2;
-    --lacre:#9c3527; --lacre-borde:#7a2519; --lacre-letra:#f7e6dc;
+    --lacre:#a8752a; --lacre-borde:#7a5416; --lacre-letra:#fdf3df;
   }
 }
 
@@ -559,10 +559,8 @@ body.quieto{ overflow:hidden; }
    salir en vez de ampliarlo. */
 .sobre{ overflow:visible; }
 .hoy-cara.tapada, .capa.derritiendo .visor, .capa.derritiendo{ overflow:visible; }
-.sobre .cera, .sobre .sello-marca, .sobre .gota,
-.sobre .solapa, .sobre .carta{ transform-box:fill-box; }
+.sobre .cera, .sobre .sello-marca, .sobre .solapa, .sobre .carta{ transform-box:fill-box; }
 .sobre .cera, .sobre .sello-marca{ transform-origin:50% 92%; }
-.sobre .gota{ transform-origin:50% 0%; }
 .sobre .solapa{ transform-origin:50% 0%; }
 .sobre .carta{ transform-origin:50% 100%; }
 
@@ -571,7 +569,6 @@ body.quieto{ overflow:hidden; }
 
 .sobre.rompiendo .sello-marca{ animation:borra-marca .38s ease-out forwards; }
 .sobre.rompiendo .cera{ animation:derrite .95s cubic-bezier(.55,.02,.6,1) forwards; }
-.sobre.rompiendo .gota{ animation:gotea .95s .2s cubic-bezier(.4,0,.9,1) forwards; }
 .sobre.rompiendo .solapa{ animation:abre-solapa .95s 1s cubic-bezier(.32,1.16,.6,1) forwards; }
 .sobre.rompiendo .carta{ animation:asoma .8s 1.5s ease-out forwards; }
 
@@ -580,14 +577,9 @@ body.quieto{ overflow:hidden; }
 }
 @keyframes derrite{
   0%  { transform:none; filter:blur(0); }
-  30% { transform:translateY(2px) scale(1.06,.94); filter:blur(.4px); }
-  70% { transform:translateY(11px) scale(1.3,.48); filter:blur(1px); }
-  100%{ transform:translateY(18px) scale(1.5,.18); filter:blur(1.6px); opacity:.8; }
-}
-@keyframes gotea{
-  0%  { opacity:0; transform:scaleY(0); }
-  40% { opacity:.9; transform:scaleY(.55); }
-  100%{ opacity:.7; transform:translateY(9px) scaleY(1.1); }
+  30% { transform:translateY(1px) scale(1.08,.93); filter:blur(.4px); }
+  70% { transform:translateY(6px) scale(1.42,.5); filter:blur(1px); opacity:.92; }
+  100%{ transform:translateY(9px) scale(1.7,.16); filter:blur(1.8px); opacity:.7; }
 }
 /* La solapa cae hacia atrás y deja ver el interior. */
 @keyframes abre-solapa{

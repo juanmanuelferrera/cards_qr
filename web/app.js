@@ -255,8 +255,6 @@ function sobreLacrado(inicial) {
           fill="var(--sobre-solapa)" stroke="var(--sobre-linea)" stroke-width="1.4"
           stroke-linejoin="round"/>
     <g transform="translate(130,100)">
-      <path class="gota" d="M-7 14 q7 26 7 34 q0 8-7 8 q-7 0-7-8 q0-8 7-34z"
-            fill="var(--lacre)" opacity="0"/>
       <g class="cera">
         <path d="M0-31c9-4 15 2 21 5s13 1 15 10-4 13-3 20-2 14-10 16-12 8-20 7-13-6-21-8-15-4-17-13 3-12 2-19 1-15 9-17 15-7 24-1z"
               fill="var(--lacre)"/>
