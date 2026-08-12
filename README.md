@@ -65,7 +65,7 @@ Cuatro archivos, sin framework ni compilación:
 
 **El sobre del día** sale del número de día, no del azar.
 
-**Los códigos** se descargan desde cada sobre ganado: vector de 100 mm para camisetas, PNG de 2000 px para imprentas que no aceptan vector, o el enlace. Hay también un botón discreto de camiseta con dos salidas —descargar el diseño y hacérsela donde quiera, o pedirla por correo—. Cuando haya demanda se cambia por una tienda. Para camisetas, a la espalda y de 8 a 10 cm — en el pecho nadie se atreve a acercar el móvil, y en una cola la espalda de quien va delante se escanea sola.
+**Los códigos** se descargan desde cada sobre ganado: vector de 100 mm para camisetas, PNG de 2000 px para imprentas que no aceptan vector, o el enlace. Hay también un botón discreto de camiseta con dos salidas —descargar el diseño y hacérsela donde quiera, o pedirla por correo—. Cuando haya demanda se cambia por una tienda. Para camisetas, a la espalda y de 25 a 30 cm. Un QR se lee desde unas diez veces su tamaño, así que 25 cm dan dos metros y medio — la distancia de una cola o un semáforo. Por debajo de 10 cm hay que acercarse, y al pecho de un desconocido no se acerca nadie.
 
 ### Probarla en local
 
