@@ -191,6 +191,17 @@ function bajarPng(url, id, px) {
 
 
 /* ---------------- El sobre lacrado ---------------- */
+function ceraGastada(marca) {
+  // Lo que queda del lacre una vez derretido: una mancha aplastada con su número.
+  return `<svg class="restos" viewBox="0 0 44 30" aria-hidden="true">
+    <path d="M4 17c-2-6 3-11 9-12s10-3 15 0 13 4 14 11-6 10-13 11-9 2-15 1-8-5-10-11z"
+          fill="var(--lacre)" opacity=".92"/>
+    <path d="M20 26q2 4 2 5t-2 1-2-1 2-5z" fill="var(--lacre)" opacity=".7"/>
+    <text x="22" y="21" text-anchor="middle" font-family="Georgia,serif" font-size="13"
+          font-weight="700" fill="var(--lacre-letra)">${marca}</text>
+  </svg>`;
+}
+
 function sobreChico(marca) {
   // El mismo sobre, reducido a lo esencial, para las cartas por descubrir.
   return `<svg class="sobrecito" viewBox="0 0 120 78" role="img" aria-hidden="true">
@@ -264,7 +275,7 @@ function niveles() {
       const clases = ["mini", abierta ? "hallada" : "", id === hoy ? "hoy" : "",
                       abrible ? "" : "cerrado"].join(" ");
       const dentro = abierta
-        ? `<span class="preg">${esc(c[idioma][2])}</span>`
+        ? `<span class="carta-abierta"><span class="preg">${esc(c[idioma][2])}</span>${ceraGastada(esc(id))}</span>`
         : sobreChico(esc(id));
       if (!abrible) return `<span class="${clases}" title="${t("cerrado")}">${dentro}</span>`;
       // El código no se enseña de entrada: aparece si lo buscas.
