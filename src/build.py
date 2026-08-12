@@ -31,9 +31,9 @@ COLS, FILAS = 2, 5            # 10 huecos por A4
 MARGEN_X, MARGEN_Y = 10, 11
 MARCA, SEPARACION = 4, 1.2    # marcas de corte: largo y separación
 
-# El QR de un verso ocupa 37 módulos. A 19,5 mm son 0,53 mm por celda, que es
-# el mínimo cómodo para la cámara de un móvil con luz de interior. Si acortas
-# una URL y el código baja de módulos, puedes reducir QR en la misma medida.
+# En vedic-library no hay página por verso: el verso es un ancla dentro del
+# capítulo, /bg-es/2#bg-213 para BG 2.13. Esa URL ocupa 37 módulos; a 23,5 mm
+# son 0,64 mm por celda. Por debajo de 0,5 un móvil falla con luz de interior.
 MODULO_MINIMO = 0.50
 
 AUDIO = "https://vedabase.cc/media/audio/bhajan.mp3"
@@ -125,7 +125,7 @@ def comprobar(url, modulos):
 
 def tarjeta_html(cfg, pregunta):
     linea1, linea2, cierre, capitulo, verso = pregunta
-    url = f"{BASE}/{cfg['ruta']}/{capitulo}/{verso}/"
+    url = f"{BASE}/{cfg['ruta']}/{capitulo}#bg-{capitulo}{verso}"
     qr_gita, mod_gita = qr_svg(url)
     qr_audio, mod_audio = qr_svg(AUDIO)
     comprobar(url, mod_gita)

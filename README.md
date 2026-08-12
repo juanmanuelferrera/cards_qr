@@ -46,7 +46,9 @@ La URL de un verso ocupa 37 módulos, así que el QR va a **23,5 mm** para dar 0
 
 Se generan con corrección de error **M**, no H: con H el código sale más denso y las celdas se quedan pequeñas al imprimir.
 
-Destinos: `vedic-library.pages.dev/bg-<idioma>/<capítulo>/<verso>/` y `vedabase.cc/media/audio/bhajan.mp3`.
+En vedic-library **no hay una página por verso**: el verso es un ancla dentro del capítulo. BG 2.13 es `/bg-es/2#bg-213`, o sea `bg-` seguido del capítulo y el verso pegados. Ojo con esto, porque el sitio devuelve 200 para cualquier ruta que le pidas —es una SPA— y una URL inventada parece válida hasta que la abres.
+
+Destinos: `vedic-library.pages.dev/bg-<idioma>/<capítulo>#bg-<capítulo><verso>` y `vedabase.cc/media/audio/bhajan.mp3`.
 
 ## Añadir un idioma
 
@@ -74,15 +76,35 @@ curl -o /dev/null -w "%{http_code}\n" https://vedic-library.pages.dev/bg-pt/2/13
 
 ## Editor en el navegador
 
-`gui/index.html` — ábrelo con doble clic. No hay que instalar nada, no necesita conexión y funciona en cualquier ordenador.
+`gui/index.html` — doble clic y ya está. No hay que instalar nada, no necesita conexión y funciona en cualquier ordenador.
 
-Muestra la hoja A4 entera con las diez tarjetas. Pinchas una y la editas en el panel de la izquierda: las dos líneas, la pregunta, el capítulo y el verso. El QR se regenera solo y avisa en rojo si las celdas bajan de 0,5 mm, que es donde un móvil empieza a fallar.
+### Cómo va
 
-Zoom con los botones de la barra, o **Ajustar** para ver la hoja completa. Flechas ← → para saltar de tarjeta.
+A la derecha se ve **la hoja A4 entera**, tal como saldrá impresa, con las diez tarjetas y sus marcas de corte. Pinchas una y se edita en el panel de la izquierda. La seleccionada queda marcada y cada hueco lleva su número en la esquina.
 
-**Guardar PDF para imprenta** abre el diálogo de impresión: elige *Guardar como PDF*, escala **100 %** y sin «ajustar al papel». Sale un A4 vectorial exacto, con sus marcas de corte, listo para mandar.
+Se edita: las dos líneas, la pregunta, el capítulo y el verso.
 
-Lo que edites se guarda en el propio navegador. Con **Guardar .json** te lo llevas a otro ordenador, y con **Copiar para build.py** pegas las diez preguntas en el script si prefieres generarlas desde la terminal.
+- **Zoom** con − y +, **Ajustar** para ver la hoja completa, **100 %** para verla a tamaño real.
+- **Flechas ← →** saltan de tarjeta sin tocar el ratón.
+- **Copiar a todas** pone la tarjeta actual en los diez huecos, por si quieres una tirada de diez iguales.
+
+### El campo de la URL
+
+Se rellena solo al cambiar capítulo o verso, montando el ancla del capítulo (`/bg-es/2#bg-213`). Si escribes encima, la etiqueta pasa a *escrita a mano* en rojo y esa tarjeta deja de seguir la fórmula; **Recalcular** la devuelve.
+
+**Abrir y comprobar** abre esa dirección en otra pestaña. Úsalo: es la única forma de verificar que el verso es el que crees, porque el sitio devuelve 200 aunque la ruta no exista.
+
+Debajo va el diagnóstico del código: milímetros por celda y número de módulos, en rojo si baja de 0,5 mm.
+
+### Sacar el PDF
+
+**Guardar PDF para imprenta** abre el diálogo de impresión. Elige *Guardar como PDF*, escala **100 %** y desactiva «ajustar al papel». Sale un A4 vectorial exacto, idéntico al que produce el script.
+
+No hay botón que se salte ese diálogo, y es a propósito: el PDF del navegador es vectorial de verdad, mientras que una librería que lo exportara por su cuenta acabaría rasterizando el texto o moviendo las medidas un milímetro.
+
+### Guardar el trabajo
+
+Lo que edites se queda en el navegador. **Guardar .json** para llevártelo a otro ordenador, y **Copiar para build.py** te pone las diez preguntas con el formato del script, por si prefieres la terminal.
 
 ## Regenerar desde la terminal
 
