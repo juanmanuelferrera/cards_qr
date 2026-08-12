@@ -72,14 +72,26 @@ Los PDF salen solos, nombrados por idioma. Comprueba antes que la ruta existe:
 curl -o /dev/null -w "%{http_code}\n" https://vedic-library.pages.dev/bg-pt/2/13/
 ```
 
-## Regenerar
+## Editor en el navegador
+
+`gui/index.html` — ábrelo con doble clic. No hay que instalar nada, no necesita conexión y funciona en cualquier ordenador.
+
+Muestra la hoja A4 entera con las diez tarjetas. Pinchas una y la editas en el panel de la izquierda: las dos líneas, la pregunta, el capítulo y el verso. El QR se regenera solo y avisa en rojo si las celdas bajan de 0,5 mm, que es donde un móvil empieza a fallar.
+
+Zoom con los botones de la barra, o **Ajustar** para ver la hoja completa. Flechas ← → para saltar de tarjeta.
+
+**Guardar PDF para imprenta** abre el diálogo de impresión: elige *Guardar como PDF*, escala **100 %** y sin «ajustar al papel». Sale un A4 vectorial exacto, con sus marcas de corte, listo para mandar.
+
+Lo que edites se guarda en el propio navegador. Con **Guardar .json** te lo llevas a otro ordenador, y con **Copiar para build.py** pegas las diez preguntas en el script si prefieres generarlas desde la terminal.
+
+## Regenerar desde la terminal
 
 ```bash
 pip install segno weasyprint
 python3 src/build.py
 ```
 
-Los PDF salen a `dist/` y las vistas previas en HTML a `preview/`.
+Los PDF salen a `dist/` y las vistas previas en HTML a `preview/`. Da igual usar el editor o el script: producen la misma tarjeta con las mismas medidas.
 
 ## Diseño
 

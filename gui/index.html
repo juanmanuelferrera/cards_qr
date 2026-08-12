@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tarjetas QR — editor A4</title>
+<script src="qrcode.min.js"></script>
+<style>
+  :root{
+    --tinta:#171512; --suave:#6a6259; --acento:#8a6d3b;
+    --linea:#d9d2c6; --fondo:#e7e3dc; --panel:#fff; --aviso:#a8342a;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    color:var(--tinta); background:var(--fondo); overflow:hidden;
+  }
+
+  .app{ display:grid; grid-template-columns:390px 1fr; height:100vh; }
+  @media (max-width:860px){ .app{ grid-template-columns:1fr; } }
+
+  /* ---------------- Panel izquierdo ---------------- */
+  .panel{ background:var(--panel); border-right:1px solid var(--linea);
+          padding:20px 22px 40px; overflow-y:auto; }
+  h1{ font-size:16px; font-weight:650; letter-spacing:-.01em; }
+  h1 span{ font-weight:400; color:var(--suave); }
+  h2{ font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--suave);
+      margin:20px 0 9px; font-weight:600; }
+  p.ayuda{ color:var(--suave); font-size:12.5px; margin-top:5px; }
+
+  label small{ display:block; font-size:11px; color:var(--suave); margin-bottom:3px; }
+  input,select{
+    font:inherit; width:100%; padding:7px 9px; border:1px solid var(--linea);
+    border-radius:6px; background:#fff; color:inherit;
+  }
+  input:focus{ outline:2px solid var(--acento); outline-offset:-1px; border-color:transparent; }
+  .campos{ display:grid; gap:6px; }
+  .duo{ display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+
+  button{
+    font:inherit; font-weight:550; padding:7px 12px; border:1px solid var(--linea);
+    border-radius:7px; background:#fff; cursor:pointer; color:inherit;
+  }
+  button:hover{ border-color:var(--acento); color:var(--acento); }
+  button.fuerte{ background:var(--tinta); color:#fff; border-color:var(--tinta); }
+  button.fuerte:hover{ background:var(--acento); border-color:var(--acento); color:#fff; }
+  button.mini{ padding:4px 9px; font-size:12px; }
+  .botones{ display:flex; gap:7px; flex-wrap:wrap; margin-top:12px; }
+
+  .aviso{ color:var(--aviso); font-size:12.5px; margin-top:8px; }
+  .ok{ color:var(--suave); font-size:12.5px; margin-top:8px; }
+  .cual{ font-size:12px; color:var(--acento); font-weight:650; }
+
+  /* ---------------- Lienzo ---------------- */
+  .zona{ position:relative; overflow:auto; padding:26px; }
+  .barra{
+    position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:8px;
+    background:var(--fondo); padding-bottom:14px; flex-wrap:wrap;
+  }
+  .barra .sep{ flex:1; }
+  .zoomval{ font-variant-numeric:tabular-nums; font-size:12.5px; color:var(--suave); min-width:44px; text-align:center; }
+
+  #lienzo{ transform-origin:0 0; width:210mm; height:297mm; }
+  #hoja{
+    position:relative; width:210mm; height:297mm; background:#fff;
+    box-shadow:0 3px 22px rgba(0,0,0,.16);
+  }
+  #hoja .rejilla{
+    position:absolute; left:10mm; top:11mm;
+    display:grid; grid-template-columns:repeat(2,85mm); grid-template-rows:repeat(5,55mm);
+  }
+  #hoja .m{ position:absolute; background:#000; }
+  #hoja .m.v{ width:.25pt; height:4mm; }
+  #hoja .m.h{ height:.25pt; width:4mm; }
+
+  .hueco{ position:relative; cursor:pointer; }
+  .hueco .tapa{
+    position:absolute; inset:0; outline:1px dashed rgba(0,0,0,.16); outline-offset:-1px;
+  }
+  .hueco:hover .tapa{ outline:1.5px solid var(--acento); background:rgba(138,109,59,.05); }
+  .hueco.sel .tapa{ outline:2px solid var(--acento); background:rgba(138,109,59,.07); }
+  .hueco .n{
+    position:absolute; top:1mm; right:1.5mm; font:600 9px/1 system-ui,sans-serif;
+    color:var(--acento); background:#fff; padding:2px 4px; border-radius:3px;
+  }
+
+  /* ---------------- La tarjeta: mismas medidas que build.py ---------------- */
+  .tarjeta{
+    width:85mm; height:55mm; padding:4.5mm 5.5mm 3.5mm;
+    background:#fff; overflow:hidden; color:var(--tinta);
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  }
+  .tarjeta .titulo{ font-size:10.6pt; line-height:1.2; letter-spacing:-.005em; }
+  .tarjeta .pregunta{ font-style:italic; color:var(--acento); }
+  .tarjeta .codigos{ margin-top:2.5mm; display:grid; grid-template-columns:1fr 1fr; gap:4mm; align-items:end; }
+  .tarjeta .codigo{ text-align:center; min-width:0; }
+  .tarjeta .codigo svg{ display:block; margin:0 auto 1mm; }
+  .tarjeta .que{ font-size:6.8pt; font-weight:600; letter-spacing:.03em; line-height:1.12; white-space:nowrap; }
+  .tarjeta .sub{ font-size:5.8pt; color:var(--suave); margin-top:.4mm; line-height:1.15; }
+
+  /* ---------------- Impresión ---------------- */
+  @page{ size:A4 portrait; margin:0; }
+  @media print{
+    body{ background:#fff; overflow:visible; }
+    .app{ display:block; }
+    .panel, .barra{ display:none !important; }
+    .zona{ padding:0; overflow:visible; }
+    #lienzo{ transform:none !important; }
+    #hoja{ box-shadow:none; }
+    .hueco .tapa, .hueco .n{ display:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="panel">
+    <h1>Tarjetas QR <span>— editor A4</span></h1>
+    <p class="ayuda">Pincha una tarjeta de la hoja y edítala aquí. Diez tarjetas, diez preguntas distintas.</p>
+
+    <h2>Tarjeta <span class="cual" id="cual"></span></h2>
+    <div class="campos">
+      <label><small>Primera línea</small><input id="l1"></label>
+      <label><small>Segunda línea</small><input id="l2"></label>
+      <label><small>La pregunta</small><input id="l3"></label>
+      <div class="duo">
+        <label><small>Capítulo</small><input id="cap" type="number" min="1" max="18"></label>
+        <label><small>Verso</small><input id="ver" type="number" min="1"></label>
+      </div>
+    </div>
+    <div class="botones">
+      <button class="mini" id="anterior">← Anterior</button>
+      <button class="mini" id="siguiente">Siguiente →</button>
+      <button class="mini" id="copiarTodas">Copiar a todas</button>
+    </div>
+    <div id="diagnostico"></div>
+    <p class="ayuda" id="destino" style="word-break:break-all"></p>
+
+    <h2>Textos fijos y medidas</h2>
+    <div class="campos">
+      <div class="duo">
+        <label><small>Ruta del libro</small><input id="ruta" value="bg-es"></label>
+        <label><small>QR (mm)</small><input id="qrmm" type="number" step="0.5" min="10" max="30" value="23.5"></label>
+      </div>
+      <label><small>Pie bajo el QR del libro</small><input id="pieGita" value="Leerlo gratis, en castellano"></label>
+      <div class="duo">
+        <label><small>Título del QR de audio</small><input id="tituloAudio" value="Canto sánscrito"></label>
+        <label><small>Pie del audio</small><input id="pieAudio" value="20 minutos"></label>
+      </div>
+      <label><small>URL del audio</small><input id="urlAudio" value="https://vedabase.cc/media/audio/bhajan.mp3"></label>
+      <label><small>Base de las URLs del libro</small><input id="base" value="https://vedic-library.pages.dev"></label>
+    </div>
+
+    <h2>Salida</h2>
+    <div class="botones">
+      <button class="fuerte" id="pdf">Guardar PDF para imprenta</button>
+      <button id="copiarPy">Copiar para build.py</button>
+    </div>
+    <p class="ayuda">Se abre el diálogo de impresión. Elige <strong>Guardar como PDF</strong> y en Escala pon <strong>100 %</strong>, sin «ajustar al papel». Sale un A4 vectorial exacto, que es lo que espera la imprenta.</p>
+
+    <div class="botones">
+      <button id="exportar">Guardar .json</button>
+      <button id="importar">Abrir .json</button>
+      <button id="reset">Restaurar las diez</button>
+      <input type="file" id="ficheroJson" accept="application/json" style="display:none">
+    </div>
+    <div class="ok" id="mensaje"></div>
+  </div>
+
+  <div class="zona">
+    <div class="barra">
+      <button class="mini" id="menos">−</button>
+      <span class="zoomval" id="zoomval">100 %</span>
+      <button class="mini" id="mas">+</button>
+      <button class="mini" id="ajustar">Ajustar</button>
+      <button class="mini" id="cien">100 %</button>
+      <span class="sep"></span>
+      <span class="ayuda">Pincha una tarjeta para editarla</span>
+    </div>
+    <div id="lienzo"><div id="hoja"></div></div>
+  </div>
+
+</div>
+
+<script>
+"use strict";
+
+const MODULO_MINIMO = 0.50;   // mm por celda; por debajo un móvil falla con poca luz
+const HUECOS = 10;            // 2 x 5 en A4
+const CLAVE = "cards_qr_a4_v1";
+
+const PREDETERMINADAS = [
+  ["De niño tenías otro cuerpo.", "Y sigues diciendo «yo».", "¿Quién es ese?", 2, 13],
+  ["Llevas años intentando", "controlar tu cabeza.", "¿Quién manda ahí?", 6, 35],
+  ["Consigues lo que querías.", "A los tres días, otra cosa.", "¿Por qué nunca basta?", 3, 39],
+  ["Haces el trabajo.", "El resultado no depende de ti.", "¿Entonces qué es tuyo?", 2, 47],
+  ["Tu vida tendrá un", "último pensamiento.", "¿Cuál quieres que sea?", 8, 6],
+  ["Todo lo que ves hoy", "habrá desaparecido.", "¿Y tú?", 11, 32],
+  ["Algo dentro de ti", "te observa pensar.", "¿Quién es?", 13, 23],
+  ["Le tienes miedo a morir.", "Pero eso le pasa al cuerpo.", "¿Y a ti?", 2, 20],
+  ["Quieres algo.", "Acabas enfadado.", "¿Cómo se llega ahí?", 2, 62],
+  ["Lo que ayer te dio placer,", "hoy te pasa factura.", "¿Por qué acaba siempre igual?", 18, 38],
+];
+
+const $ = id => document.getElementById(id);
+const AJUSTES = ["ruta","qrmm","pieGita","tituloAudio","pieAudio","urlAudio","base"];
+const CAMPOS = { l1:0, l2:1, l3:2, cap:3, ver:4 };
+
+let tarjetas = [];
+let sel = 0;
+let zoom = 1;
+
+// ---------------- QR ----------------
+const cacheQR = new Map();
+
+function qr(texto, mm){
+  const clave = texto + "|" + mm;
+  if (cacheQR.has(clave)) return cacheQR.get(clave);
+  const c = qrcode(0, "M");
+  c.addData(texto);
+  c.make();
+  const n = c.getModuleCount(), borde = 2, lado = n + borde * 2;
+  let d = "";
+  for (let f = 0; f < n; f++)
+    for (let col = 0; col < n; col++)
+      if (c.isDark(f, col)) d += `M${col + borde} ${f + borde}h1v1h-1z`;
+  const res = {
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${lado} ${lado}" style="width:${mm}mm;height:${mm}mm"><path fill="#111" d="${d}"/></svg>`,
+    modulos: lado
+  };
+  cacheQR.set(clave, res);
+  return res;
+}
+
+// ---------------- Tarjeta ----------------
+const esc = t => String(t).replace(/[&<>]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;" }[c]));
+const mmQR = () => parseFloat($("qrmm").value) || 23.5;
+const urlVerso = t => `${$("base").value.replace(/\/$/, "")}/${$("ruta").value}/${t[3]}/${t[4]}/`;
+
+function tarjetaHtml(t){
+  const mm = mmQR();
+  return `<div class="tarjeta">
+    <div class="titulo">${esc(t[0])}<br>${esc(t[1])}<br><span class="pregunta">${esc(t[2])}</span></div>
+    <div class="codigos">
+      <div class="codigo">${qr(urlVerso(t), mm).svg}<div class="que">Bhagavad-gītā ${t[3]}.${t[4]}</div><div class="sub">${esc($("pieGita").value)}</div></div>
+      <div class="codigo">${qr($("urlAudio").value, mm).svg}<div class="que">${esc($("tituloAudio").value)}</div><div class="sub">${esc($("pieAudio").value)}</div></div>
+    </div>
+  </div>`;
+}
+
+// ---------------- Hoja ----------------
+function pintarHoja(){
+  const huecos = tarjetas.map((t, i) =>
+    `<div class="hueco${i === sel ? " sel" : ""}" data-i="${i}">${tarjetaHtml(t)}<div class="tapa"></div><div class="n">${i + 1}</div></div>`
+  ).join("");
+
+  let marcas = "";
+  for (let c = 0; c <= 2; c++){
+    const x = 10 + c * 85;
+    marcas += `<div class="m v" style="left:${x}mm;top:${11 - 5.2}mm"></div>`;
+    marcas += `<div class="m v" style="left:${x}mm;top:${11 + 275 + 1.2}mm"></div>`;
+  }
+  for (let f = 0; f <= 5; f++){
+    const y = 11 + f * 55;
+    marcas += `<div class="m h" style="top:${y}mm;left:${10 - 5.2}mm"></div>`;
+    marcas += `<div class="m h" style="top:${y}mm;left:${10 + 170 + 1.2}mm"></div>`;
+  }
+  $("hoja").innerHTML = `<div class="rejilla">${huecos}</div>${marcas}`;
+}
+
+// ---------------- Panel ----------------
+function cargarCampos(){
+  const t = tarjetas[sel];
+  Object.entries(CAMPOS).forEach(([id, i]) => $(id).value = t[i]);
+  $("cual").textContent = `${sel + 1} de ${HUECOS}`;
+
+  const mm = mmQR();
+  const peor = Math.max(qr(urlVerso(t), mm).modulos, qr($("urlAudio").value, mm).modulos);
+  const celda = mm / peor;
+  const dia = $("diagnostico");
+  if (celda < MODULO_MINIMO){
+    dia.className = "aviso";
+    dia.innerHTML = `<strong>${celda.toFixed(2)} mm por celda</strong> (${peor} módulos). Por debajo de ${MODULO_MINIMO} falla con poca luz: agranda el QR o acorta la URL.`;
+  } else {
+    dia.className = "ok";
+    dia.textContent = `${celda.toFixed(2)} mm por celda (${peor} módulos). Tamaño correcto.`;
+  }
+  $("destino").textContent = urlVerso(t);
+}
+
+function seleccionar(i){
+  sel = (i + HUECOS) % HUECOS;
+  document.querySelectorAll(".hueco").forEach((h, n) => h.classList.toggle("sel", n === sel));
+  cargarCampos();
+}
+
+// ---------------- Zoom ----------------
+function aplicarZoom(){
+  $("lienzo").style.transform = `scale(${zoom})`;
+  $("lienzo").style.width  = `calc(210mm * ${zoom})`;
+  $("lienzo").style.height = `calc(297mm * ${zoom})`;
+  $("zoomval").textContent = Math.round(zoom * 100) + " %";
+}
+
+function ajustar(){
+  const zona = document.querySelector(".zona");
+  const anchoA4 = $("hoja").getBoundingClientRect().width / zoom;
+  zoom = Math.max(0.25, Math.min(3, (zona.clientWidth - 62) / anchoA4));
+  aplicarZoom();
+}
+
+// ---------------- Guardado ----------------
+function estado(){
+  const ajustes = {};
+  AJUSTES.forEach(k => ajustes[k] = $(k).value);
+  return { ajustes, tarjetas };
+}
+function guardar(){ try { localStorage.setItem(CLAVE, JSON.stringify(estado())); } catch (e) {} }
+
+function cargar(){
+  try {
+    const g = JSON.parse(localStorage.getItem(CLAVE));
+    if (g && g.tarjetas && g.tarjetas.length === HUECOS){
+      tarjetas = g.tarjetas;
+      Object.entries(g.ajustes || {}).forEach(([k, v]) => { if ($(k)) $(k).value = v; });
+      return;
+    }
+  } catch (e) {}
+  tarjetas = PREDETERMINADAS.map(t => t.slice());
+}
+
+function refrescar(){ pintarHoja(); cargarCampos(); guardar(); }
+
+function aviso(txt){
+  $("mensaje").textContent = txt;
+  setTimeout(() => { if ($("mensaje").textContent === txt) $("mensaje").textContent = ""; }, 4000);
+}
+
+// ---------------- Eventos ----------------
+$("hoja").addEventListener("click", e => {
+  const h = e.target.closest(".hueco");
+  if (h) seleccionar(+h.dataset.i);
+});
+
+Object.entries(CAMPOS).forEach(([id, i]) => {
+  $(id).addEventListener("input", () => {
+    tarjetas[sel][i] = (i === 3 || i === 4) ? (parseInt($(id).value, 10) || 1) : $(id).value;
+    refrescar();
+  });
+});
+
+AJUSTES.forEach(k => $(k).addEventListener("input", refrescar));
+
+$("anterior").addEventListener("click", () => seleccionar(sel - 1));
+$("siguiente").addEventListener("click", () => seleccionar(sel + 1));
+
+$("copiarTodas").addEventListener("click", () => {
+  if (!confirm("¿Poner esta misma pregunta en las diez tarjetas?")) return;
+  tarjetas = tarjetas.map(() => tarjetas[sel].slice());
+  refrescar();
+});
+
+$("menos").addEventListener("click", () => { zoom = Math.max(0.25, zoom - 0.1); aplicarZoom(); });
+$("mas").addEventListener("click",   () => { zoom = Math.min(3, zoom + 0.1); aplicarZoom(); });
+$("ajustar").addEventListener("click", ajustar);
+$("cien").addEventListener("click", () => { zoom = 1; aplicarZoom(); });
+
+$("pdf").addEventListener("click", () => window.print());
+
+$("copiarPy").addEventListener("click", async () => {
+  const filas = tarjetas.map(t => `            ("${t[0]}", "${t[1]}", "${t[2]}", ${t[3]}, ${t[4]}),`).join("\n");
+  try {
+    await navigator.clipboard.writeText(`        "preguntas": [\n${filas}\n        ],`);
+    aviso("Copiado. Pégalo en IDIOMAS, dentro de src/build.py.");
+  } catch (e) { aviso("No se pudo copiar. Usa «Guardar .json»."); }
+});
+
+$("exportar").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(estado(), null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `tarjetas-${$("ruta").value}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+$("importar").addEventListener("click", () => $("ficheroJson").click());
+
+$("ficheroJson").addEventListener("change", e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const lector = new FileReader();
+  lector.onload = () => {
+    try {
+      const d = JSON.parse(lector.result);
+      if (!d.tarjetas || d.tarjetas.length !== HUECOS) throw new Error("formato");
+      tarjetas = d.tarjetas;
+      Object.entries(d.ajustes || {}).forEach(([k, v]) => { if ($(k)) $(k).value = v; });
+      sel = 0; refrescar(); aviso("Cargado.");
+    } catch (err) { aviso("Ese archivo no vale."); }
+  };
+  lector.readAsText(f);
+  e.target.value = "";
+});
+
+$("reset").addEventListener("click", () => {
+  if (!confirm("¿Descartar los cambios y volver a las diez preguntas originales?")) return;
+  tarjetas = PREDETERMINADAS.map(t => t.slice());
+  sel = 0; refrescar();
+});
+
+document.addEventListener("keydown", e => {
+  if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+  if (e.key === "ArrowRight") seleccionar(sel + 1);
+  if (e.key === "ArrowLeft")  seleccionar(sel - 1);
+});
+
+// ---------------- Arranque ----------------
+cargar();
+refrescar();
+aplicarZoom();
+setTimeout(ajustar, 60);
+</script>
+
+</body>
+</html>
