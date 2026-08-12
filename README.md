@@ -42,13 +42,15 @@ No lleva sangrado, y es correcto: el fondo es blanco y ningún elemento llega al
 
 Cada tarjeta enlaza a **su verso**, no al libro entero: quien escanea cae en la respuesta, no en un índice.
 
-La URL de un verso ocupa 37 módulos, así que el QR va a **23,5 mm** para dar 0,64 mm por celda. Con menos de 0,5 mm un móvil empieza a fallar con luz de interior. El script comprueba esa proporción en cada generación y avisa si se queda corta.
+La URL de un verso ocupa 33 módulos, así que el QR a **23,5 mm** da 0,71 mm por celda. Con menos de 0,5 mm un móvil empieza a fallar con luz de interior. El script comprueba esa proporción en cada generación y avisa si se queda corta.
 
 Se generan con corrección de error **M**, no H: con H el código sale más denso y las celdas se quedan pequeñas al imprimir.
 
-En vedic-library **no hay una página por verso**: el verso es un ancla dentro del capítulo. BG 2.13 es `/bg-es/2#bg-213`, o sea `bg-` seguido del capítulo y el verso pegados. Ojo con esto, porque el sitio devuelve 200 para cualquier ruta que le pidas —es una SPA— y una URL inventada parece válida hasta que la abres.
+Los enlaces van a **vedabase.cc**, que sirve una página por verso montada en el servidor: `/es/bg/2/13/` es BG 2.13, y el código aterriza exactamente ahí. El título de la página es el propio verso.
 
-Destinos: `vedic-library.pages.dev/bg-<idioma>/<capítulo>#bg-<capítulo><verso>` y `vedabase.cc/media/audio/bhajan.mp3`.
+Se descartó vedic-library porque no tiene página por verso —el verso es un ancla dentro del capítulo y la navegación va capítulo a capítulo— y porque devuelve 200 a cualquier ruta, con lo que una URL inventada parece válida hasta que la abres.
+
+Destinos: `vedabase.cc/<idioma>/bg/<capítulo>/<verso>/` y `vedabase.cc/media/audio/bhajan.mp3`.
 
 ## Añadir un idioma
 
@@ -57,7 +59,7 @@ Un bloque en `IDIOMAS`, dentro de `src/build.py`:
 ```python
 "pt": {
     "html_lang": "pt",
-    "ruta": "bg-pt",                      # ruta en vedic-library
+    "ruta": "pt/bg",                      # idioma y libro en vedabase.cc
     "pie_gita": "Leia grátis, em português",
     "titulo_audio": "Canto em sânscrito",
     "pie_audio": "20 minutos",
@@ -68,10 +70,10 @@ Un bloque en `IDIOMAS`, dentro de `src/build.py`:
 },
 ```
 
-Los PDF salen solos, nombrados por idioma. Comprueba antes que la ruta existe:
+Los PDF salen solos, nombrados por idioma. Comprueba antes que el idioma existe y que la página trae el verso:
 
 ```bash
-curl -o /dev/null -w "%{http_code}\n" https://vedic-library.pages.dev/bg-pt/2/13/
+curl -sL https://vedabase.cc/pt/bg/2/13/ | grep -o '<title>[^<]*'
 ```
 
 ## Editor en el navegador
@@ -90,9 +92,9 @@ Se edita: las dos líneas, la pregunta, el capítulo y el verso.
 
 ### El campo de la URL
 
-Se rellena solo al cambiar capítulo o verso, montando el ancla del capítulo (`/bg-es/2#bg-213`). Si escribes encima, la etiqueta pasa a *escrita a mano* en rojo y esa tarjeta deja de seguir la fórmula; **Recalcular** la devuelve.
+Se rellena solo al cambiar capítulo o verso (`vedabase.cc/es/bg/2/13/`). Si escribes encima, la etiqueta pasa a *escrita a mano* en rojo y esa tarjeta deja de seguir la fórmula; **Recalcular** la devuelve.
 
-**Abrir y comprobar** abre esa dirección en otra pestaña. Úsalo: es la única forma de verificar que el verso es el que crees, porque el sitio devuelve 200 aunque la ruta no exista.
+**Abrir y comprobar** abre esa dirección en otra pestaña. Merece la pena mirarlo antes de mandar nada a imprenta.
 
 Debajo va el diagnóstico del código: milímetros por celda y número de módulos, en rojo si baja de 0,5 mm.
 

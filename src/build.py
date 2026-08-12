@@ -31,19 +31,19 @@ COLS, FILAS = 2, 5            # 10 huecos por A4
 MARGEN_X, MARGEN_Y = 10, 11
 MARCA, SEPARACION = 4, 1.2    # marcas de corte: largo y separación
 
-# En vedic-library no hay página por verso: el verso es un ancla dentro del
-# capítulo, /bg-es/2#bg-213 para BG 2.13. Esa URL ocupa 37 módulos; a 23,5 mm
-# son 0,64 mm por celda. Por debajo de 0,5 un móvil falla con luz de interior.
+# vedabase.cc sirve una página por verso, montada en el servidor: /es/bg/2/13/
+# es BG 2.13. El QR aterriza exactamente ahí. Son 33 módulos; a 23,5 mm salen
+# 0,71 mm por celda. Por debajo de 0,5 un móvil falla con luz de interior.
 MODULO_MINIMO = 0.50
 
 AUDIO = "https://vedabase.cc/media/audio/bhajan.mp3"
-BASE = "https://vedic-library.pages.dev"
+BASE = "https://vedabase.cc"
 
 # Cada pregunta: (línea 1, línea 2, cierre, capítulo, verso)
 IDIOMAS = {
     "es": {
         "html_lang": "es",
-        "ruta": "bg-es",
+        "ruta": "es/bg",
         "pie_gita": "Leerlo gratis, en castellano",
         "titulo_audio": "Canto s&aacute;nscrito",
         "pie_audio": "20 minutos",
@@ -62,7 +62,7 @@ IDIOMAS = {
     },
     "en": {
         "html_lang": "en",
-        "ruta": "bg-en",
+        "ruta": "en/bg",
         "pie_gita": "Read it free, in English",
         "titulo_audio": "Sanskrit chant",
         "pie_audio": "20 minutes",
@@ -125,7 +125,7 @@ def comprobar(url, modulos):
 
 def tarjeta_html(cfg, pregunta):
     linea1, linea2, cierre, capitulo, verso = pregunta
-    url = f"{BASE}/{cfg['ruta']}/{capitulo}#bg-{capitulo}{verso}"
+    url = f"{BASE}/{cfg['ruta']}/{capitulo}/{verso}/"
     qr_gita, mod_gita = qr_svg(url)
     qr_audio, mod_audio = qr_svg(AUDIO)
     comprobar(url, mod_gita)
