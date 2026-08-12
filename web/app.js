@@ -242,7 +242,7 @@ function sobreLacrado(inicial) {
   // Orden de pintado: interior oscuro, la carta que asoma, el cuerpo del
   // sobre, la solapa que se levanta, y encima la cera. Así al abrirse se ve
   // el hueco de dentro en vez de un triángulo girando en el vacío.
-  return `<svg class="sobre" viewBox="0 0 260 168" role="img" aria-hidden="true">
+  return `<svg class="sobre" viewBox="0 -92 260 262" role="img" aria-hidden="true">
     <rect x="1" y="1" width="258" height="166" rx="7" fill="var(--sobre-dentro)"/>
     <g class="carta"><rect x="26" y="26" width="208" height="128" rx="4"
        fill="var(--carta-papel)" stroke="var(--sobre-linea)" stroke-width="1"/></g>
@@ -520,7 +520,7 @@ function derretirYEntrar(id) {
   capa.innerHTML = sobreLacrado(id);
   document.body.appendChild(capa);
   requestAnimationFrame(() => capa.querySelector(".sobre").classList.add("rompiendo"));
-  setTimeout(() => { capa.remove(); ir(); }, 1500);
+  setTimeout(() => { capa.remove(); ir(); }, 2400);
 }
 
 // El significado se lee aquí dentro. Sacar a la gente a otra pestaña la
@@ -764,7 +764,7 @@ async function compartir() {
     const sobre = a.classList.contains("tapada") ? a.querySelector(".sobre") : null;
     if (sobre && !quieto) {
       sobre.classList.add("rompiendo");
-      return setTimeout(ir, 1450);
+      return setTimeout(ir, 2350);
     }
     ir();
   });

@@ -564,11 +564,11 @@ body.quieto{ overflow:hidden; }
 /* La carta queda escondida hasta que se abre la solapa. */
 .sobre .carta{ opacity:0; }
 
-.sobre.rompiendo .sello-marca{ animation:borra-marca .3s ease-out forwards; }
-.sobre.rompiendo .cera{ animation:derrite .75s cubic-bezier(.55,.02,.6,1) forwards; }
-.sobre.rompiendo .gota{ animation:gotea .8s .18s cubic-bezier(.4,0,.9,1) forwards; }
-.sobre.rompiendo .solapa{ animation:abre-solapa .62s .62s cubic-bezier(.34,1.2,.64,1) forwards; }
-.sobre.rompiendo .carta{ animation:asoma .55s .86s ease-out forwards; }
+.sobre.rompiendo .sello-marca{ animation:borra-marca .38s ease-out forwards; }
+.sobre.rompiendo .cera{ animation:derrite .95s cubic-bezier(.55,.02,.6,1) forwards; }
+.sobre.rompiendo .gota{ animation:gotea .95s .2s cubic-bezier(.4,0,.9,1) forwards; }
+.sobre.rompiendo .solapa{ animation:abre-solapa .95s 1s cubic-bezier(.32,1.16,.6,1) forwards; }
+.sobre.rompiendo .carta{ animation:asoma .8s 1.5s ease-out forwards; }
 
 @keyframes borra-marca{
   to{ opacity:0; filter:blur(2px); transform:scale(.92); }
@@ -587,16 +587,16 @@ body.quieto{ overflow:hidden; }
 /* La solapa cae hacia atrás y deja ver el interior. */
 @keyframes abre-solapa{
   0%  { transform:scaleY(1); }
-  100%{ transform:scaleY(-.86); }
+  100%{ transform:scaleY(-.92); }
 }
 @keyframes asoma{
   0%  { opacity:0; transform:translateY(0); }
   30% { opacity:1; }
-  100%{ opacity:1; transform:translateY(-16px); }
+  100%{ opacity:1; transform:translateY(-34px); }
 }
 
-.hoy-cara.tapada .sobre.rompiendo{ animation:aparta .34s 1.12s ease-in forwards; }
-.capa.derritiendo .sobre.rompiendo{ animation:aparta .34s 1.12s ease-in forwards; }
+.hoy-cara.tapada .sobre.rompiendo{ animation:aparta .35s 2s ease-in forwards; }
+.capa.derritiendo .sobre.rompiendo{ animation:aparta .35s 2s ease-in forwards; }
 @keyframes aparta{
   to{ transform:translateY(-6px) scale(1.02); opacity:0; }
 }
