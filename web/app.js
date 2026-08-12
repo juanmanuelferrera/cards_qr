@@ -34,10 +34,15 @@ const T = {
     intro: "Trece preguntas. Cada una tiene su respuesta en un verso.",
     intro2: "Las que te faltan están en las tarjetas de papel. Hay que encontrarlas.",
     imprimir_larga: "Puedes imprimir las tuyas y repartirlas.",
-    copia: "Guardar una copia",
-    restaurar: "Restaurar",
-    aviso_copia: "Todo esto vive en este navegador. Si lo borras o cambias de aparato, se pierde. Guarda una copia de vez en cuando.",
-    restaurado: "Restaurado"
+    copia: "Guardar con código",
+    restaurar: "Tengo un código",
+    aviso_copia: "Todo esto vive en este navegador. Si lo borras o cambias de móvil, se pierde. Guárdalo con un código y apúntalo.",
+    aviso_codigo: "Con el código se recupera en cualquier aparato. Quien lo tenga verá también lo que has escrito.",
+    tu_codigo: "Tu código",
+    pide_codigo: "Escribe tu código",
+    guardando: "Guardando…",
+    restaurado: "Recuperado",
+    fallo: "No hay nada con ese código"
   },
   en: {
     imprimir: "Print your own",
@@ -66,10 +71,15 @@ const T = {
     intro: "Thirteen questions. Each one is answered by a verse.",
     intro2: "The ones you're missing are on the paper cards. You have to find them.",
     imprimir_larga: "You can print your own and hand them out.",
-    copia: "Save a copy",
-    restaurar: "Restore",
-    aviso_copia: "All of this lives in this browser. If you clear it or switch devices, it is gone. Save a copy now and then.",
-    restaurado: "Restored"
+    copia: "Save with a code",
+    restaurar: "I have a code",
+    aviso_copia: "All of this lives in this browser. If you clear it or change phones, it is gone. Save it with a code and write it down.",
+    aviso_codigo: "The code restores it on any device. Whoever has it also sees what you wrote.",
+    tu_codigo: "Your code",
+    pide_codigo: "Type your code",
+    guardando: "Saving…",
+    restaurado: "Restored",
+    fallo: "Nothing found with that code"
   }
 };
 
@@ -152,6 +162,28 @@ function bajarPng(url, id, px) {
             btoa(unescape(encodeURIComponent(svgDelCodigo(url, "#000", 4))));
 }
 
+
+/* ---------------- El sobre lacrado ---------------- */
+function sobreLacrado(inicial) {
+  // Sobre de solapa cerrada con el lacre encima del pico. El borde del lacre
+  // va irregular a propósito: la cera nunca sale redonda.
+  return `<svg class="sobre" viewBox="0 0 260 168" role="img" aria-hidden="true">
+    <rect x="1" y="1" width="258" height="166" rx="7"
+          fill="var(--sobre)" stroke="var(--sobre-linea)" stroke-width="1.4"/>
+    <path d="M1 12 L130 104 L259 12" fill="var(--sobre-solapa)"
+          stroke="var(--sobre-linea)" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M1 158 L96 84 M259 158 L164 84" fill="none"
+          stroke="var(--sobre-linea)" stroke-width="1.2" opacity=".65"/>
+    <g transform="translate(130,100)">
+      <path d="M0-31c9-4 15 2 21 5s13 1 15 10-4 13-3 20-2 14-10 16-12 8-20 7-13-6-21-8-15-4-17-13 3-12 2-19 1-15 9-17 15-7 24-1z"
+            fill="var(--lacre)"/>
+      <circle r="20" fill="none" stroke="var(--lacre-borde)" stroke-width="1.4" opacity=".8"/>
+      <text y="8" text-anchor="middle" font-family="Georgia,serif" font-size="24"
+            font-weight="700" fill="var(--lacre-letra)">${inicial}</text>
+    </g>
+  </svg>`;
+}
+
 /* ---------------- Piezas ---------------- */
 function cara(c) {
   const [l1, l2, preg] = c[idioma];
@@ -168,7 +200,10 @@ function niveles() {
       return `<section class="nivel sellado">
         <h2>${t("lote")} ${i + 1} · ${esc(lote.nombre)}</h2>
         <p class="subtitulo">${esc(lote[idioma].titulo)}</p>
-        <div class="lacre"><span class="sello">◆</span><p>${esc(lote[idioma].pista)}</p></div>
+        <div class="lacre">
+          ${sobreLacrado(esc(lote.nombre[0]))}
+          <p>${esc(lote[idioma].pista)}</p>
+        </div>
       </section>`;
     }
 
@@ -219,11 +254,12 @@ function portada() {
   </section>
   <section class="respaldo">
     <p class="nota">${t("aviso_copia")}</p>
+    ${estado.codigo ? `<p class="codigo-mio"><span>${t("tu_codigo")}</span><strong>${esc(estado.codigo)}</strong></p>` : ""}
     <div class="menu">
       <button id="copia">${t("copia")}</button>
       <button id="restaurar">${t("restaurar")}</button>
-      <input type="file" id="fichero" accept="application/json" hidden>
     </div>
+    <p class="nota fina">${t("aviso_codigo")}</p>
   </section>`;
 }
 
@@ -313,30 +349,39 @@ function pintar() {
 
   const copia = document.getElementById("copia");
   if (copia) {
-    copia.addEventListener("click", () => bajar(
-      new Blob([JSON.stringify(estado, null, 1)], { type: "application/json" }),
-      "qrveda-" + new Date().toISOString().slice(0, 10) + ".json"));
+    copia.addEventListener("click", async () => {
+      const antes = copia.textContent;
+      copia.textContent = t("guardando");
+      try {
+        const r = await fetch("/api/copia", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ codigo: estado.codigo || "", estado: estado })
+        });
+        const d = await r.json();
+        if (!d.codigo) throw new Error("api");
+        estado.codigo = d.codigo;
+        guardar();
+        pintar();
+      } catch (e) {
+        copia.textContent = antes;
+      }
+    });
 
-    document.getElementById("restaurar")
-      .addEventListener("click", () => document.getElementById("fichero").click());
-
-    document.getElementById("fichero").addEventListener("change", e => {
-      const f = e.target.files[0];
-      if (!f) return;
-      const lector = new FileReader();
-      lector.onload = () => {
-        try {
-          const d = JSON.parse(lector.result);
-          if (!d.progreso) throw new Error("formato");
-          // Se une, no se pisa: si tienes avances en los dos, no pierdes ninguno.
-          estado.progreso = Object.assign({}, d.progreso, estado.progreso);
-          estado.racha = Math.max(estado.racha || 0, d.racha || 0);
-          guardar();
-          pintar();
-        } catch (err) { alert("?"); }
-      };
-      lector.readAsText(f);
-      e.target.value = "";
+    document.getElementById("restaurar").addEventListener("click", async () => {
+      const codigo = (prompt(t("pide_codigo")) || "").trim().toUpperCase();
+      if (!codigo) return;
+      try {
+        const r = await fetch("/api/copia?c=" + encodeURIComponent(codigo));
+        const d = await r.json();
+        if (!d.estado) throw new Error("no");
+        // Se une, no se pisa: si tienes avances en los dos, no pierdes ninguno.
+        estado.progreso = Object.assign({}, d.estado.progreso, estado.progreso);
+        estado.racha = Math.max(estado.racha || 0, d.estado.racha || 0);
+        estado.codigo = d.codigo;
+        guardar();
+        pintar();
+      } catch (e) { alert(t("fallo")); }
     });
   }
 
@@ -376,6 +421,7 @@ async function compartir() {
   estado.progreso = g.progreso || {};
   estado.racha = g.racha || 0;
   estado.ultimoDia = g.ultimoDia || 0;
+  estado.codigo = g.codigo || "";
 
   const hoy = diaDeHoy();
   if (estado.ultimoDia !== hoy) {

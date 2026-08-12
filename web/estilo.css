@@ -186,13 +186,36 @@ footer .lema{ display:block; margin-top:5px; font-style:italic; }
 }
 .nivel.hecho .marcador{ color:var(--acento); }
 
-.nivel.sellado{ opacity:.72; }
 .lacre{
-  display:flex; align-items:center; gap:16px; margin-top:14px;
-  padding:26px 24px; border:1px dashed var(--linea); border-radius:12px;
+  display:flex; align-items:center; gap:24px; margin-top:16px;
+  padding:26px 24px; border-radius:14px;
+  background:var(--panel); border:1px solid var(--linea);
 }
-.lacre .sello{ font-size:24px; color:var(--linea); }
-.lacre p{ font-family:system-ui,sans-serif; font-size:13px; color:var(--suave); }
+.lacre p{
+  font-family:system-ui,sans-serif; font-size:13px; line-height:1.5; color:var(--suave);
+}
+.sobre{
+  width:150px; height:auto; flex:0 0 auto;
+  filter:drop-shadow(0 3px 10px rgba(0,0,0,.35));
+}
+
+/* Colores del sobre: papel apagado y cera oscura, para que el lacre destaque
+   sin que el bloque compita con las cartas abiertas. */
+:root{
+  --sobre:#2a2521; --sobre-solapa:#221e1a; --sobre-linea:#4a4139;
+  --lacre:#9c3527; --lacre-borde:#c25a48; --lacre-letra:#f3d9c9;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --sobre:#efe7d8; --sobre-solapa:#e5dbc9; --sobre-linea:#cdbfa6;
+    --lacre:#9c3527; --lacre-borde:#7a2519; --lacre-letra:#f7e6dc;
+  }
+}
+
+@media (max-width:520px){
+  .lacre{ flex-direction:column; align-items:flex-start; gap:18px; }
+  .sobre{ width:180px; }
+}
 
 /* ---------------- Copia de seguridad ---------------- */
 .respaldo{ padding:26px 0; border-top:1px solid var(--linea); }
@@ -207,3 +230,16 @@ footer .lema{ display:block; margin-top:5px; font-style:italic; }
   background:var(--panel); color:var(--suave); cursor:pointer;
 }
 .respaldo button:hover{ border-color:var(--acento); color:var(--acento); }
+
+.respaldo .codigo-mio{
+  display:flex; align-items:baseline; gap:12px; margin-bottom:14px;
+}
+.respaldo .codigo-mio span{
+  font-family:system-ui,sans-serif; font-size:11.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--suave);
+}
+.respaldo .codigo-mio strong{
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:21px;
+  letter-spacing:.2em; color:var(--acento); font-weight:600;
+}
+.respaldo .nota.fina{ margin:14px 0 0; font-size:11.5px; }

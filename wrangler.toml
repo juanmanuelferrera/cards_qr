@@ -1,0 +1,9 @@
+name = "qrveda"
+compatibility_date = "2026-08-12"
+pages_build_output_dir = "web"
+
+# Copias de seguridad por código. Guarda solo lo que el visitante decide
+# guardar, bajo una clave de seis caracteres que él mismo se lleva.
+[[kv_namespaces]]
+binding = "COPIAS"
+id = "85540861382d44068b19d5b172a69935"
