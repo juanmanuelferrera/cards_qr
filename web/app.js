@@ -67,7 +67,7 @@ const T = {
     cerrado: "Se abre el día que le toque, o con su clave.",
     imprimir_larga: "Puedes imprimir las tuyas y repartirlas.",
     respaldo_pie: "Guarda tu avance fuera de este navegador",
-    copia: "Guardar con un código",
+    copia: "Obtener un código",
     restaurar: "Tengo un código de respaldo",
     aviso_copia: "Tu colección vive en este navegador. Guárdala si vas a cambiar de móvil.",
     aviso_codigo: "Esto no abre sobres. Recupera tu colección entera, con lo que hayas escrito.",
@@ -137,7 +137,7 @@ const T = {
     cerrado: "Opens on its day, or with its key.",
     imprimir_larga: "You can print your own and hand them out.",
     respaldo_pie: "Save your progress beyond this browser",
-    copia: "Save with a code",
+    copia: "Get a code",
     restaurar: "I have a backup code",
     aviso_copia: "Your collection lives in this browser. Save it if you are changing phones.",
     aviso_codigo: "This opens no envelopes. It restores your whole collection, with whatever you wrote.",
@@ -708,7 +708,7 @@ function pedirRespaldo() {
   const capa = document.createElement("div");
   capa.className = "capa";
   capa.innerHTML = `<div class="visor respaldo">
-    <h2>${t("copia")}</h2>
+    <h2>${t("respaldo_pie")}</h2>
     <p class="nota">${t("aviso_copia")}</p>
     ${estado.codigo ? `<p class="codigo-mio"><span>${t("tu_codigo")}</span><strong>${esc(estado.codigo)}</strong></p>` : ""}
     <div class="menu">
