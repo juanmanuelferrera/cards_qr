@@ -36,7 +36,9 @@ const T = {
     sellado: "Sellado",
     completo: "Completo",
     intro: "Trece sobres. Cada día se puede abrir uno.",
-    intro2: "Los demás están en tarjetas de papel que reparte la gente. Escanea una y se abre el sobre que le toca.",
+    intro2: "Los demás los tienen los que ya los abrieron. Si alguien te pasa su tarjeta, escaneas y se abre.",
+    reparte: "Reparte los tuyos",
+    reparte_pie: "Solo puedes repartir los sobres que has abierto. Pincha uno para descargar su código o imprimirlo.",
     hoy_hecho: "El de hoy ya está abierto. Mañana hay otro.",
     cerrado: "Este se abre el día que le toque, o con su tarjeta.",
     imprimir_larga: "Puedes imprimir las tuyas y repartirlas.",
@@ -79,7 +81,9 @@ const T = {
     sellado: "Sealed",
     completo: "Complete",
     intro: "Thirteen envelopes. Each day you can open one.",
-    intro2: "The others are on paper cards that people hand out. Scan one and its envelope opens.",
+    intro2: "The others belong to whoever opened them. If someone passes you their card, you scan it and it opens.",
+    reparte: "Hand out yours",
+    reparte_pie: "You can only hand out the envelopes you have opened. Tap one to download its code or print it.",
     hoy_hecho: "Today's is open. There's another tomorrow.",
     cerrado: "This one opens on its day, or with its card.",
     imprimir_larga: "You can print your own and hand them out.",
@@ -271,6 +275,23 @@ function pasos(id) {
   </ol>`;
 }
 
+function mios() {
+  // Solo se reparte lo que se ha abierto: es lo que hace que el sobre valga algo.
+  const abiertos = datos.tarjetas.filter(c => hallada(c.id));
+  if (!abiertos.length) return "";
+  const piezas = abiertos.map(c =>
+    `<a class="mio" href="/${c.id}">
+       <div class="cuadro">${svgDelCodigo(enlaceCarta(c.id), "#111")}</div>
+       <span>${c.id}</span>
+     </a>`).join("");
+  return `<section class="reparte">
+    <h2>${t("reparte")}</h2>
+    <p class="nota">${t("reparte_pie")}</p>
+    <div class="mios">${piezas}</div>
+    <div class="menu"><a href="/imprimir/">${t("imprimir")}</a></div>
+  </section>`;
+}
+
 /* ---------------- Vistas ---------------- */
 function portada() {
   const c = cartaDelDia();
@@ -295,6 +316,7 @@ function portada() {
     <p>${t("intro2")}</p>
     <p>${t("imprimir_larga")} <a href="/imprimir/">${t("imprimir")}</a>.</p>
   </section>
+  ${mios()}
   <section class="respaldo">
     <p class="nota">${t("aviso_copia")}</p>
     ${estado.codigo ? `<p class="codigo-mio"><span>${t("tu_codigo")}</span><strong>${esc(estado.codigo)}</strong></p>` : ""}
