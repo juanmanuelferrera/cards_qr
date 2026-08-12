@@ -60,8 +60,13 @@ h1,h2{
 .hoy-cara.tapada{ text-align:center; padding:38px 30px 34px; }
 .hoy-cara.tapada .sobre{ width:190px; margin:0 auto; }
 
-.frase{ font-size:23px; line-height:1.28; letter-spacing:-.01em; }
-.pregunta{ font-size:21px; font-style:italic; color:var(--acento); margin-top:12px; }
+/* La pregunta manda: es lo único que tiene que quedarse en la cabeza.
+   Las dos frases de arriba la preparan, y por eso van más pequeñas. */
+.frase{ font-size:17px; line-height:1.45; color:var(--suave); }
+.pregunta{
+  font-size:32px; line-height:1.15; font-style:italic; color:var(--acento);
+  margin-top:14px; letter-spacing:-.015em;
+}
 
 .sello{ color:var(--linea); font-style:normal; }
 .sello.grande{ font-size:40px; line-height:1; }
@@ -101,7 +106,7 @@ blockquote cite{
   display:flex; align-items:center; justify-content:center; text-align:center;
   min-height:84px; padding:14px 12px; text-decoration:none;
   background:var(--panel); border:1px solid var(--linea); border-radius:11px;
-  font-size:14.5px; line-height:1.3; font-style:italic; color:var(--acento);
+  font-size:15px; line-height:1.28; font-style:italic; color:var(--acento);
   transition:border-color .2s;
 }
 .mini{ padding:10px; }
@@ -126,8 +131,8 @@ footer a{ color:var(--acento); }
 footer .lema{ display:block; margin-top:5px; font-style:italic; }
 
 @media (max-width:520px){
-  .frase{ font-size:20px; }
-  .pregunta{ font-size:18px; }
+  .frase{ font-size:15.5px; }
+  .pregunta{ font-size:26px; }
   .malla{ grid-template-columns:repeat(auto-fill,minmax(124px,1fr)); }
 }
 
@@ -364,3 +369,16 @@ footer .lema{ display:block; margin-top:5px; font-style:italic; }
 .visor .nota{
   font-family:system-ui,sans-serif; font-size:11.5px; color:var(--suave); margin-top:14px;
 }
+
+/* ---------------- Hay más abajo ---------------- */
+.masabajo{ display:grid; place-items:center; height:34px; margin-top:8px; }
+.masabajo span{
+  width:11px; height:11px; border-right:1.5px solid var(--suave);
+  border-bottom:1.5px solid var(--suave); transform:rotate(45deg);
+  opacity:.55; animation:baja 2.2s ease-in-out infinite;
+}
+@keyframes baja{
+  0%,100%{ transform:rotate(45deg) translate(0,0); opacity:.35; }
+  50%    { transform:rotate(45deg) translate(3px,3px); opacity:.75; }
+}
+body.rodado .masabajo{ opacity:0; transition:opacity .3s; }

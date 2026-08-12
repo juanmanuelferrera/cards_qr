@@ -295,6 +295,7 @@ function portada() {
     <h1>${t("hoy")}</h1>
     ${tarjeta}
     ${racha}
+    <div class="masabajo" aria-hidden="true"><span></span></div>
   </section>
   ${niveles()}
   <section class="explica">
@@ -346,7 +347,7 @@ function carta(id) {
       <cite>Bhagavad-gītā ${ref}</cite>
     </blockquote>
     <div class="acciones">
-      <a class="principal${p.leido ? "" : " gana"}" href="${esc(c.url[idioma])}" data-leido>${
+      <a class="principal${p.leido ? "" : " gana"}" href="${esc(c.url[idioma])}" target="_blank" rel="noopener" data-leido>${
         p.leido ? t("leer")
                 : `<strong>${t("ganar")}</strong><em>${t("ganar_pie").replace("{n}", id)}</em>`
       }</a>
@@ -399,6 +400,14 @@ function verCodigo(id) {
   document.body.appendChild(capa);
 }
 
+// Después de cada acción, la vista va sola a lo que acaba de cambiar.
+function llevarA(selector) {
+  requestAnimationFrame(() => {
+    const n = document.querySelector(selector);
+    if (n) n.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+}
+
 /* ---------------- Pintado ---------------- */
 function pintar() {
   const id = location.pathname.replace(/\//g, "");
@@ -419,7 +428,7 @@ function pintar() {
       estado.progreso[id] = Object.assign(paso(id), { respuesta: texto });
       guardar();
       pintar();
-      scrollTo(0, 0);
+      llevarA(".acciones");
     });
   }
 
@@ -427,7 +436,7 @@ function pintar() {
   document.querySelectorAll("[data-leido]").forEach(a => a.addEventListener("click", () => {
     estado.progreso[id] = Object.assign(paso(id), { leido: true });
     guardar();
-    setTimeout(pintar, 400);
+    setTimeout(() => { pintar(); llevarA(".conseguida"); }, 600);
   }));
 
   document.querySelectorAll("[data-ver]").forEach(b =>
@@ -540,6 +549,9 @@ async function compartir() {
     scrollTo(0, 0);
   });
   addEventListener("popstate", pintar);
+  addEventListener("scroll", () => {
+    document.body.classList.toggle("rodado", scrollY > 40);
+  }, { passive: true });
 
   pintar();
 })();
