@@ -486,15 +486,7 @@ function portada() {
     <p>${t("intro2")}</p>
     <p>${t("imprimir_larga")} <a href="/imprimir/">${t("imprimir")}</a>.</p>
   </section>
-  <details class="respaldo">
-    <summary>${t("aviso_copia")}</summary>
-    ${estado.codigo ? `<p class="codigo-mio"><span>${t("tu_codigo")}</span><strong>${esc(estado.codigo)}</strong></p>` : ""}
-    <div class="menu">
-      <button id="copia">${t("copia")}</button>
-      <button id="restaurar">${t("restaurar")}</button>
-    </div>
-    <p class="nota fina">${t("aviso_codigo")}</p>
-  </details>`;
+  <p></p>`;
 }
 
 function carta(id) {
@@ -709,6 +701,63 @@ function verCamiseta(id) {
   pie();
 }
 
+// El respaldo no es del juego, pero tiene que poder encontrarse desde
+// cualquier pantalla: por eso vive en el pie y se abre en su panel.
+function pedirRespaldo() {
+  const capa = document.createElement("div");
+  capa.className = "capa";
+  capa.innerHTML = `<div class="visor respaldo">
+    <h2>${t("copia")}</h2>
+    <p class="nota">${t("aviso_copia")}</p>
+    ${estado.codigo ? `<p class="codigo-mio"><span>${t("tu_codigo")}</span><strong>${esc(estado.codigo)}</strong></p>` : ""}
+    <div class="menu">
+      <button id="copia">${t("copia")}</button>
+      <button id="restaurar">${t("restaurar")}</button>
+    </div>
+    <p class="nota fina">${t("aviso_codigo")}</p>
+  </div>`;
+
+  const cerrar = () => capa.remove();
+  capa.addEventListener("click", e => { if (e.target === capa) cerrar(); });
+  addEventListener("keydown", e => { if (e.key === "Escape") cerrar(); }, { once: true });
+  document.body.appendChild(capa);
+
+  const boton = capa.querySelector("#copia");
+  boton.addEventListener("click", async () => {
+    boton.textContent = t("guardando");
+    try {
+      const r = await fetch("/api/copia", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ codigo: estado.codigo || "", estado: estado }),
+      });
+      const d = await r.json();
+      if (!d.codigo) throw new Error("api");
+      estado.codigo = d.codigo;
+      guardar();
+      cerrar();
+      pedirRespaldo();
+    } catch (e) { boton.textContent = t("copia"); }
+  });
+
+  capa.querySelector("#restaurar").addEventListener("click", async () => {
+    const codigo = (prompt(t("pide_codigo")) || "").trim().toUpperCase();
+    if (!codigo) return;
+    try {
+      const d = await (await fetch("/api/copia?c=" + encodeURIComponent(codigo))).json();
+      if (!d.estado) throw new Error("no");
+      // Se une, no se pisa: si tienes avances en los dos, no pierdes ninguno.
+      estado.progreso = Object.assign({}, d.estado.progreso, estado.progreso);
+      estado.claves = [...new Set((estado.claves || []).concat(d.estado.claves || []))];
+      estado.racha = Math.max(estado.racha || 0, d.estado.racha || 0);
+      estado.codigo = d.codigo;
+      guardar();
+      cerrar();
+      pintar();
+    } catch (e) { alert(t("fallo")); }
+  });
+}
+
 /* ---------------- Pintado ---------------- */
 function pintar() {
   const id = location.pathname.replace(/\//g, "");
@@ -751,44 +800,6 @@ function pintar() {
 
   const conImagen = document.querySelector('[data-qr="imagen"]');
   if (conImagen) prepararImagen(location.pathname.replace(/\//g, ""));
-
-  const copia = document.getElementById("copia");
-  if (copia) {
-    copia.addEventListener("click", async () => {
-      const antes = copia.textContent;
-      copia.textContent = t("guardando");
-      try {
-        const r = await fetch("/api/copia", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ codigo: estado.codigo || "", estado: estado })
-        });
-        const d = await r.json();
-        if (!d.codigo) throw new Error("api");
-        estado.codigo = d.codigo;
-        guardar();
-        pintar();
-      } catch (e) {
-        copia.textContent = antes;
-      }
-    });
-
-    document.getElementById("restaurar").addEventListener("click", async () => {
-      const codigo = (prompt(t("pide_codigo")) || "").trim().toUpperCase();
-      if (!codigo) return;
-      try {
-        const r = await fetch("/api/copia?c=" + encodeURIComponent(codigo));
-        const d = await r.json();
-        if (!d.estado) throw new Error("no");
-        // Se une, no se pisa: si tienes avances en los dos, no pierdes ninguno.
-        estado.progreso = Object.assign({}, d.estado.progreso, estado.progreso);
-        estado.racha = Math.max(estado.racha || 0, d.estado.racha || 0);
-        estado.codigo = d.codigo;
-        guardar();
-        pintar();
-      } catch (e) { alert(t("fallo")); }
-    });
-  }
 
   document.querySelectorAll("[data-qr]").forEach(b => b.addEventListener("click", async () => {
     if (b.dataset.qr === "imagen") return compartirImagen(id);
@@ -847,6 +858,7 @@ async function compartir() {
   guardar();
 
   document.getElementById("pedirclave").addEventListener("click", pedirClave);
+  document.getElementById("guardar-col").addEventListener("click", pedirRespaldo);
 
   document.getElementById("idioma").addEventListener("click", () => {
     idioma = idioma === "es" ? "en" : "es";
