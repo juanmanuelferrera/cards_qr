@@ -37,8 +37,8 @@ const T = {
     completo: "Completo",
     intro: "Trece sobres. Cada día se puede abrir uno.",
     intro2: "Los demás los tienen quienes ya los abrieron. Cada sobre lleva su código: si alguien te pasa el suyo, se abre.",
-    reparte: "Reparte los tuyos",
-    reparte_pie: "Solo se reparten los sobres que has abierto. Pincha uno para llevarte su código, mandarlo o imprimirlo en tarjetas.",
+    su_codigo: "Su código",
+    reparte_pie: "Solo se reparten los sobres que has abierto.",
     hoy_hecho: "El de hoy ya está abierto. Mañana hay otro.",
     cerrado: "Este se abre el día que le toque, o con su tarjeta.",
     imprimir_larga: "Puedes imprimir las tuyas y repartirlas.",
@@ -82,8 +82,8 @@ const T = {
     completo: "Complete",
     intro: "Thirteen envelopes. Each day you can open one.",
     intro2: "The others belong to whoever opened them. Each envelope carries its code: if someone passes you theirs, it opens.",
-    reparte: "Hand out yours",
-    reparte_pie: "You can only pass on the envelopes you have opened. Tap one to take its code, send it or print it on cards.",
+    su_codigo: "Its code",
+    reparte_pie: "You can only pass on the envelopes you have opened.",
     hoy_hecho: "Today's is open. There's another tomorrow.",
     cerrado: "This one opens on its day, or with its card.",
     imprimir_larga: "You can print your own and hand them out.",
@@ -249,9 +249,12 @@ function niveles() {
       const dentro = abierta
         ? `<span class="preg">${esc(c[idioma][2])}</span>`
         : sobreChico(esc(id));
-      return abrible
-        ? `<a class="${clases}" href="/${id}">${dentro}</a>`
-        : `<span class="${clases}" title="${t("cerrado")}">${dentro}</span>`;
+      if (!abrible) return `<span class="${clases}" title="${t("cerrado")}">${dentro}</span>`;
+      // El código no se enseña de entrada: aparece si lo buscas.
+      const tirador = abierta
+        ? `<button class="verqr" data-ver="${id}" title="${t("su_codigo")}" aria-label="${t("su_codigo")}">⌗</button>`
+        : "";
+      return `<span class="envoltorio"><a class="${clases}" href="/${id}">${dentro}</a>${tirador}</span>`;
     }).join("");
 
     const n = lote.tarjetas.filter(hallada).length;
@@ -273,23 +276,6 @@ function pasos(id) {
     <li class="${uno}"><span>1</span>${t("paso1")}</li>
     <li class="${dos}"><span>2</span>${t("paso2")}</li>
   </ol>`;
-}
-
-function mios() {
-  // Solo se reparte lo que se ha abierto: es lo que hace que el sobre valga algo.
-  const abiertos = datos.tarjetas.filter(c => hallada(c.id));
-  if (!abiertos.length) return "";
-  const piezas = abiertos.map(c =>
-    `<a class="mio" href="/${c.id}">
-       <div class="cuadro">${svgDelCodigo(enlaceCarta(c.id), "#111")}</div>
-       <span>${c.id}</span>
-     </a>`).join("");
-  return `<section class="reparte">
-    <h2>${t("reparte")}</h2>
-    <p class="nota">${t("reparte_pie")}</p>
-    <div class="mios">${piezas}</div>
-    <div class="menu"><a href="/imprimir/">${t("imprimir")}</a></div>
-  </section>`;
 }
 
 /* ---------------- Vistas ---------------- */
@@ -316,7 +302,6 @@ function portada() {
     <p>${t("intro2")}</p>
     <p>${t("imprimir_larga")} <a href="/imprimir/">${t("imprimir")}</a>.</p>
   </section>
-  ${mios()}
   <section class="respaldo">
     <p class="nota">${t("aviso_copia")}</p>
     ${estado.codigo ? `<p class="codigo-mio"><span>${t("tu_codigo")}</span><strong>${esc(estado.codigo)}</strong></p>` : ""}
@@ -383,6 +368,37 @@ function carta(id) {
   ${niveles()}`;
 }
 
+function verCodigo(id) {
+  const capa = document.createElement("div");
+  capa.className = "capa";
+  capa.innerHTML = `<div class="visor">
+    <p class="num">${id}</p>
+    <div class="cuadro">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
+    <div class="menu">
+      <button data-qr="copiar">${t("copiar")}</button>
+      <button data-qr="svg">${t("svg")}</button>
+      <button data-qr="png">${t("png")}</button>
+    </div>
+    <p class="nota">${t("reparte_pie")}</p>
+  </div>`;
+
+  const cerrar = () => capa.remove();
+  capa.addEventListener("click", e => { if (e.target === capa) cerrar(); });
+  addEventListener("keydown", e => { if (e.key === "Escape") cerrar(); }, { once: true });
+
+  capa.querySelectorAll("[data-qr]").forEach(b => b.addEventListener("click", async () => {
+    const url = enlaceCarta(id);
+    if (b.dataset.qr === "svg") return bajarSvg(url, id);
+    if (b.dataset.qr === "png") return bajarPng(url, id, 2000);
+    await navigator.clipboard.writeText(url);
+    const antes = b.textContent;
+    b.textContent = t("copiado");
+    setTimeout(cerrar, 900);
+  }));
+
+  document.body.appendChild(capa);
+}
+
 /* ---------------- Pintado ---------------- */
 function pintar() {
   const id = location.pathname.replace(/\//g, "");
@@ -413,6 +429,9 @@ function pintar() {
     guardar();
     setTimeout(pintar, 400);
   }));
+
+  document.querySelectorAll("[data-ver]").forEach(b =>
+    b.addEventListener("click", e => { e.preventDefault(); verCodigo(b.dataset.ver); }));
 
   const boton = document.getElementById("compartir");
   if (boton) boton.addEventListener("click", compartir);
