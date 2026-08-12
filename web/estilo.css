@@ -408,9 +408,12 @@ body.rodado .masabajo{ opacity:0; transition:opacity .3s; }
 
 /* La clave, en grande y antes que el QR: es lo que se pasa de viva voz. */
 .clavegorda{
+  display:block; margin:0 0 16px; padding:6px 0; cursor:pointer;
+  background:none; border:0; border-bottom:1px dashed var(--linea);
   font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:30px;
-  letter-spacing:.3em; color:var(--acento); margin-bottom:16px;
+  letter-spacing:.3em; color:var(--acento); text-align:left;
 }
+.clavegorda:hover{ border-bottom-color:var(--acento); }
 
 
 

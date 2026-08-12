@@ -533,7 +533,7 @@ function carta(id) {
     ${p.leido ? `<p class="conseguida">${t("ganada").replace("{n}", id)}</p>` : ""}
     <div class="codigo">
       <h2>${t("codigo")}</h2>
-      <p class="clavegorda">${esc(c.clave)}</p>
+      <button class="clavegorda" data-qr="clave" title="${t("copiada_clave")}">${esc(c.clave)}</button>
       <div class="lienzo">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
       <div class="menu">
         <button data-qr="copiar">${t("copiar")}</button>
@@ -776,10 +776,11 @@ function pintar() {
 
   document.querySelectorAll("[data-qr]").forEach(b => b.addEventListener("click", async () => {
     if (b.dataset.qr === "imagen") return compartirImagen(id);
-    await navigator.clipboard.writeText(mensajeDe(id));
+    const esClave = b.dataset.qr === "clave";
+    await navigator.clipboard.writeText(esClave ? buscar(id).clave : mensajeDe(id));
     const antes = b.textContent;
-    b.textContent = t("copiado");
-    setTimeout(() => { b.textContent = antes; }, 2000);
+    b.textContent = esClave ? "✓" : t("copiado");
+    setTimeout(() => { b.textContent = antes; }, 1600);
   }));
 }
 
