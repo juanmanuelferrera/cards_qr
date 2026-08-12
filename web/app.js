@@ -35,8 +35,10 @@ const T = {
     lote: "Nivel",
     sellado: "Sellado",
     completo: "Completo",
-    intro: "Trece preguntas. Cada una tiene su respuesta en un verso.",
-    intro2: "Las que te faltan están en las tarjetas de papel. Hay que encontrarlas.",
+    intro: "Trece sobres. Uno se abre cada día.",
+    intro2: "Los demás andan por la calle, en tarjetas. El código de cada tarjeta abre el suyo.",
+    hoy_hecho: "El de hoy ya está abierto. Mañana hay otro.",
+    cerrado: "Este se abre el día que le toque, o con su tarjeta.",
     imprimir_larga: "Puedes imprimir las tuyas y repartirlas.",
     copia: "Guardar con código",
     restaurar: "Tengo un código",
@@ -76,8 +78,10 @@ const T = {
     lote: "Level",
     sellado: "Sealed",
     completo: "Complete",
-    intro: "Thirteen questions. Each one is answered by a verse.",
-    intro2: "The ones you're missing are on the paper cards. You have to find them.",
+    intro: "Thirteen envelopes. One opens each day.",
+    intro2: "The rest are out on the street, on cards. Each card's code opens its own.",
+    hoy_hecho: "Today's is open. There's another tomorrow.",
+    cerrado: "This one opens on its day, or with its card.",
     imprimir_larga: "You can print your own and hand them out.",
     copia: "Save with a code",
     restaurar: "I have a code",
@@ -234,11 +238,16 @@ function niveles() {
     const piezas = lote.tarjetas.map(id => {
       const c = buscar(id);
       const abierta = hallada(id);
-      const clases = ["mini", abierta ? "hallada" : "", id === hoy ? "hoy" : ""].join(" ");
+      const empezada = !!paso(id).respuesta;
+      const abrible = abierta || empezada || id === hoy;
+      const clases = ["mini", abierta ? "hallada" : "", id === hoy ? "hoy" : "",
+                      abrible ? "" : "cerrado"].join(" ");
       const dentro = abierta
         ? `<span class="preg">${esc(c[idioma][2])}</span>`
         : sobreChico(esc(id));
-      return `<a class="${clases}" href="/${id}">${dentro}</a>`;
+      return abrible
+        ? `<a class="${clases}" href="/${id}">${dentro}</a>`
+        : `<span class="${clases}" title="${t("cerrado")}">${dentro}</span>`;
     }).join("");
 
     const n = lote.tarjetas.filter(hallada).length;
@@ -269,7 +278,7 @@ function portada() {
     ? `<p class="racha">${t("racha").replace("{n}", estado.racha)}</p>` : "";
 
   const tarjeta = hallada(c.id)
-    ? `<a class="hoy-cara" href="/${c.id}">${cara(c)}</a>`
+    ? `<a class="hoy-cara" href="/${c.id}">${cara(c)}<p class="ya">${t("hoy_hecho")}</p></a>`
     : `<a class="hoy-cara tapada" href="/${c.id}">
          ${sobreLacrado(esc(c.id))}
          <p class="invita">${t("ver")}</p>
