@@ -213,11 +213,13 @@ footer .lema{ display:block; margin-top:5px; font-style:italic; }
    sin que el bloque compita con las cartas abiertas. */
 :root{
   --sobre:#2a2521; --sobre-solapa:#221e1a; --sobre-linea:#4a4139;
+  --sobre-dentro:#100e0c; --carta-papel:#e7dcc6;
   --lacre:#9c3527; --lacre-borde:#c25a48; --lacre-letra:#f3d9c9;
 }
 @media (prefers-color-scheme: light){
   :root{
     --sobre:#efe7d8; --sobre-solapa:#e5dbc9; --sobre-linea:#cdbfa6;
+    --sobre-dentro:#b3a184; --carta-papel:#fdfaf2;
     --lacre:#9c3527; --lacre-borde:#7a2519; --lacre-letra:#f7e6dc;
   }
 }
@@ -411,85 +413,6 @@ body.rodado .masabajo{ opacity:0; transition:opacity .3s; }
 }
 
 
-/* ---------------- Derretir el lacre ---------------- */
-/* En SVG hay que fijar la caja de referencia: sin fill-box, el origen se
-   calcula sobre el lienzo entero y la pieza gira desde donde no debe. */
-.sobre .cera, .sobre .sello-marca, .sobre .gota, .sobre .solapa{
-  transform-box:fill-box;
-}
-.sobre .cera, .sobre .sello-marca{ transform-origin:50% 92%; }
-.sobre .gota{ transform-origin:50% 0%; }
-.sobre .solapa{ transform-origin:50% 0%; }
-
-/* La marca es lo primero que se va: el calor borra el relieve antes que la forma. */
-.sobre.rompiendo .sello-marca{ animation:borra-marca .34s ease-out forwards; }
-.sobre.rompiendo .cera{ animation:derrite .9s cubic-bezier(.55,.02,.6,1) forwards; }
-.sobre.rompiendo .gota{ animation:gotea .9s .2s cubic-bezier(.4,0,.9,1) forwards; }
-.sobre.rompiendo .solapa{ animation:abre-solapa .5s .48s ease-in forwards; }
-
-@keyframes borra-marca{
-  0%  { opacity:1; filter:blur(0); }
-  100%{ opacity:0; filter:blur(2px); transform:scale(.92); }
-}
-@keyframes derrite{
-  0%  { transform:none; filter:blur(0); }
-  25% { transform:translateY(2px) scale(1.06,.94); filter:blur(.4px); }
-  60% { transform:translateY(12px) scale(1.3,.5); filter:blur(1px); }
-  100%{ transform:translateY(20px) scale(1.55,.2); filter:blur(1.6px); opacity:.85; }
-}
-@keyframes gotea{
-  0%  { opacity:0; transform:scaleY(0); }
-  35% { opacity:.9; transform:scaleY(.5); }
-  100%{ opacity:.75; transform:translateY(10px) scaleY(1.15); }
-}
-@keyframes abre-solapa{
-  0%  { transform:scaleY(1); }
-  100%{ transform:scaleY(-.72); }
-}
-
-.hoy-cara.tapada .sobre.rompiendo{ animation:aparta .9s ease-in forwards; }
-@keyframes aparta{
-  0%  { opacity:1; }
-  70% { opacity:1; }
-  100%{ transform:translateY(8px) scale(.98); opacity:.12; }
-}
-
-@media (prefers-reduced-motion: reduce){
-  .sobre.rompiendo, .sobre.rompiendo *{ animation:none !important; }
-}
-
-/* La cera derritiéndose a pantalla completa, al acertar una clave. */
-.capa.derritiendo{ background:rgba(0,0,0,.82); }
-.capa.derritiendo .sobre{ width:min(320px,74vw); filter:drop-shadow(0 6px 24px rgba(0,0,0,.5)); }
-
-/* ---------------- El sobre ya abierto ---------------- */
-/* Deja de ser sobre y pasa a ser la carta que llevaba dentro: papel algo más
-   claro, una esquina doblada y la mancha de cera que quedó al derretirse. */
-.mini.hallada{
-  position:relative; overflow:hidden; padding:16px 14px 26px;
-  background:
-    linear-gradient(225deg, var(--fondo) 0 11px, transparent 11px) top right / 22px 22px no-repeat,
-    var(--carta);
-  border-color:var(--carta-linea);
-  align-items:flex-start;
-}
-.mini.hallada::after{
-  content:""; position:absolute; top:0; right:0; width:22px; height:22px;
-  border-left:1px solid var(--carta-linea); border-bottom:1px solid var(--carta-linea);
-  transform:rotate(0deg); clip-path:polygon(100% 0, 0 100%, 100% 100%);
-  opacity:.9;
-}
-.carta-abierta{ display:block; width:100%; }
-.mini.hallada .preg{ display:block; }
-.restos{
-  display:block; width:34px; height:auto; margin-top:10px; opacity:.9;
-  filter:drop-shadow(0 1px 2px rgba(0,0,0,.3));
-}
-
-:root{ --carta:#1d1a17; --carta-linea:#3a342d; }
-@media (prefers-color-scheme: light){
-  :root{ --carta:#fbf7ee; --carta-linea:#ddd2ba; }
-}
 
 /* ---------------- La carta ya sacada del sobre ---------------- */
 /* Lo cerrado es oscuro; lo abierto es papel. Esa es toda la señal, y se lee
@@ -629,3 +552,55 @@ body.quieto{ overflow:hidden; }
   border-color:var(--acento); background:var(--acento); color:#141210;
 }
 .medidas span{ font-family:system-ui,sans-serif; font-size:11px; color:var(--suave); }
+
+/* ---------------- Derretir el lacre y abrir el sobre ---------------- */
+.sobre .cera, .sobre .sello-marca, .sobre .gota,
+.sobre .solapa, .sobre .carta{ transform-box:fill-box; }
+.sobre .cera, .sobre .sello-marca{ transform-origin:50% 92%; }
+.sobre .gota{ transform-origin:50% 0%; }
+.sobre .solapa{ transform-origin:50% 0%; }
+.sobre .carta{ transform-origin:50% 100%; }
+
+/* La carta queda escondida hasta que se abre la solapa. */
+.sobre .carta{ opacity:0; }
+
+.sobre.rompiendo .sello-marca{ animation:borra-marca .3s ease-out forwards; }
+.sobre.rompiendo .cera{ animation:derrite .75s cubic-bezier(.55,.02,.6,1) forwards; }
+.sobre.rompiendo .gota{ animation:gotea .8s .18s cubic-bezier(.4,0,.9,1) forwards; }
+.sobre.rompiendo .solapa{ animation:abre-solapa .62s .62s cubic-bezier(.34,1.2,.64,1) forwards; }
+.sobre.rompiendo .carta{ animation:asoma .55s .86s ease-out forwards; }
+
+@keyframes borra-marca{
+  to{ opacity:0; filter:blur(2px); transform:scale(.92); }
+}
+@keyframes derrite{
+  0%  { transform:none; filter:blur(0); }
+  30% { transform:translateY(2px) scale(1.06,.94); filter:blur(.4px); }
+  70% { transform:translateY(11px) scale(1.3,.48); filter:blur(1px); }
+  100%{ transform:translateY(18px) scale(1.5,.18); filter:blur(1.6px); opacity:.8; }
+}
+@keyframes gotea{
+  0%  { opacity:0; transform:scaleY(0); }
+  40% { opacity:.9; transform:scaleY(.55); }
+  100%{ opacity:.7; transform:translateY(9px) scaleY(1.1); }
+}
+/* La solapa cae hacia atrás y deja ver el interior. */
+@keyframes abre-solapa{
+  0%  { transform:scaleY(1); }
+  100%{ transform:scaleY(-.86); }
+}
+@keyframes asoma{
+  0%  { opacity:0; transform:translateY(0); }
+  30% { opacity:1; }
+  100%{ opacity:1; transform:translateY(-16px); }
+}
+
+.hoy-cara.tapada .sobre.rompiendo{ animation:aparta .34s 1.12s ease-in forwards; }
+.capa.derritiendo .sobre.rompiendo{ animation:aparta .34s 1.12s ease-in forwards; }
+@keyframes aparta{
+  to{ transform:translateY(-6px) scale(1.02); opacity:0; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .sobre.rompiendo, .sobre.rompiendo *{ animation:none !important; }
+}

@@ -239,15 +239,21 @@ function sobreChico(marca) {
 }
 
 function sobreLacrado(inicial) {
-  // La cera se derrite: pierde el sello, se aplasta contra el sobre y
-  // se descuelga en un goterón. Todo con transformaciones, sin librerías.
+  // Orden de pintado: interior oscuro, la carta que asoma, el cuerpo del
+  // sobre, la solapa que se levanta, y encima la cera. Así al abrirse se ve
+  // el hueco de dentro en vez de un triángulo girando en el vacío.
   return `<svg class="sobre" viewBox="0 0 260 168" role="img" aria-hidden="true">
-    <rect x="1" y="1" width="258" height="166" rx="7"
-          fill="var(--sobre)" stroke="var(--sobre-linea)" stroke-width="1.4"/>
-    <path class="solapa" d="M1 12 L130 104 L259 12" fill="var(--sobre-solapa)"
-          stroke="var(--sobre-linea)" stroke-width="1.4" stroke-linejoin="round"/>
+    <rect x="1" y="1" width="258" height="166" rx="7" fill="var(--sobre-dentro)"/>
+    <g class="carta"><rect x="26" y="26" width="208" height="128" rx="4"
+       fill="var(--carta-papel)" stroke="var(--sobre-linea)" stroke-width="1"/></g>
+    <path class="cuerpo" d="M1 46 L1 161 a6 6 0 0 0 6 6 h246 a6 6 0 0 0 6-6 L259 46 L130 122Z"
+          fill="var(--sobre)" stroke="var(--sobre-linea)" stroke-width="1.4"
+          stroke-linejoin="round"/>
     <path d="M1 158 L96 84 M259 158 L164 84" fill="none"
-          stroke="var(--sobre-linea)" stroke-width="1.2" opacity=".65"/>
+          stroke="var(--sobre-linea)" stroke-width="1.2" opacity=".5"/>
+    <path class="solapa" d="M1 12 L130 104 L259 12 a6 6 0 0 0-6-6 H7 a6 6 0 0 0-6 6z"
+          fill="var(--sobre-solapa)" stroke="var(--sobre-linea)" stroke-width="1.4"
+          stroke-linejoin="round"/>
     <g transform="translate(130,100)">
       <path class="gota" d="M-7 14 q7 26 7 34 q0 8-7 8 q-7 0-7-8 q0-8 7-34z"
             fill="var(--lacre)" opacity="0"/>
@@ -514,7 +520,7 @@ function derretirYEntrar(id) {
   capa.innerHTML = sobreLacrado(id);
   document.body.appendChild(capa);
   requestAnimationFrame(() => capa.querySelector(".sobre").classList.add("rompiendo"));
-  setTimeout(() => { capa.remove(); ir(); }, 1000);
+  setTimeout(() => { capa.remove(); ir(); }, 1500);
 }
 
 // El significado se lee aquí dentro. Sacar a la gente a otra pestaña la
@@ -758,7 +764,7 @@ async function compartir() {
     const sobre = a.classList.contains("tapada") ? a.querySelector(".sobre") : null;
     if (sobre && !quieto) {
       sobre.classList.add("rompiendo");
-      return setTimeout(ir, 900);
+      return setTimeout(ir, 1450);
     }
     ir();
   });
