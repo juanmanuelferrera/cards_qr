@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """Genera las tarjetas QR listas para imprenta.
 
-Salida en dist/:
-  tarjetas-A4-imprenta.pdf   ES · A4 con 10 tarjetas y marcas de corte
-  tarjeta-1up-85x55.pdf      ES · una tarjeta a tamaño final
-  cards-A4-print.pdf         EN · A4 con 10 tarjetas y marcas de corte
-  card-1up-85x55.pdf         EN · una tarjeta a tamaño final
+Ocho preguntas por idioma. Cada tarjeta lleva al verso del Bhagavad-gītā que
+responde a su pregunta, y a un canto en sánscrito.
+
+Salida en dist/, un juego por idioma:
+  tarjetas-A4-<idioma>.pdf   A4 con 10 tarjetas y marcas de corte
+  tarjeta-1up-<idioma>.pdf   una página por pregunta, a tamaño final
+
+Añadir un idioma es añadir un bloque a IDIOMAS. Nada más.
 
 Requisitos:  pip install segno weasyprint
 Uso:         python3 src/build.py
@@ -21,83 +24,113 @@ RAIZ = Path(__file__).resolve().parent.parent
 DIST = RAIZ / "dist"
 PREVIEW = RAIZ / "preview"
 
-# --- Tamaños de la tarjeta y de la imposición (mm) ---
-ANCHO, ALTO = 85, 55          # tarjeta estándar
-COLS, FILAS = 2, 5            # 10 por A4
-MARGEN_X, MARGEN_Y = 10, 11   # margen de la retícula en A4
-MARCA, SEPARACION = 4, 1.2    # largo de la marca de corte y su separación
+# --- Medidas (mm) ---
+ANCHO, ALTO = 85, 55          # tarjeta estándar de cartera
+QR = 23.5                     # lado del código impreso
+COLS, FILAS = 2, 5            # 10 huecos por A4
+MARGEN_X, MARGEN_Y = 10, 11
+MARCA, SEPARACION = 4, 1.2    # marcas de corte: largo y separación
+
+# El QR de un verso ocupa 37 módulos. A 19,5 mm son 0,53 mm por celda, que es
+# el mínimo cómodo para la cámara de un móvil con luz de interior. Si acortas
+# una URL y el código baja de módulos, puedes reducir QR en la misma medida.
+MODULO_MINIMO = 0.50
 
 AUDIO = "https://vedabase.cc/media/audio/bhajan.mp3"
+BASE = "https://vedic-library.pages.dev"
 
+# Cada pregunta: (línea 1, línea 2, cierre, capítulo, verso)
 IDIOMAS = {
     "es": {
-        "lang": "es",
-        "gita": "https://vedic-library.pages.dev/bg-es/",
-        "titulo": "De ni&ntilde;o ten&iacute;as otro cuerpo.<br>"
-                  "Y sigues diciendo &laquo;yo&raquo;.<br>"
-                  '<span class="pregunta">&iquest;Qui&eacute;n es ese?</span>',
-        "qr1_titulo": "Bhagavad-g&#299;t&#257;",
-        "qr1_pie": "Leerlo gratis, en castellano",
-        "qr2_titulo": "Canto s&aacute;nscrito",
-        "qr2_pie": "20 minutos",
-        "pliego": "tarjetas-A4-imprenta.pdf",
-        "suelta": "tarjeta-1up-85x55.pdf",
+        "html_lang": "es",
+        "ruta": "bg-es",
+        "pie_gita": "Leerlo gratis, en castellano",
+        "titulo_audio": "Canto s&aacute;nscrito",
+        "pie_audio": "20 minutos",
+        "preguntas": [
+            ("De ni&ntilde;o ten&iacute;as otro cuerpo.", "Y sigues diciendo &laquo;yo&raquo;.", "&iquest;Qui&eacute;n es ese?", 2, 13),
+            ("Llevas a&ntilde;os intentando", "controlar tu cabeza.", "&iquest;Qui&eacute;n manda ah&iacute;?", 6, 35),
+            ("Consigues lo que quer&iacute;as.", "A los tres d&iacute;as, otra cosa.", "&iquest;Por qu&eacute; nunca basta?", 3, 39),
+            ("Haces el trabajo.", "El resultado no depende de ti.", "&iquest;Entonces qu&eacute; es tuyo?", 2, 47),
+            ("Tu vida tendr&aacute; un", "&uacute;ltimo pensamiento.", "&iquest;Cu&aacute;l quieres que sea?", 8, 6),
+            ("Todo lo que ves hoy", "habr&aacute; desaparecido.", "&iquest;Y t&uacute;?", 11, 32),
+            ("Algo dentro de ti", "te observa pensar.", "&iquest;Qui&eacute;n es?", 13, 23),
+            ("Le tienes miedo a morir.", "Pero eso le pasa al cuerpo.", "&iquest;Y a ti?", 2, 20),
+        ],
     },
     "en": {
-        "lang": "en",
-        "gita": "https://vedic-library.pages.dev/bg-en/",
-        "titulo": "As a child you had another body.<br>"
-                  "And you still say &ldquo;I&rdquo;.<br>"
-                  '<span class="pregunta">Who is that?</span>',
-        "qr1_titulo": "Bhagavad-g&#299;t&#257;",
-        "qr1_pie": "Read it free, in English",
-        "qr2_titulo": "Sanskrit chant",
-        "qr2_pie": "20 minutes",
-        "pliego": "cards-A4-print.pdf",
-        "suelta": "card-1up-85x55.pdf",
+        "html_lang": "en",
+        "ruta": "bg-en",
+        "pie_gita": "Read it free, in English",
+        "titulo_audio": "Sanskrit chant",
+        "pie_audio": "20 minutes",
+        "preguntas": [
+            ("As a child you had another body.", "And you still say &ldquo;I&rdquo;.", "Who is that?", 2, 13),
+            ("You&rsquo;ve spent years trying", "to control your mind.", "Who&rsquo;s winning?", 6, 35),
+            ("You get what you wanted.", "Three days later, you want more.", "Why is it never enough?", 3, 39),
+            ("You do the work.", "The result isn&rsquo;t up to you.", "So what is yours?", 2, 47),
+            ("Your life will have", "a last thought.", "Which one do you want?", 8, 6),
+            ("Everything you see today", "will be gone.", "And you?", 11, 32),
+            ("Something in you", "watches you think.", "Who is it?", 13, 23),
+            ("You&rsquo;re afraid to die.", "But that happens to the body.", "What about you?", 2, 20),
+        ],
     },
 }
 
-ESTILO = """
-  :root{ --tinta:#171512; --suave:#6a6259; --acento:#8a6d3b; }
-  *{ box-sizing:border-box; margin:0; padding:0; }
-  body{
+ESTILO = f"""
+  :root{{ --tinta:#171512; --suave:#6a6259; --acento:#8a6d3b; }}
+  *{{ box-sizing:border-box; margin:0; padding:0; }}
+  body{{
     font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
     color:var(--tinta); background:#fff;
-  }
-  .tarjeta{
-    width:%(ancho)smm; height:%(alto)smm; padding:5mm 5.5mm 4.5mm;
+  }}
+  .tarjeta{{
+    width:{ANCHO}mm; height:{ALTO}mm; padding:4.5mm 5.5mm 3.5mm;
     display:block; overflow:hidden; background:#fff;
-  }
-  .titulo{ font-size:11.4pt; line-height:1.24; letter-spacing:-.005em; }
-  .pregunta{ font-style:italic; color:var(--acento); }
-  .codigos{ margin-top:4mm; display:grid; grid-template-columns:1fr 1fr; gap:5mm; align-items:end; }
-  .codigo{ text-align:center; min-width:0; }
-  .codigo svg{ width:17mm; height:17mm; display:block; margin:0 auto 1.2mm; }
-  .codigo .que{ font-size:7pt; font-weight:600; letter-spacing:.03em; line-height:1.15; white-space:nowrap; }
-  .codigo .sub{ font-size:6pt; color:var(--suave); margin-top:.5mm; line-height:1.2; }
-""" % {"ancho": ANCHO, "alto": ALTO}
+  }}
+  .titulo{{ font-size:10.6pt; line-height:1.2; letter-spacing:-.005em; }}
+  .pregunta{{ font-style:italic; color:var(--acento); }}
+  .codigos{{ margin-top:2.5mm; display:grid; grid-template-columns:1fr 1fr; gap:4mm; align-items:end; }}
+  .codigo{{ text-align:center; min-width:0; }}
+  .codigo svg{{ width:{QR}mm; height:{QR}mm; display:block; margin:0 auto 1mm; }}
+  .codigo .que{{ font-size:6.8pt; font-weight:600; letter-spacing:.03em; line-height:1.12; white-space:nowrap; }}
+  .codigo .sub{{ font-size:5.8pt; color:var(--suave); margin-top:.4mm; line-height:1.15; }}
+"""
+
+_cache = {}
 
 
 def qr_svg(url):
     """QR en SVG inline. Corrección M: menos módulos, celdas más grandes al imprimir."""
-    codigo = segno.make(url, error="m")
-    buffer = io.BytesIO()
-    codigo.save(buffer, kind="svg", scale=1, border=2, svgclass=None, lineclass=None,
-                omitsize=True, dark="#111", xmldecl=False, svgns=True)
-    return buffer.getvalue().decode().strip(), codigo.symbol_size(scale=1, border=2)[0]
+    if url not in _cache:
+        codigo = segno.make(url, error="m")
+        buffer = io.BytesIO()
+        codigo.save(buffer, kind="svg", scale=1, border=2, svgclass=None, lineclass=None,
+                    omitsize=True, dark="#111", xmldecl=False, svgns=True)
+        _cache[url] = (buffer.getvalue().decode().strip(),
+                       codigo.symbol_size(scale=1, border=2)[0])
+    return _cache[url]
 
 
-def tarjeta_html(cfg):
-    qr_gita, mod_gita = qr_svg(cfg["gita"])
+def comprobar(url, modulos):
+    celda = QR / modulos
+    if celda < MODULO_MINIMO:
+        print(f"  AVISO  {celda:.2f} mm/celda ({modulos} módulos) — agranda el QR o acorta {url}")
+    return celda
+
+
+def tarjeta_html(cfg, pregunta):
+    linea1, linea2, cierre, capitulo, verso = pregunta
+    url = f"{BASE}/{cfg['ruta']}/{capitulo}/{verso}/"
+    qr_gita, mod_gita = qr_svg(url)
     qr_audio, mod_audio = qr_svg(AUDIO)
-    print(f"  {cfg['lang']}: gita {mod_gita} módulos ({17/mod_gita:.2f} mm/módulo) · "
-          f"audio {mod_audio} módulos ({17/mod_audio:.2f} mm/módulo)")
+    comprobar(url, mod_gita)
+    comprobar(AUDIO, mod_audio)
     return f"""<div class="tarjeta">
-  <div class="titulo">{cfg['titulo']}</div>
+  <div class="titulo">{linea1}<br>{linea2}<br><span class="pregunta">{cierre}</span></div>
   <div class="codigos">
-    <div class="codigo">{qr_gita}<div class="que">{cfg['qr1_titulo']}</div><div class="sub">{cfg['qr1_pie']}</div></div>
-    <div class="codigo">{qr_audio}<div class="que">{cfg['qr2_titulo']}</div><div class="sub">{cfg['qr2_pie']}</div></div>
+    <div class="codigo">{qr_gita}<div class="que">Bhagavad-g&#299;t&#257; {capitulo}.{verso}</div><div class="sub">{cfg['pie_gita']}</div></div>
+    <div class="codigo">{qr_audio}<div class="que">{cfg['titulo_audio']}</div><div class="sub">{cfg['pie_audio']}</div></div>
   </div>
 </div>"""
 
@@ -116,19 +149,32 @@ def marcas_de_corte():
     return "".join(piezas)
 
 
-def construir(cfg):
-    tarjeta = tarjeta_html(cfg)
+def construir(idioma, cfg):
+    print(f"\n[{idioma}]")
+    tarjetas = [tarjeta_html(cfg, p) for p in cfg["preguntas"]]
+    for p in cfg["preguntas"]:
+        print(f"  BG {p[3]}.{p[4]:<3} {p[2]}")
 
-    suelta = f"""<!doctype html><html lang="{cfg['lang']}"><head><meta charset="utf-8">
-<title>{ANCHO}x{ALTO}</title><style>
+    # Una página por pregunta, a tamaño final: para imprentas que cobran por tarjeta.
+    suelta = f"""<!doctype html><html lang="{cfg['html_lang']}"><head><meta charset="utf-8">
+<title>{ANCHO}x{ALTO} {idioma}</title><style>
 @page {{ size: {ANCHO}mm {ALTO}mm; margin:0; }}
 {ESTILO}
-</style></head><body>{tarjeta}</body></html>"""
-    (PREVIEW / f"tarjeta-{cfg['lang']}.html").write_text(suelta)
-    HTML(string=suelta).write_pdf(DIST / cfg["suelta"])
+.tarjeta{{ page-break-after:always; }}
+</style></head><body>{''.join(tarjetas)}</body></html>"""
+    (PREVIEW / f"tarjeta-1up-{idioma}.html").write_text(suelta)
+    HTML(string=suelta).write_pdf(DIST / f"tarjeta-1up-{idioma}.pdf")
 
-    pliego = f"""<!doctype html><html lang="{cfg['lang']}"><head><meta charset="utf-8">
-<title>A4</title><style>
+    # Pliego A4: los huecos se llenan girando por la lista de preguntas.
+    huecos = COLS * FILAS
+    rejilla = "".join(tarjetas[i % len(tarjetas)] for i in range(huecos))
+    sobrantes = huecos % len(tarjetas)
+    if sobrantes:
+        repes = [cfg["preguntas"][i % len(cfg["preguntas"])][2] for i in range(len(tarjetas), huecos)]
+        print(f"  {huecos} huecos y {len(tarjetas)} preguntas: se repiten {', '.join(repes)}")
+
+    pliego = f"""<!doctype html><html lang="{cfg['html_lang']}"><head><meta charset="utf-8">
+<title>A4 {idioma}</title><style>
 @page {{ size: A4 portrait; margin:0; }}
 {ESTILO}
 .hoja{{ position:relative; width:210mm; height:297mm; }}
@@ -141,17 +187,17 @@ def construir(cfg):
 .m.h{{ height:.25pt; width:{MARCA}mm; }}
 </style></head><body>
 <div class="hoja">
-  <div class="rejilla">{tarjeta * (COLS * FILAS)}</div>
+  <div class="rejilla">{rejilla}</div>
   {marcas_de_corte()}
 </div>
 </body></html>"""
-    (PREVIEW / f"pliego-{cfg['lang']}.html").write_text(pliego)
-    HTML(string=pliego).write_pdf(DIST / cfg["pliego"])
+    (PREVIEW / f"pliego-{idioma}.html").write_text(pliego)
+    HTML(string=pliego).write_pdf(DIST / f"tarjetas-A4-{idioma}.pdf")
 
 
 if __name__ == "__main__":
     DIST.mkdir(exist_ok=True)
     PREVIEW.mkdir(exist_ok=True)
-    for cfg in IDIOMAS.values():
-        construir(cfg)
+    for idioma, cfg in IDIOMAS.items():
+        construir(idioma, cfg)
     print(f"\nPDFs en {DIST}")

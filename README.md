@@ -1,41 +1,72 @@
 # cards_qr
 
-Tarjetas de reparto con códigos QR: una pregunta corta delante, y dos códigos que llevan al *Bhagavad-gītā* completo y a un canto en sánscrito. Tamaño estándar de cartera, 85 × 55 mm, a una sola cara.
+Tarjetas de reparto con códigos QR. Delante, una observación corta y una pregunta. Detrás del código, el verso del *Bhagavad-gītā* que la responde. Tamaño estándar de cartera, 85 × 55 mm, a una sola cara.
+
+**Ocho preguntas distintas por idioma**, cada una enlazada a su verso.
+
+## Las ocho
+
+| Pregunta | Verso |
+|---|---|
+| ¿Quién es ese? — *De niño tenías otro cuerpo. Y sigues diciendo «yo».* | BG 2.13 |
+| ¿Quién manda ahí? — *Llevas años intentando controlar tu cabeza.* | BG 6.35 |
+| ¿Por qué nunca basta? — *Consigues lo que querías. A los tres días, otra cosa.* | BG 3.39 |
+| ¿Entonces qué es tuyo? — *Haces el trabajo. El resultado no depende de ti.* | BG 2.47 |
+| ¿Cuál quieres que sea? — *Tu vida tendrá un último pensamiento.* | BG 8.6 |
+| ¿Y tú? — *Todo lo que ves hoy habrá desaparecido.* | BG 11.32 |
+| ¿Quién es? — *Algo dentro de ti te observa pensar.* | BG 13.23 |
+| ¿Y a ti? — *Le tienes miedo a morir. Pero eso le pasa al cuerpo.* | BG 2.20 |
+
+Ninguna promete un resultado ni pide creer nada. Todas parten de algo que el lector sabe que es cierto.
+
+Cuidado con la de BG 13.23: la respuesta no es «ese observador eres tú», que es monismo. El verso dice que en el cuerpo hay **alguien más**.
 
 ## Qué hay en `dist/`
 
-| Fichero | Idioma | Qué es |
-|---|---|---|
-| `tarjetas-A4-imprenta.pdf` | Español | A4 con 10 tarjetas y marcas de corte |
-| `tarjeta-1up-85x55.pdf` | Español | Una tarjeta a tamaño final |
-| `cards-A4-print.pdf` | Inglés | A4 con 10 tarjetas y marcas de corte |
-| `card-1up-85x55.pdf` | Inglés | Una tarjeta a tamaño final |
+| Fichero | Qué es |
+|---|---|
+| `tarjetas-A4-es.pdf` · `tarjetas-A4-en.pdf` | A4 con 10 tarjetas y marcas de corte |
+| `tarjeta-1up-es.pdf` · `tarjeta-1up-en.pdf` | Ocho páginas de 85 × 55 mm, una por pregunta |
 
-Cuál mandar a la imprenta depende de cómo cobren. **Por tarjeta**, manda el `1up`: ellos imponen el pliego, cortan a máquina y suele salir mejor y más barato en tiradas grandes. **Por hoja A4** o si lo imprimes tú, manda el pliego, que ya trae 10 por hoja y las marcas para guillotinar.
+Cuál mandar depende de cómo cobre la imprenta. **Por tarjeta**, manda el `1up` y que impongan ellos. **Por hoja A4** o si lo imprimes tú, manda el pliego.
 
-No lleva sangrado, y es correcto: el fondo es blanco y ningún elemento llega al borde, así que un corte desviado un milímetro no deja franja. Si la imprenta lo exige por norma, hay que regenerar con 3 mm y desplazar las marcas.
+El pliego tiene 10 huecos y hay 8 preguntas, así que las dos primeras salen repetidas. El script lo avisa al generar.
 
-## Diseño
-
-Una cara. A doble cara hay que cuadrar el reverso al imprimir, sale descentrado con facilidad, y mucha gente no le da la vuelta.
-
-El texto es deliberadamente corto: una observación que el lector sabe que es cierta, una pregunta, y los dos códigos. Sin explicación intermedia, sin nombres propios que haya que conocer de antes, y sin prometer ningún resultado.
-
-> De niño tenías otro cuerpo.
-> Y sigues diciendo «yo».
-> *¿Quién es ese?*
+No lleva sangrado, y es correcto: el fondo es blanco y ningún elemento llega al borde, así que un corte desviado un milímetro no deja franja.
 
 ## Los códigos
 
-Se generan con corrección de error **M** en lugar de H. Con H el código sale más denso y, a 17 mm impresos, las celdas quedan demasiado pequeñas para que un móvil las lea con comodidad. Con M y una URL corta salen 33 módulos, o sea **0,52 mm por celda**, que está por encima del umbral práctico.
+Cada tarjeta enlaza a **su verso**, no al libro entero: quien escanea cae en la respuesta, no en un índice.
 
-Por eso las direcciones deben ser cortas. Una URL larga sube el código a 37 módulos y baja la celda a 0,41 mm, y ahí ya falla con poca luz.
+La URL de un verso ocupa 37 módulos, así que el QR va a **23,5 mm** para dar 0,64 mm por celda. Con menos de 0,5 mm un móvil empieza a fallar con luz de interior. El script comprueba esa proporción en cada generación y avisa si se queda corta.
 
-Destinos actuales:
+Se generan con corrección de error **M**, no H: con H el código sale más denso y las celdas se quedan pequeñas al imprimir.
 
-- `https://vedic-library.pages.dev/bg-es/` — *Bhagavad-gītā tal como es*
-- `https://vedic-library.pages.dev/bg-en/` — *Bhagavad-gītā As It Is*
-- `https://vedabase.cc/media/audio/bhajan.mp3` — canto en sánscrito, 20 min
+Destinos: `vedic-library.pages.dev/bg-<idioma>/<capítulo>/<verso>/` y `vedabase.cc/media/audio/bhajan.mp3`.
+
+## Añadir un idioma
+
+Un bloque en `IDIOMAS`, dentro de `src/build.py`:
+
+```python
+"pt": {
+    "html_lang": "pt",
+    "ruta": "bg-pt",                      # ruta en vedic-library
+    "pie_gita": "Leia grátis, em português",
+    "titulo_audio": "Canto em sânscrito",
+    "pie_audio": "20 minutos",
+    "preguntas": [
+        ("linha 1", "linha 2", "pergunta?", 2, 13),   # capítulo, verso
+        ...
+    ],
+},
+```
+
+Los PDF salen solos, nombrados por idioma. Comprueba antes que la ruta existe:
+
+```bash
+curl -o /dev/null -w "%{http_code}\n" https://vedic-library.pages.dev/bg-pt/2/13/
+```
 
 ## Regenerar
 
@@ -44,10 +75,12 @@ pip install segno weasyprint
 python3 src/build.py
 ```
 
-Todo se controla desde `src/build.py`: las URLs, los textos de cada idioma y las medidas de la imposición. Los PDF salen a `dist/` y las vistas previas en HTML a `preview/`.
+Los PDF salen a `dist/` y las vistas previas en HTML a `preview/`.
 
-Para cambiar un destino basta con editar la URL en el diccionario `IDIOMAS` y volver a ejecutar — el QR se regenera solo. Comprueba en la salida del script que el número de módulos no sube de 33.
+## Diseño
 
-## Nota sobre el papel
+Una cara. A doble cara hay que cuadrar el reverso al imprimir, sale descentrado con facilidad, y mucha gente no le da la vuelta.
 
-Para repartir en la calle, cartulina de 300 g. En papel normal la tarjeta se dobla el primer día y vuelve a ser un folleto, que es justo lo que se guarda menos.
+Sin explicación intermedia, sin nombres propios que haya que conocer de antes. La tarjeta solo tiene que conseguir que escaneen; el contexto ya está al otro lado.
+
+Para repartir en la calle, cartulina de 300 g. En papel normal se dobla el primer día y vuelve a ser un folleto, que es lo que menos se guarda.
