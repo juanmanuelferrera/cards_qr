@@ -34,7 +34,11 @@ const T = {
     completo: "Completo",
     intro: "Trece preguntas. Cada una tiene su respuesta en un verso.",
     intro2: "Las que te faltan están en las tarjetas de papel. Hay que encontrarlas.",
-    imprimir_larga: "Puedes imprimir las tuyas y repartirlas."
+    imprimir_larga: "Puedes imprimir las tuyas y repartirlas.",
+    copia: "Guardar una copia",
+    restaurar: "Restaurar",
+    aviso_copia: "Todo esto vive en este navegador. Si lo borras o cambias de aparato, se pierde. Guarda una copia de vez en cuando.",
+    restaurado: "Restaurado"
   },
   en: {
     imprimir: "Print your own",
@@ -63,7 +67,11 @@ const T = {
     completo: "Complete",
     intro: "Thirteen questions. Each one is answered by a verse.",
     intro2: "The ones you're missing are on the paper cards. You have to find them.",
-    imprimir_larga: "You can print your own and hand them out."
+    imprimir_larga: "You can print your own and hand them out.",
+    copia: "Save a copy",
+    restaurar: "Restore",
+    aviso_copia: "All of this lives in this browser. If you clear it or switch devices, it is gone. Save a copy now and then.",
+    restaurado: "Restored"
   }
 };
 
@@ -210,6 +218,14 @@ function portada() {
     <p>${t("intro")}</p>
     <p>${t("intro2")}</p>
     <p>${t("imprimir_larga")} <a href="/imprimir/">${t("imprimir")}</a>.</p>
+  </section>
+  <section class="respaldo">
+    <p class="nota">${t("aviso_copia")}</p>
+    <div class="menu">
+      <button id="copia">${t("copia")}</button>
+      <button id="restaurar">${t("restaurar")}</button>
+      <input type="file" id="fichero" accept="application/json" hidden>
+    </div>
   </section>`;
 }
 
@@ -301,6 +317,35 @@ function pintar() {
   const boton = document.getElementById("compartir");
   if (boton) boton.addEventListener("click", compartir);
 
+  const copia = document.getElementById("copia");
+  if (copia) {
+    copia.addEventListener("click", () => bajar(
+      new Blob([JSON.stringify(estado, null, 1)], { type: "application/json" }),
+      "qrveda-" + new Date().toISOString().slice(0, 10) + ".json"));
+
+    document.getElementById("restaurar")
+      .addEventListener("click", () => document.getElementById("fichero").click());
+
+    document.getElementById("fichero").addEventListener("change", e => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const lector = new FileReader();
+      lector.onload = () => {
+        try {
+          const d = JSON.parse(lector.result);
+          if (!d.progreso) throw new Error("formato");
+          // Se une, no se pisa: si tienes avances en los dos, no pierdes ninguno.
+          estado.progreso = Object.assign({}, d.progreso, estado.progreso);
+          estado.racha = Math.max(estado.racha || 0, d.racha || 0);
+          guardar();
+          pintar();
+        } catch (err) { alert("?"); }
+      };
+      lector.readAsText(f);
+      e.target.value = "";
+    });
+  }
+
   document.querySelectorAll("[data-qr]").forEach(b => b.addEventListener("click", async () => {
     const url = enlaceCarta(id);
     if (b.dataset.qr === "svg") return bajarSvg(url, id);
@@ -327,6 +372,10 @@ async function compartir() {
 
 /* ---------------- Arranque ---------------- */
 (async function () {
+  // Sin esto, algunos navegadores tiran el almacenamiento tras unos días sin
+  // visitas. Safari en iOS lo hace a los siete. Pedirlo no molesta al usuario.
+  try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+
   datos = await (await fetch("/datos.json")).json();
 
   const g = leer();
