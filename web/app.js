@@ -737,6 +737,12 @@ async function compartir() {
     estado.ultimoDia = hoy;
   }
 
+  // Para probar el juego desde cero: qr.vedicvault.org/?reset
+  if (new URLSearchParams(location.search).has("reset")) {
+    try { localStorage.removeItem(CLAVE); } catch (e) {}
+    return location.replace("/");
+  }
+
   const param = new URLSearchParams(location.search).get("l");
   idioma = param || g.idioma || (navigator.language || "es").slice(0, 2);
   if (!T[idioma]) idioma = "es";
