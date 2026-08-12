@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Genera las tarjetas QR listas para imprenta.
 
-Ocho preguntas por idioma. Cada tarjeta lleva al verso del Bhagavad-gītā que
+Diez preguntas por idioma. Cada tarjeta lleva al verso del Bhagavad-gītā que
 responde a su pregunta, y a un canto en sánscrito.
 
 Salida en dist/, un juego por idioma:
@@ -56,6 +56,8 @@ IDIOMAS = {
             ("Todo lo que ves hoy", "habr&aacute; desaparecido.", "&iquest;Y t&uacute;?", 11, 32),
             ("Algo dentro de ti", "te observa pensar.", "&iquest;Qui&eacute;n es?", 13, 23),
             ("Le tienes miedo a morir.", "Pero eso le pasa al cuerpo.", "&iquest;Y a ti?", 2, 20),
+            ("Quieres algo.", "Acabas enfadado.", "&iquest;C&oacute;mo se llega ah&iacute;?", 2, 62),
+            ("Lo que ayer te dio placer,", "hoy te pasa factura.", "&iquest;Por qu&eacute; acaba siempre igual?", 18, 38),
         ],
     },
     "en": {
@@ -73,6 +75,8 @@ IDIOMAS = {
             ("Everything you see today", "will be gone.", "And you?", 11, 32),
             ("Something in you", "watches you think.", "Who is it?", 13, 23),
             ("You&rsquo;re afraid to die.", "But that happens to the body.", "What about you?", 2, 20),
+            ("You want something.", "You end up angry.", "How did that happen?", 2, 62),
+            ("What gave you pleasure once", "costs you now.", "Why does it always end the same?", 18, 38),
         ],
     },
 }

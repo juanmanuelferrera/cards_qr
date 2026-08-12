@@ -2,9 +2,9 @@
 
 Tarjetas de reparto con códigos QR. Delante, una observación corta y una pregunta. Detrás del código, el verso del *Bhagavad-gītā* que la responde. Tamaño estándar de cartera, 85 × 55 mm, a una sola cara.
 
-**Ocho preguntas distintas por idioma**, cada una enlazada a su verso.
+**Diez preguntas distintas por idioma**, cada una enlazada a su verso.
 
-## Las ocho
+## Las diez
 
 | Pregunta | Verso |
 |---|---|
@@ -16,6 +16,8 @@ Tarjetas de reparto con códigos QR. Delante, una observación corta y una pregu
 | ¿Y tú? — *Todo lo que ves hoy habrá desaparecido.* | BG 11.32 |
 | ¿Quién es? — *Algo dentro de ti te observa pensar.* | BG 13.23 |
 | ¿Y a ti? — *Le tienes miedo a morir. Pero eso le pasa al cuerpo.* | BG 2.20 |
+| ¿Cómo se llega ahí? — *Quieres algo. Acabas enfadado.* | BG 2.62 |
+| ¿Por qué acaba siempre igual? — *Lo que ayer te dio placer, hoy te pasa factura.* | BG 18.38 |
 
 Ninguna promete un resultado ni pide creer nada. Todas parten de algo que el lector sabe que es cierto.
 
@@ -26,11 +28,13 @@ Cuidado con la de BG 13.23: la respuesta no es «ese observador eres tú», que 
 | Fichero | Qué es |
 |---|---|
 | `tarjetas-A4-es.pdf` · `tarjetas-A4-en.pdf` | A4 con 10 tarjetas y marcas de corte |
-| `tarjeta-1up-es.pdf` · `tarjeta-1up-en.pdf` | Ocho páginas de 85 × 55 mm, una por pregunta |
+| `tarjeta-1up-es.pdf` · `tarjeta-1up-en.pdf` | Diez páginas de 85 × 55 mm, una por pregunta |
 
-Cuál mandar depende de cómo cobre la imprenta. **Por tarjeta**, manda el `1up` y que impongan ellos. **Por hoja A4** o si lo imprimes tú, manda el pliego.
+Manda el **pliego A4**. Con la hoja ya imposada, para la imprenta es un solo archivo: imprimen N copias y guillotinan. Que dentro haya diez diseños distintos o uno repetido diez veces les da igual — cobran por hojas impresas y por cortes, no por diseños.
 
-El pliego tiene 10 huecos y hay 8 preguntas, así que las dos primeras salen repetidas. El script lo avisa al generar.
+Mandar los diez sueltos puede salir más caro: algunas imprentas cobran preparación por diseño, y las webs de tarjetas suelen cobrar **por diseño**, con lo que diez diseños son diez pedidos. El `1up` está ahí por si te lo piden expresamente.
+
+Diez preguntas y diez huecos: el pliego sale sin repeticiones.
 
 No lleva sangrado, y es correcto: el fondo es blanco y ningún elemento llega al borde, así que un corte desviado un milímetro no deja franja.
 
