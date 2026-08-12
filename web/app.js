@@ -21,8 +21,8 @@ const T = {
     lector_fuente: "Texto de vedabase.cc",
     lector_cerrar: "Cerrar",
     lector_ir: "Abrirlo en vedabase.cc",
-    paso1: "Contéstala tú",
-    paso2: "Rompe el lacre",
+    paso1: "Tu respuesta",
+    paso2: "El significado",
     ganar: "Leerlo con su significado",
     ganar_pie: "y el sobre {n} es tuyo",
     ganada: "Sobre {n} abierto",
@@ -75,8 +75,8 @@ const T = {
     lector_fuente: "Text from vedabase.cc",
     lector_cerrar: "Close",
     lector_ir: "Open it on vedabase.cc",
-    paso1: "Answer it yourself",
-    paso2: "Break the seal",
+    paso1: "Your answer",
+    paso2: "The purport",
     ganar: "Read it with the purport",
     ganar_pie: "and envelope {n} is yours",
     ganada: "Envelope {n} opened",
@@ -312,6 +312,8 @@ function cajaClave() {
 
 function pasos(id) {
   const p = paso(id);
+  // Con el sobre ya ganado, el indicador ha cumplido y estorba.
+  if (p.respuesta && p.leido) return "";
   const uno = p.respuesta ? "hecho" : "ahora";
   const dos = p.respuesta ? (p.leido ? "hecho" : "ahora") : "";
   return `<ol class="pasos">
