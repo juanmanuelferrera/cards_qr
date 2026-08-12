@@ -2,7 +2,7 @@
 
 Trece sobres lacrados. Cada uno guarda una pregunta y el verso del *Bhagavad-gītā* que la responde.
 
-**https://qrveda.pages.dev**
+**https://qr.vedicvault.org**
 
 > Un QR al día no hace daño
 
@@ -14,7 +14,7 @@ Trece sobres lacrados. Cada uno guarda una pregunta y el verso del *Bhagavad-gī
 
 **2. Los demás están cerrados.** Se ven en la colección, con su número, pero no se pueden tocar.
 
-**3. Un sobre cerrado se abre con su clave.** Cuatro caracteres. Quien ya lo abrió puede dárselos a quien quiera: de palabra, por mensaje, en una tarjeta impresa o en una camiseta. El QR es esa misma clave, escaneada.
+**3. Un sobre cerrado se abre con su clave.** Cuatro caracteres. Quien ya lo abrió puede dárselos a quien quiera: de palabra, por mensaje, en una tarjeta impresa o en una camiseta. El QR de la tarjeta lleva al mismo sitio.
 
 **4. Para quedarte un sobre hay que hacer dos cosas.** Primero contestar la pregunta con tus palabras, antes de leer nada. Después abrir el verso entero con su significado. Con las dos, el sobre es tuyo.
 
@@ -61,11 +61,11 @@ Cuatro archivos, sin framework ni compilación:
 | `datos.json` | las trece preguntas con su verso y su clave |
 | `qrcode.min.js` | generador de códigos |
 
-**Una URL por sobre, para los dos idiomas:** `qrveda.pages.dev/7`. El idioma se detecta del navegador y se cambia en la barra, así que un mismo código impreso sirve en español y en inglés.
+**Una URL por sobre, para los dos idiomas:** `qr.vedicvault.org/7`. El idioma se detecta del navegador y se cambia en la barra, así que un mismo código impreso sirve en español y en inglés.
 
 **El sobre del día** sale del número de día, no del azar.
 
-**Los códigos** se descargan desde cada carta ganada: vector de 100 mm para camisetas, PNG de 2000 px para imprentas que no aceptan vector, o el enlace. Para camisetas, a la espalda y de 8 a 10 cm — en el pecho nadie se atreve a acercar el móvil, y en una cola la espalda de quien va delante se escanea sola.
+**Los códigos** se descargan desde cada sobre ganado: vector de 100 mm para camisetas, PNG de 2000 px para imprentas que no aceptan vector, o el enlace. Hay también un botón discreto de camiseta con dos salidas —descargar el diseño y hacérsela donde quiera, o pedirla por correo—. Cuando haya demanda se cambia por una tienda. Para camisetas, a la espalda y de 8 a 10 cm — en el pecho nadie se atreve a acercar el móvil, y en una cola la espalda de quien va delante se escanea sola.
 
 ### Probarla en local
 
@@ -103,7 +103,9 @@ Enseña la hoja A4 entera con las diez tarjetas. Pinchas una y la editas: las do
 
 Delante van dos cosas: la pregunta y el código. Sin explicación, sin nombres que haya que conocer de antes y sin texto debajo del QR.
 
-**Los códigos** se generan con corrección de error M, no H: con H salen más densos y las celdas se quedan pequeñas al imprimir. Con las URLs actuales son 33 módulos, y a 30 mm dan 0,9 mm por celda. El generador avisa si alguna baja de 0,5 mm, que es donde un móvil empieza a fallar con luz de interior.
+**El código lleva al sobre**, no al verso: la tarjeta es una invitación al juego, y quien escanea contesta, lee y se lo queda.
+
+Se generan con corrección de error M, no H: con H salen más densos y las celdas se quedan pequeñas al imprimir. Con `qr.vedicvault.org/7` son 33 módulos, y a 30 mm dan 0,91 mm por celda. El generador avisa si alguna baja de 0,5 mm, que es donde un móvil empieza a fallar con luz de interior.
 
 Sin sangrado: el fondo es blanco y ningún elemento llega al borde.
 

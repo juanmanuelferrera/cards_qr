@@ -144,10 +144,10 @@
     <h2>Textos fijos y medidas</h2>
     <div class="campos">
       <div class="duo">
-        <label><small>Idioma y libro</small><input id="ruta" value="es/bg"></label>
+        <label><small>Número de sobre</small><input id="ruta" value="1"></label>
         <label><small>QR (mm)</small><input id="qrmm" type="number" step="0.5" min="10" max="34" value="30"></label>
       </div>
-      <label><small>Base de las URLs del libro</small><input id="base" value="https://vedabase.cc"></label>
+      <label><small>Base de las URLs del libro</small><input id="base" value="https://qr.vedicvault.org"></label>
     </div>
 
     <h2>Salida</h2>
@@ -235,7 +235,8 @@ function qr(texto, mm){
 const esc = t => String(t).replace(/[&<>]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;" }[c]));
 const mmQR = () => parseFloat($("qrmm").value) || 23.5;
 // vedabase.cc sirve una página por verso: /es/bg/2/13/ para BG 2.13.
-const urlAuto = t => `${$("base").value.replace(/\/$/, "")}/${$("ruta").value}/${t[3]}/${t[4]}/`;
+// El código lleva al sobre en qrveda, no al verso: la tarjeta invita al juego.
+const urlAuto = t => `${$("base").value.replace(/\/$/, "")}/${$("ruta").value}`;
 const urlVerso = t => (t[5] && t[5].trim()) ? t[5].trim() : urlAuto(t);
 
 function tarjetaHtml(t){
