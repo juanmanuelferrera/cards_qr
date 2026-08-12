@@ -33,6 +33,13 @@ const T = {
     png: "Imagen grande",
     copiar: "Copiar el enlace",
     consejo: "Con esta clave, o con el QR, cualquiera abre este sobre. A ti no te lo quita.",
+    camiseta: "¿En camiseta?",
+    cam_titulo: "Este sobre, en camiseta",
+    cam_donde: "A la espalda y de 8 a 10 cm. En el pecho nadie se atreve a acercar el móvil; en una cola, la espalda de quien va delante se escanea sola. Oscuro sobre tela clara.",
+    cam_hazla: "Descargar el diseño",
+    cam_hazla_pie: "Vector de 100 mm. Vale en cualquier imprenta o web de camisetas.",
+    cam_pide: "Pedírmela",
+    cam_pide_pie: "Sin tienda todavía: escríbeme y lo vemos.",
     coleccion: "Las trece",
     encontradas: "{n} de {total}",
     racha: "{n} días seguidos",
@@ -88,6 +95,13 @@ const T = {
     png: "Large image",
     copiar: "Copy the link",
     consejo: "With this key, or the QR, anyone can open this envelope. You keep yours.",
+    camiseta: "On a shirt?",
+    cam_titulo: "This envelope, on a shirt",
+    cam_donde: "On the back, 8 to 10 cm. Nobody points a phone at a stranger's chest; in a queue, the back of the person ahead scans itself. Dark on light fabric.",
+    cam_hazla: "Download the artwork",
+    cam_hazla_pie: "100 mm vector. Works at any print shop or shirt site.",
+    cam_pide: "Ask me for one",
+    cam_pide_pie: "No shop yet: write to me and we'll sort it out.",
     coleccion: "The thirteen",
     encontradas: "{n} of {total}",
     racha: "{n} days in a row",
@@ -409,6 +423,7 @@ function carta(id) {
         <button data-qr="png">${t("png")}</button>
         <button data-qr="copiar">${t("copiar")}</button>
         <a href="/imprimir/">${t("imprimir")}</a>
+        <button class="discreto" data-camiseta="${id}">${t("camiseta")}</button>
       </div>
       <p class="consejo">${t("consejo")}</p>
     </div>
@@ -511,6 +526,32 @@ async function abrirLector(id) {
   guardar();
 }
 
+// Sin tienda montada: o te la haces donde quieras, o me la pides. Cuando
+// haya demanda, esto se cambia por el enlace de la tienda y ya está.
+function verCamiseta(id) {
+  const asunto = encodeURIComponent(`Camiseta — sobre ${id}`);
+  const cuerpo = encodeURIComponent(
+    `Quiero una camiseta con el sobre ${id} de qrveda.\n${enlaceCarta(id)}\n\nTalla:\nColor:\n`);
+  const capa = document.createElement("div");
+  capa.className = "capa";
+  capa.innerHTML = `<div class="visor camiseta">
+    <h2>${t("cam_titulo")}</h2>
+    <div class="cuadro">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
+    <p class="nota">${t("cam_donde")}</p>
+    <div class="opciones">
+      <button data-cam="bajar">${t("cam_hazla")}</button>
+      <p class="pie">${t("cam_hazla_pie")}</p>
+      <a href="mailto:${datos.contacto}?subject=${asunto}&body=${cuerpo}">${t("cam_pide")}</a>
+      <p class="pie">${t("cam_pide_pie")}</p>
+    </div>
+  </div>`;
+  const cerrar = () => capa.remove();
+  capa.addEventListener("click", e => { if (e.target === capa) cerrar(); });
+  addEventListener("keydown", e => { if (e.key === "Escape") cerrar(); }, { once: true });
+  capa.querySelector("[data-cam]").addEventListener("click", () => bajarSvg(enlaceCarta(id), id));
+  document.body.appendChild(capa);
+}
+
 /* ---------------- Pintado ---------------- */
 function pintar() {
   const id = location.pathname.replace(/\//g, "");
@@ -544,6 +585,9 @@ function pintar() {
 
   document.querySelectorAll("[data-ver]").forEach(b =>
     b.addEventListener("click", e => { e.preventDefault(); verCodigo(b.dataset.ver); }));
+
+  document.querySelectorAll("[data-camiseta]").forEach(b =>
+    b.addEventListener("click", () => verCamiseta(b.dataset.camiseta)));
 
   const boton = document.getElementById("compartir");
   if (boton) boton.addEventListener("click", compartir);

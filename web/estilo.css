@@ -590,3 +590,28 @@ body.quieto{ overflow:hidden; }
   font-family:system-ui,sans-serif; font-size:12px; color:var(--suave);
   margin-top:14px; line-height:1.5;
 }
+
+/* ---------------- La camiseta ---------------- */
+.codigo .menu .discreto{ border-style:dashed; }
+
+.visor.camiseta{ max-width:340px; }
+.visor.camiseta h2{ margin-bottom:16px; }
+.visor.camiseta .cuadro{ max-width:150px; margin:0 auto; }
+.visor.camiseta .nota{
+  font-family:system-ui,sans-serif; font-size:12px; line-height:1.55;
+  color:var(--suave); margin-top:16px; text-align:left;
+}
+.visor .opciones{ margin-top:20px; text-align:left; }
+.visor .opciones button, .visor .opciones a{
+  display:block; width:100%; text-align:center; margin-top:6px;
+  font-family:system-ui,sans-serif; font-size:13px; font-weight:550;
+  padding:10px 14px; border-radius:9px; border:1px solid var(--linea);
+  background:var(--fondo); color:inherit; text-decoration:none; cursor:pointer;
+}
+.visor .opciones button:hover, .visor .opciones a:hover{
+  border-color:var(--acento); color:var(--acento);
+}
+.visor .opciones .pie{
+  font-family:system-ui,sans-serif; font-size:11px; color:var(--suave);
+  margin:5px 2px 16px;
+}
