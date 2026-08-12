@@ -324,7 +324,18 @@ function imagenParaCompartir(id) {
     g.textAlign = "center";
     g.fillText("qr.vedicvault.org", L / 2, L - 74);
 
-    lienzo.toBlob(b => bajar(b, `qrveda-${id}.png`), "image/png");
+    lienzo.toBlob(async b => {
+      const fichero = new File([b], `qrveda-${id}.png`, { type: "image/png" });
+      // En el móvil se abre la hoja de compartir con la imagen dentro; en el
+      // escritorio, donde eso no existe, se descarga.
+      if (navigator.canShare && navigator.canShare({ files: [fichero] })) {
+        try {
+          await navigator.share({ files: [fichero], text: mensajeDe(id) });
+          return;
+        } catch (e) { if (e.name === "AbortError") return; }
+      }
+      bajar(b, `qrveda-${id}.png`);
+    }, "image/png");
   };
   qr.src = "data:image/svg+xml;base64," +
            btoa(unescape(encodeURIComponent(svgDelCodigo(enlaceCarta(id), "#111", 3))));
