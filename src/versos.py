@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
-"""Trae de vedabase.cc la traducción de cada verso y la guarda en data/versos.json.
+"""Trae de vedabase.cc la traducción y el significado de cada verso.
 
-Se ejecuta a mano cuando cambian las tarjetas. El sitio se construye a partir
-del caché, así que build_site.py no depende de la red.
+Se ejecuta a mano cuando cambian las tarjetas. Escribe:
+  data/versos.json          todo junto, para consultarlo
+  web/versos/<cap>-<ver>.json  uno por verso, que es lo que pide la web
+
+La extracción va por la estructura del HTML, no por longitudes ni por
+palabras clave: vedabase envuelve cada pieza en su propio bloque
+(av-translation, av-purport) y dentro separa el idioma principal
+(dual-col-primary) del secundario. Así entra el significado entero, tenga
+dos párrafos o cuarenta.
 
 Uso:  python3 src/versos.py
 """
@@ -15,14 +22,7 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 DATOS = RAIZ / "data"
-
-MARCA = {"es": "Traducción", "en": "Translation"}
-FIN = {"es": "Significado", "en": "Purport"}
-# El significado termina donde empieza la lista de clases, o el pie de página.
-CIERRE = {
-    "es": ["Conferencias de Śrīla Prabhupāda sobre este verso", "Anterior", "Copyright"],
-    "en": ["Śrīla Prabhupāda’s lectures on this verse", "Previous", "Copyright"],
-}
+WEB = RAIZ / "web" / "versos"
 
 
 def pagina(url):
@@ -30,35 +30,40 @@ def pagina(url):
     return urllib.request.urlopen(peticion).read().decode("utf-8", "replace")
 
 
-def limpiar(t):
-    t = re.sub(r"<(script|style)[^>]*>.*?</\1>", "", t, flags=re.S | re.I)
-    t = re.sub(r"<[^>]+>", "\n", t)
-    return re.sub(r"[ \t]+", " ", html.unescape(t))
+def bloque(html_texto, clase):
+    """Devuelve el contenido del primer <div class="clase">, con sus divs cerrados.
+
+    Hay que contar aperturas y cierres: los bloques llevan divs dentro y un
+    corte por el primer </div> se quedaría con el primer párrafo.
+    """
+    inicio = re.search(rf'<div[^>]*class="[^"]*\b{clase}\b[^"]*"[^>]*>', html_texto)
+    if not inicio:
+        return ""
+    i = inicio.end()
+    hondo = 1
+    for etiqueta in re.finditer(r"<(/?)div\b[^>]*>", html_texto[i:]):
+        hondo += -1 if etiqueta.group(1) else 1
+        if hondo == 0:
+            return html_texto[i:i + etiqueta.start()]
+    return html_texto[i:]
 
 
-def traduccion(bruto, idioma):
-    m = re.search(rf"{MARCA[idioma]}\s*(.{{0,1200}}?)\s*{FIN[idioma]}", limpiar(bruto), re.S)
-    return re.sub(r"\s+", " ", m.group(1)).strip() if m else ""
-
-
-def significado(bruto, idioma):
-    t = limpiar(bruto)
-    i = t.find(FIN[idioma])
-    if i < 0:
+def parrafos(trozo):
+    """Cada div hoja del bloque es un párrafo. Se conserva el orden y no se filtra."""
+    if not trozo:
         return []
-    trozo = t[i + len(FIN[idioma]):]
-    for marca in CIERRE[idioma]:
-        j = trozo.find(marca)
-        if j > 0:
-            trozo = trozo[:j]
-    # Cada párrafo, una línea suelta y larga; lo corto descarta menús y adornos.
-    return [re.sub(r"\s+", " ", l).strip()
-            for l in trozo.split("\n") if len(l.strip()) > 90]
-
-
-def clases(bruto):
-    m = re.search(r"lectures on this verse\s*(\d+)", re.sub(r"\s+", " ", limpiar(bruto)))
-    return int(m.group(1)) if m else 0
+    principal = bloque(trozo, "dual-col-primary") or trozo
+    # Los párrafos son los divs sin divs dentro; si no hay, vale el bloque entero.
+    hojas = re.findall(r"<div[^>]*>((?:(?!<div)[\s\S])*?)</div>", principal)
+    if not hojas:
+        hojas = [principal]
+    salida = []
+    for h in hojas:
+        h = re.sub(r"<br\s*/?>", " ", h)
+        texto = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", h))).strip()
+        if texto:
+            salida.append(texto)
+    return salida
 
 
 def main():
@@ -72,24 +77,35 @@ def main():
         if referencia in salida:
             continue
         salida[referencia] = {}
+
         for idioma, cfg_idioma in cfg["idiomas"].items():
             url = f"{base}/{cfg_idioma['ruta']}/{cap}/{ver}/"
             bruto = pagina(url)
-            texto = traduccion(bruto, idioma)
-            if not texto:
+
+            traduccion = " ".join(parrafos(bloque(bruto, "av-translation")))
+            significado = parrafos(bloque(bruto, "av-purport"))
+            if not traduccion:
                 raise SystemExit(f"Sin traducción en {url}")
-            parrafos = significado(bruto, idioma)
+
             salida[referencia][idioma] = {
-                "url": url, "traduccion": texto, "significado": parrafos,
+                "url": url,
+                "traduccion": traduccion,
+                "significado": significado,
             }
-            if idioma == "en":
-                salida[referencia]["clases"] = clases(bruto)
-            print(f"  BG {referencia:<6} {idioma}  {len(texto):>4} car  "
-                  f"significado: {len(parrafos)} párrafos")
+            letras = sum(len(p) for p in significado)
+            print(f"  BG {referencia:<6} {idioma}  traducción {len(traduccion):>4}  "
+                  f"significado {len(significado):>2} párr / {letras:>5} car")
 
     (DATOS / "versos.json").write_text(
         json.dumps(salida, ensure_ascii=False, indent=2) + "\n")
-    print(f"\n{len(salida)} versos en {DATOS / 'versos.json'}")
+
+    WEB.mkdir(parents=True, exist_ok=True)
+    for referencia, d in salida.items():
+        (WEB / (referencia.replace(".", "-") + ".json")).write_text(
+            json.dumps(d, ensure_ascii=False) + "\n")
+
+    peso = sum(f.stat().st_size for f in WEB.glob("*.json"))
+    print(f"\n{len(salida)} versos · {peso // 1024} KB en {WEB}")
 
 
 if __name__ == "__main__":
