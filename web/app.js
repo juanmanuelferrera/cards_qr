@@ -29,6 +29,9 @@ const T = {
     compartir: "Mandársela a alguien",
     copiado: "Copiado",
     codigo: "Pásaselo a alguien",
+    via_movil: "Por el móvil",
+    via_voz: "De viva voz",
+    via_papel: "En papel o en tela",
     copiar: "Copiar el mensaje",
     imagen: "Imagen para compartir",
     imagen_bajar: "Descargar la imagen",
@@ -95,6 +98,9 @@ const T = {
     compartir: "Send it to someone",
     copiado: "Copied",
     codigo: "Pass it on",
+    via_movil: "On the phone",
+    via_voz: "Out loud",
+    via_papel: "On paper or fabric",
     copiar: "Copy the message",
     imagen: "Image to share",
     imagen_bajar: "Download the image",
@@ -528,19 +534,27 @@ function carta(id) {
         p.leido ? t("leer")
                 : `<strong>${t("ganar")}</strong><em>${t("ganar_pie").replace("{n}", id)}</em>`
       }</button>
-      <button id="compartir">${t("compartir")}</button>
     </div>
     ${p.leido ? `<p class="conseguida">${t("ganada").replace("{n}", id)}</p>` : ""}
     <div class="codigo">
       <h2>${t("codigo")}</h2>
-      <button class="clavegorda" data-qr="clave" title="${t("copiada_clave")}">${esc(c.clave)}</button>
-      <div class="lienzo">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
+
+      <p class="via">${t("via_movil")}</p>
       <div class="menu">
         <button data-qr="copiar">${t("copiar")}</button>
         <button data-qr="imagen">${navigator.canShare ? t("imagen") : t("imagen_bajar")}</button>
+      </div>
+
+      <p class="via">${t("via_voz")}</p>
+      <button class="clavegorda" data-qr="clave" title="${t("copiada_clave")}">${esc(c.clave)}</button>
+
+      <p class="via">${t("via_papel")}</p>
+      <div class="lienzo">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
+      <div class="menu">
         <a href="/imprimir/">${t("imprimir")}</a>
         <button data-camiseta="${id}">${t("camiseta")}</button>
       </div>
+
       <p class="consejo">${t("consejo")}</p>
     </div>
   </section>

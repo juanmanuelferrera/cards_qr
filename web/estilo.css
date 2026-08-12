@@ -138,7 +138,7 @@ footer .lema{ display:block; margin-top:5px; font-style:italic; }
 
 /* ---------------- El código de cada carta ---------------- */
 .codigo{ padding:30px 0; border-top:1px solid var(--linea); }
-.codigo h2{ margin-bottom:16px; }
+.codigo h2{ margin-bottom:22px; }
 
 .lienzo{
   width:150px; padding:10px; border-radius:10px; background:#fff;
@@ -603,3 +603,12 @@ body.quieto{ overflow:hidden; }
 @media (prefers-reduced-motion: reduce){
   .sobre.rompiendo, .sobre.rompiendo *{ animation:none !important; }
 }
+
+/* Tres formas de pasarlo, de lo inmediato a lo que lleva trabajo. */
+.codigo .via{
+  font-family:system-ui,sans-serif; font-size:10.5px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--suave); margin:22px 0 9px;
+}
+.codigo .via:first-of-type{ margin-top:0; }
+.codigo .menu{ margin-top:0; }
+.codigo .lienzo{ margin-bottom:11px; }
