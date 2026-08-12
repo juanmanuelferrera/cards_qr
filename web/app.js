@@ -435,6 +435,23 @@ function llevarA(selector) {
   });
 }
 
+// Una clave acertada merece ver cómo se derrite la cera.
+function derretirYEntrar(id) {
+  const ir = () => {
+    history.pushState({}, "", "/" + id);
+    pintar();
+    scrollTo(0, 0);
+  };
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return ir();
+
+  const capa = document.createElement("div");
+  capa.className = "capa derritiendo";
+  capa.innerHTML = sobreLacrado(id);
+  document.body.appendChild(capa);
+  requestAnimationFrame(() => capa.querySelector(".sobre").classList.add("rompiendo"));
+  setTimeout(() => { capa.remove(); ir(); }, 1000);
+}
+
 /* ---------------- Pintado ---------------- */
 function pintar() {
   const id = location.pathname.replace(/\//g, "");
@@ -477,9 +494,7 @@ function pintar() {
       if (!c) { cajaClave.value = ""; cajaClave.placeholder = t("clave_mal"); return cajaClave.focus(); }
       estado.claves = (estado.claves || []).concat(c.id);
       guardar();
-      history.pushState({}, "", "/" + c.id);
-      pintar();
-      scrollTo(0, 0);
+      derretirYEntrar(c.id);
     };
     document.getElementById("abrirclave").addEventListener("click", probar);
     cajaClave.addEventListener("keydown", e => { if (e.key === "Enter") probar(); });

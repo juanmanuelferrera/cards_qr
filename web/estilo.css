@@ -473,3 +473,7 @@ body.rodado .masabajo{ opacity:0; transition:opacity .3s; }
 @media (prefers-reduced-motion: reduce){
   .sobre.rompiendo, .sobre.rompiendo *{ animation:none !important; }
 }
+
+/* La cera derritiéndose a pantalla completa, al acertar una clave. */
+.capa.derritiendo{ background:rgba(0,0,0,.82); }
+.capa.derritiendo .sobre{ width:min(320px,74vw); filter:drop-shadow(0 6px 24px rgba(0,0,0,.5)); }
