@@ -22,7 +22,12 @@ const T = {
     volver: "Volver",
     intro: "Trece preguntas. Cada una tiene su respuesta en un verso.",
     intro2: "Las que te faltan están en las tarjetas de papel. Hay que encontrarlas.",
-    imprimir_larga: "Puedes imprimir las tuyas y repartirlas."
+    imprimir_larga: "Puedes imprimir las tuyas y repartirlas.",
+    codigo: "Su código",
+    svg: "Vector (camisetas)",
+    png: "Imagen grande",
+    copiar: "Copiar enlace",
+    consejo: "Para camisetas, a la espalda y de 8 a 10 cm. Oscuro sobre tela clara y sin arrugas."
   },
   en: {
     imprimir: "Print your own",
@@ -39,7 +44,12 @@ const T = {
     volver: "Back",
     intro: "Thirteen questions. Each one is answered by a verse.",
     intro2: "The ones you're missing are on the paper cards. You have to find them.",
-    imprimir_larga: "You can print your own and hand them out."
+    imprimir_larga: "You can print your own and hand them out.",
+    codigo: "Its code",
+    svg: "Vector (for shirts)",
+    png: "Large image",
+    copiar: "Copy link",
+    consejo: "For shirts, put it on the back, 8 to 10 cm. Dark on light fabric, and flat."
   }
 };
 
@@ -62,9 +72,55 @@ const diaDeHoy = () => Math.floor(Date.now() / DIA);
 const cartaDelDia = () => datos.tarjetas[diaDeHoy() % datos.tarjetas.length];
 const buscar = id => datos.tarjetas.find(c => c.id === id);
 const hallada = id => estado.halladas.includes(id);
+const enlaceCarta = id => location.origin + "/" + id;
 
 function marcar(id) {
   if (!hallada(id)) { estado.halladas.push(id); guardar(); }
+}
+
+/* ---------------- El código ---------------- */
+function svgDelCodigo(texto, tinta) {
+  const q = qrcode(0, "M");
+  q.addData(texto);
+  q.make();
+  const n = q.getModuleCount(), borde = 2, lado = n + borde * 2;
+  let d = "";
+  for (let f = 0; f < n; f++)
+    for (let c = 0; c < n; c++)
+      if (q.isDark(f, c)) d += `M${c + borde} ${f + borde}h1v1h-1z`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${lado} ${lado}" ` +
+         `shape-rendering="crispEdges"><rect width="${lado}" height="${lado}" fill="#fff"/>` +
+         `<path fill="${tinta}" d="${d}"/></svg>`;
+}
+
+function bajar(blob, nombre) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = nombre;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function bajarSvg(url, id) {
+  bajar(new Blob([svgDelCodigo(url, "#000")], { type: "image/svg+xml" }), `qrveda-${id}.svg`);
+}
+
+// PNG grande: el vector vale para casi todo, pero algunas imprentas de
+// camisetas solo aceptan mapa de bits.
+function bajarPng(url, id, px) {
+  const svg = svgDelCodigo(url, "#000");
+  const img = new Image();
+  img.onload = function () {
+    const c = document.createElement("canvas");
+    c.width = c.height = px;
+    const ctx = c.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, px, px);
+    ctx.drawImage(img, 0, 0, px, px);
+    c.toBlob(b => bajar(b, `qrveda-${id}-${px}px.png`), "image/png");
+  };
+  img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
 }
 
 /* ---------------- Piezas ---------------- */
@@ -144,6 +200,17 @@ function carta(id) {
       ${clases}
       <button id="compartir">${t("compartir")}</button>
     </div>
+    <div class="codigo">
+      <h2>${t("codigo")}</h2>
+      <div class="lienzo">${svgDelCodigo(enlaceCarta(c.id), "#111")}</div>
+      <div class="menu">
+        <button data-qr="svg">${t("svg")}</button>
+        <button data-qr="png">${t("png")}</button>
+        <button data-qr="copiar">${t("copiar")}</button>
+        <a href="/imprimir/">${t("imprimir")}</a>
+      </div>
+      <p class="consejo">${t("consejo")}</p>
+    </div>
   </section>
   ${malla()}`;
 }
@@ -161,6 +228,17 @@ function pintar() {
 
   const boton = document.getElementById("compartir");
   if (boton) boton.addEventListener("click", compartir);
+
+  document.querySelectorAll("[data-qr]").forEach(b => b.addEventListener("click", async () => {
+    const id = location.pathname.replace(/\//g, "");
+    const url = enlaceCarta(id);
+    if (b.dataset.qr === "svg") return bajarSvg(url, id);
+    if (b.dataset.qr === "png") return bajarPng(url, id, 2000);
+    await navigator.clipboard.writeText(url);
+    const antes = b.textContent;
+    b.textContent = t("copiado");
+    setTimeout(() => { b.textContent = antes; }, 2000);
+  }));
 }
 
 async function compartir() {

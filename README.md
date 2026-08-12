@@ -26,6 +26,7 @@ dist/     PDF listos para mandar
 | `app.js` | rutas, colección, idioma y compartir |
 | `estilo.css` | oscuro por defecto, claro si el sistema lo pide |
 | `datos.json` | las trece preguntas con su verso ya dentro |
+| `qrcode.min.js` | generador de códigos, para las descargas |
 
 **Una URL por carta, para los dos idiomas:** `qrveda.com/7`. El idioma se detecta del navegador y se puede cambiar en la barra, así que un mismo código impreso sirve en español y en inglés. Eso mantiene el QR corto y evita imprimir dos juegos.
 
@@ -33,13 +34,17 @@ Lo que colecciona cada visitante vive en su navegador: sin cuentas, sin servidor
 
 **La carta del día** sale del número de día, no del azar: es la misma para todo el mundo y cambia a medianoche.
 
+**El código de cada carta** se muestra en su página con un menú: descargarlo en vector para camisetas, en PNG de 2000 px para imprentas que no aceptan vector, copiar el enlace o pasar al creador de tarjetas. El código lleva de vuelta a `qrveda.com/7`, no a vedabase, para que quien lo escanee entre por el juego.
+
+Para camisetas: a la espalda y de 8 a 10 cm. En el pecho nadie se atreve a acercar el móvil; en una cola, la espalda de quien va delante se escanea sola. Oscuro sobre tela clara, plano y sin arrugas.
+
 ### Probarla en local
 
 ```bash
-cd web && python3 -m http.server 8899
+python3 src/servir.py
 ```
 
-Navegando por dentro funciona todo. Entrar directo a `/7` da 404 en ese servidor: la reescritura la hace `_redirects`, que solo actúa una vez desplegado.
+Abre <http://localhost:8899/>. Ese servidor aplica la misma regla que `web/_redirects`, así que `/7` funciona igual que en producción. Con `python3 -m http.server` no: devuelve 404 en todo lo que no sea un archivo real.
 
 ### Desplegar
 
