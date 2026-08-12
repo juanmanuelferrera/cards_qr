@@ -478,7 +478,6 @@ function portada() {
     <h1>${t("hoy")}</h1>
     ${tarjeta}
     ${racha}
-    <div class="masabajo" aria-hidden="true"><span></span></div>
   </section>
   ${niveles()}
   <section class="explica">
@@ -884,9 +883,16 @@ async function compartir() {
     ir();
   });
   addEventListener("popstate", pintar);
-  addEventListener("scroll", () => {
-    document.body.classList.toggle("rodado", scrollY > 40);
-  }, { passive: true });
+  // El aviso de que hay más abajo aparece en cualquier pantalla y se apaga
+  // al llegar al final. Antes solo estaba en la portada y solo al principio.
+  const mirarFondo = () => {
+    const queda = document.documentElement.scrollHeight - scrollY - innerHeight;
+    document.body.classList.toggle("hayfondo", queda > 60);
+  };
+  addEventListener("scroll", mirarFondo, { passive: true });
+  addEventListener("resize", mirarFondo);
+  new MutationObserver(mirarFondo).observe(document.getElementById("app"), { childList: true });
+  mirarFondo();
 
   pintar();
 })();

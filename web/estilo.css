@@ -623,3 +623,34 @@ footer #guardar-col:hover{ color:var(--acento); border-bottom-color:var(--acento
 
 .visor.respaldo{ max-width:340px; text-align:left; }
 .visor.respaldo h2{ margin-bottom:12px; }
+
+/* ---------------- Hay más abajo ---------------- */
+#masabajo{
+  position:fixed; left:0; right:0; bottom:14px; z-index:9;
+  display:grid; place-items:center; height:34px;
+  opacity:0; pointer-events:none; transition:opacity .35s;
+}
+body.hayfondo #masabajo{ opacity:1; }
+#masabajo span{
+  display:block; width:34px; height:34px; border-radius:50%;
+  background:var(--panel); border:1px solid var(--linea);
+  box-shadow:0 3px 14px rgba(0,0,0,.35);
+  position:relative;
+}
+#masabajo span::after{
+  content:""; position:absolute; left:50%; top:44%;
+  width:8px; height:8px; margin-left:-4px;
+  border-right:1.5px solid var(--acento); border-bottom:1.5px solid var(--acento);
+  transform:rotate(45deg); animation:baja 2s ease-in-out infinite;
+}
+@keyframes baja{
+  0%,100%{ transform:rotate(45deg) translate(0,0); opacity:.5; }
+  50%    { transform:rotate(45deg) translate(2px,2px); opacity:1; }
+}
+
+/* El botón de la clave, con forma de botón: es la acción principal de la barra. */
+.barra nav .conllave{
+  padding:6px 12px; border-radius:99px;
+  border:1px solid var(--acento); color:var(--acento); font-weight:600;
+}
+.barra nav .conllave:hover{ background:var(--acento); color:#141210; }
