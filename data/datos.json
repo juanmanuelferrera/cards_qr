@@ -17,7 +17,11 @@
     "compartir": "Mandársela a alguien",
     "sin_descubrir": "Sin descubrir",
     "racha": "{n} días seguidos",
-    "volver": "Todas las cartas"
+    "volver": "Todas las cartas",
+    "lote": "Nivel",
+    "sellado": "Sellado",
+    "completo": "Completo",
+    "siguiente": "Has abierto"
    }
   },
   "en": {
@@ -35,7 +39,11 @@
     "compartir": "Send it to someone",
     "sin_descubrir": "Not found yet",
     "racha": "{n} days in a row",
-    "volver": "All the cards"
+    "volver": "All the cards",
+    "lote": "Level",
+    "sellado": "Sealed",
+    "completo": "Complete",
+    "siguiente": "You have opened"
    }
   }
  },
@@ -351,6 +359,61 @@
     "en": "https://vedabase.cc/en/bg/3/39/"
    },
    "clases": 0
+  }
+ ],
+ "lotes": [
+  {
+   "id": "sambandha",
+   "nombre": "Sambandha",
+   "es": {
+    "titulo": "Quién eres",
+    "pista": "Trece preguntas sobre el que mira."
+   },
+   "en": {
+    "titulo": "Who you are",
+    "pista": "Thirteen questions about the one who looks."
+   },
+   "tarjetas": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13"
+   ]
+  },
+  {
+   "id": "abhidheya",
+   "nombre": "Abhidheya",
+   "es": {
+    "titulo": "Qué se hace con eso",
+    "pista": "Se abre al completar el anterior."
+   },
+   "en": {
+    "titulo": "What to do about it",
+    "pista": "Opens when you complete the one before."
+   },
+   "tarjetas": []
+  },
+  {
+   "id": "prayojana",
+   "nombre": "Prayojana",
+   "es": {
+    "titulo": "A dónde lleva",
+    "pista": "Sellado."
+   },
+   "en": {
+    "titulo": "Where it leads",
+    "pista": "Sealed."
+   },
+   "tarjetas": []
   }
  ]
 }

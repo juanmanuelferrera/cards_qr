@@ -12,83 +12,104 @@ const T = {
     fuente: "Versos y significados en",
     hoy: "La carta de hoy",
     ver: "Descubrirla",
+    contesta: "Antes de leer nada, contesta tú",
+    marcador_resp: "Con tus palabras. Se queda en este aparato.",
+    guardar: "Guardar y ver el verso",
+    tu: "Lo que contestaste",
     leer: "Leerlo entero en vedabase",
+    pendiente: "Falta abrir el verso entero",
     clases: "Prabhupāda habla de este verso",
     compartir: "Mandársela a alguien",
     copiado: "Copiado",
-    coleccion: "Las trece",
-    encontradas: "Has encontrado {n} de {total}",
-    racha: "{n} días seguidos",
-    volver: "Volver",
-    intro: "Trece preguntas. Cada una tiene su respuesta en un verso.",
-    intro2: "Las que te faltan están en las tarjetas de papel. Hay que encontrarlas.",
-    imprimir_larga: "Puedes imprimir las tuyas y repartirlas.",
     codigo: "Su código",
     svg: "Vector (camisetas)",
     png: "Imagen grande",
     copiar: "Copiar enlace",
-    consejo: "Para camisetas, a la espalda y de 8 a 10 cm. Oscuro sobre tela clara y sin arrugas."
+    consejo: "Para camisetas, a la espalda y de 8 a 10 cm. Oscuro sobre tela clara y sin arrugas.",
+    coleccion: "Las trece",
+    encontradas: "{n} de {total}",
+    racha: "{n} días seguidos",
+    lote: "Nivel",
+    sellado: "Sellado",
+    completo: "Completo",
+    intro: "Trece preguntas. Cada una tiene su respuesta en un verso.",
+    intro2: "Las que te faltan están en las tarjetas de papel. Hay que encontrarlas.",
+    imprimir_larga: "Puedes imprimir las tuyas y repartirlas."
   },
   en: {
     imprimir: "Print your own",
     fuente: "Verses and purports on",
     hoy: "Today's card",
     ver: "Uncover it",
+    contesta: "Before you read anything, answer it yourself",
+    marcador_resp: "In your own words. It stays on this device.",
+    guardar: "Save and see the verse",
+    tu: "What you answered",
     leer: "Read it whole on vedabase",
+    pendiente: "Still to open the whole verse",
     clases: "Prabhupāda speaks on this verse",
     compartir: "Send it to someone",
     copiado: "Copied",
-    coleccion: "The thirteen",
-    encontradas: "You've found {n} of {total}",
-    racha: "{n} days in a row",
-    volver: "Back",
-    intro: "Thirteen questions. Each one is answered by a verse.",
-    intro2: "The ones you're missing are on the paper cards. You have to find them.",
-    imprimir_larga: "You can print your own and hand them out.",
     codigo: "Its code",
     svg: "Vector (for shirts)",
     png: "Large image",
     copiar: "Copy link",
-    consejo: "For shirts, put it on the back, 8 to 10 cm. Dark on light fabric, and flat."
+    consejo: "For shirts, put it on the back, 8 to 10 cm. Dark on light fabric, and flat.",
+    coleccion: "The thirteen",
+    encontradas: "{n} of {total}",
+    racha: "{n} days in a row",
+    lote: "Level",
+    sellado: "Sealed",
+    completo: "Complete",
+    intro: "Thirteen questions. Each one is answered by a verse.",
+    intro2: "The ones you're missing are on the paper cards. You have to find them.",
+    imprimir_larga: "You can print your own and hand them out."
   }
 };
 
 let datos = null;
 let idioma = "es";
-let estado = { halladas: [], racha: 0, ultimoDia: 0 };
+let estado = { progreso: {}, racha: 0, ultimoDia: 0 };
 
 /* ---------------- Guardado ---------------- */
-function leer() {
-  try { return JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch (e) { return {}; }
-}
-function guardar() {
-  try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch (e) {}
-}
+const leer = () => { try { return JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch (e) { return {}; } };
+const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch (e) {} };
 
 /* ---------------- Utilidades ---------------- */
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
 const t = k => T[idioma][k];
 const diaDeHoy = () => Math.floor(Date.now() / DIA);
-const cartaDelDia = () => datos.tarjetas[diaDeHoy() % datos.tarjetas.length];
 const buscar = id => datos.tarjetas.find(c => c.id === id);
-const hallada = id => estado.halladas.includes(id);
 const enlaceCarta = id => location.origin + "/" + id;
 
-function marcar(id) {
-  if (!hallada(id)) { estado.halladas.push(id); guardar(); }
+const paso = id => estado.progreso[id] || {};
+// Una carta cuenta con las dos cosas hechas: contestarla y abrir el verso.
+const hallada = id => !!(paso(id).respuesta && paso(id).leido);
+const halladas = () => datos.tarjetas.filter(c => hallada(c.id)).length;
+
+function cartaDelDia() {
+  const abiertas = datos.lotes.filter(l => l.tarjetas.length);
+  const pool = abiertas.length ? abiertas[0].tarjetas : datos.tarjetas.map(c => c.id);
+  return buscar(pool[diaDeHoy() % pool.length]);
 }
 
 /* ---------------- El código ---------------- */
-function svgDelCodigo(texto, tinta) {
+// borde: módulos de zona de silencio. En pantalla bastan 2; para imprimir,
+// la norma son 4, y sin ellos muchos lectores fallan.
+// medida: si se da, el SVG sale con tamaño físico. Un SVG solo con viewBox
+// lo pintan diminuto algunos visores, y entonces la cámara no lo lee.
+function svgDelCodigo(texto, tinta, borde, medida) {
+  borde = borde || 2;
   const q = qrcode(0, "M");
   q.addData(texto);
   q.make();
-  const n = q.getModuleCount(), borde = 2, lado = n + borde * 2;
+  const n = q.getModuleCount(), lado = n + borde * 2;
   let d = "";
   for (let f = 0; f < n; f++)
     for (let c = 0; c < n; c++)
       if (q.isDark(f, c)) d += `M${c + borde} ${f + borde}h1v1h-1z`;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${lado} ${lado}" ` +
+  const tam = medida ? ` width="${medida}" height="${medida}"` : "";
+  return `<svg xmlns="http://www.w3.org/2000/svg"${tam} viewBox="0 0 ${lado} ${lado}" ` +
          `shape-rendering="crispEdges"><rect width="${lado}" height="${lado}" fill="#fff"/>` +
          `<path fill="${tinta}" d="${d}"/></svg>`;
 }
@@ -101,14 +122,15 @@ function bajar(blob, nombre) {
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
-function bajarSvg(url, id) {
-  bajar(new Blob([svgDelCodigo(url, "#000")], { type: "image/svg+xml" }), `qrveda-${id}.svg`);
-}
+// 100 mm de lado y borde de 4: se escanea desde el papel, la pantalla o una
+// camiseta, y la imprenta lo puede escalar sin pensar.
+const bajarSvg = (url, id) =>
+  bajar(new Blob([svgDelCodigo(url, "#000", 4, "100mm")], { type: "image/svg+xml" }),
+        `qrveda-${id}.svg`);
 
 // PNG grande: el vector vale para casi todo, pero algunas imprentas de
 // camisetas solo aceptan mapa de bits.
 function bajarPng(url, id, px) {
-  const svg = svgDelCodigo(url, "#000");
   const img = new Image();
   img.onload = function () {
     const c = document.createElement("canvas");
@@ -120,7 +142,8 @@ function bajarPng(url, id, px) {
     ctx.drawImage(img, 0, 0, px, px);
     c.toBlob(b => bajar(b, `qrveda-${id}-${px}px.png`), "image/png");
   };
-  img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
+  img.src = "data:image/svg+xml;base64," +
+            btoa(unescape(encodeURIComponent(svgDelCodigo(url, "#000", 4))));
 }
 
 /* ---------------- Piezas ---------------- */
@@ -132,33 +155,45 @@ function cara(c) {
   </div>`;
 }
 
-function malla() {
+function niveles() {
   const hoy = cartaDelDia().id;
-  const piezas = datos.tarjetas.map(c => {
-    const abierta = hallada(c.id);
-    const clases = ["mini", abierta ? "hallada" : "", c.id === hoy ? "hoy" : ""].join(" ");
-    const dentro = abierta
-      ? `<span class="preg">${esc(c[idioma][2])}</span>`
-      : `<span class="sello">◇</span>`;
-    return `<a class="${clases}" href="/${c.id}">${dentro}</a>`;
-  }).join("");
+  return datos.lotes.map((lote, i) => {
+    if (!lote.tarjetas.length) {
+      return `<section class="nivel sellado">
+        <h2>${t("lote")} ${i + 1} · ${esc(lote.nombre)}</h2>
+        <p class="subtitulo">${esc(lote[idioma].titulo)}</p>
+        <div class="lacre"><span class="sello">◆</span><p>${esc(lote[idioma].pista)}</p></div>
+      </section>`;
+    }
 
-  const n = estado.halladas.length;
-  return `<section class="coleccion">
-    <h2>${t("coleccion")}</h2>
-    <p class="marcador">${t("encontradas").replace("{n}", n).replace("{total}", datos.tarjetas.length)}</p>
-    <div class="malla">${piezas}</div>
-  </section>`;
+    const piezas = lote.tarjetas.map(id => {
+      const c = buscar(id);
+      const abierta = hallada(id);
+      const clases = ["mini", abierta ? "hallada" : "", id === hoy ? "hoy" : ""].join(" ");
+      const dentro = abierta
+        ? `<span class="preg">${esc(c[idioma][2])}</span>`
+        : `<span class="sello">◇</span>`;
+      return `<a class="${clases}" href="/${id}">${dentro}</a>`;
+    }).join("");
+
+    const n = lote.tarjetas.filter(hallada).length;
+    const hecho = n === lote.tarjetas.length;
+    return `<section class="nivel${hecho ? " hecho" : ""}">
+      <h2>${t("lote")} ${i + 1} · ${esc(lote.nombre)}</h2>
+      <p class="subtitulo">${esc(lote[idioma].titulo)}</p>
+      <p class="marcador">${hecho ? t("completo") : t("encontradas").replace("{n}", n).replace("{total}", lote.tarjetas.length)}</p>
+      <div class="malla">${piezas}</div>
+    </section>`;
+  }).join("");
 }
 
 /* ---------------- Vistas ---------------- */
 function portada() {
   const c = cartaDelDia();
-  const abierta = hallada(c.id);
   const racha = estado.racha > 1
     ? `<p class="racha">${t("racha").replace("{n}", estado.racha)}</p>` : "";
 
-  const tarjeta = abierta
+  const tarjeta = hallada(c.id)
     ? `<a class="hoy-cara" href="/${c.id}">${cara(c)}</a>`
     : `<a class="hoy-cara tapada" href="/${c.id}">
          <p class="sello grande">◇</p>
@@ -170,7 +205,7 @@ function portada() {
     ${tarjeta}
     ${racha}
   </section>
-  ${malla()}
+  ${niveles()}
   <section class="explica">
     <p>${t("intro")}</p>
     <p>${t("intro2")}</p>
@@ -181,28 +216,45 @@ function portada() {
 function carta(id) {
   const c = buscar(id);
   if (!c) return portada();
-  marcar(id);
+  const p = paso(id);
+  document.title = `${c[idioma][2]} — qrveda`;
+
+  // Primero contestas tú. El verso no aparece hasta entonces.
+  if (!p.respuesta) {
+    return `<section class="unacarta">
+      ${cara(c)}
+      <div class="tuya">
+        <h2>${t("contesta")}</h2>
+        <textarea id="respuesta" rows="3" placeholder="…"></textarea>
+        <p class="nota">${t("marcador_resp")}</p>
+        <button class="principal" id="guardar">${t("guardar")}</button>
+      </div>
+    </section>`;
+  }
 
   const ref = `${c.cap}.${c.ver}`;
   const clases = c.clases
-    ? `<a href="${esc(c.url[idioma])}">${t("clases")} — ${c.clases}</a>` : "";
-
-  document.title = `${c[idioma][2]} — qrveda`;
+    ? `<a href="${esc(c.url[idioma])}" data-leido>${t("clases")} — ${c.clases}</a>` : "";
 
   return `<section class="unacarta">
     ${cara(c)}
+    <div class="tuya hecha">
+      <h2>${t("tu")}</h2>
+      <p class="respuesta">${esc(p.respuesta)}</p>
+    </div>
     <blockquote>
       <p>${esc(c.verso[idioma])}</p>
       <cite>Bhagavad-gītā ${ref}</cite>
     </blockquote>
     <div class="acciones">
-      <a class="principal" href="${esc(c.url[idioma])}">${t("leer")}</a>
+      <a class="principal" href="${esc(c.url[idioma])}" data-leido>${t("leer")}</a>
       ${clases}
       <button id="compartir">${t("compartir")}</button>
     </div>
+    ${p.leido ? "" : `<p class="pendiente">${t("pendiente")}</p>`}
     <div class="codigo">
       <h2>${t("codigo")}</h2>
-      <div class="lienzo">${svgDelCodigo(enlaceCarta(c.id), "#111")}</div>
+      <div class="lienzo">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
       <div class="menu">
         <button data-qr="svg">${t("svg")}</button>
         <button data-qr="png">${t("png")}</button>
@@ -212,7 +264,7 @@ function carta(id) {
       <p class="consejo">${t("consejo")}</p>
     </div>
   </section>
-  ${malla()}`;
+  ${niveles()}`;
 }
 
 /* ---------------- Pintado ---------------- */
@@ -226,11 +278,30 @@ function pintar() {
   });
   document.getElementById("idioma").textContent = idioma === "es" ? "EN" : "ES";
 
+  const caja = document.getElementById("respuesta");
+  if (caja) {
+    caja.focus();
+    document.getElementById("guardar").addEventListener("click", () => {
+      const texto = caja.value.trim();
+      if (!texto) return caja.focus();
+      estado.progreso[id] = Object.assign(paso(id), { respuesta: texto });
+      guardar();
+      pintar();
+      scrollTo(0, 0);
+    });
+  }
+
+  // Abrir el verso entero es el segundo paso: con eso la carta ya cuenta.
+  document.querySelectorAll("[data-leido]").forEach(a => a.addEventListener("click", () => {
+    estado.progreso[id] = Object.assign(paso(id), { leido: true });
+    guardar();
+    setTimeout(pintar, 400);
+  }));
+
   const boton = document.getElementById("compartir");
   if (boton) boton.addEventListener("click", compartir);
 
   document.querySelectorAll("[data-qr]").forEach(b => b.addEventListener("click", async () => {
-    const id = location.pathname.replace(/\//g, "");
     const url = enlaceCarta(id);
     if (b.dataset.qr === "svg") return bajarSvg(url, id);
     if (b.dataset.qr === "png") return bajarPng(url, id, 2000);
@@ -259,7 +330,7 @@ async function compartir() {
   datos = await (await fetch("/datos.json")).json();
 
   const g = leer();
-  estado.halladas = Array.isArray(g.halladas) ? g.halladas : [];
+  estado.progreso = g.progreso || {};
   estado.racha = g.racha || 0;
   estado.ultimoDia = g.ultimoDia || 0;
 

@@ -148,3 +148,48 @@ footer .lema{ display:block; margin-top:5px; font-style:italic; }
   font-family:system-ui,sans-serif; font-size:12px; line-height:1.5;
   color:var(--suave); margin-top:14px; max-width:44ch;
 }
+
+/* ---------------- Tu respuesta ---------------- */
+.tuya{ padding:30px 0; border-top:1px solid var(--linea); }
+.tuya h2{ margin-bottom:14px; }
+.tuya textarea{
+  width:100%; padding:14px 16px; border-radius:11px;
+  border:1px solid var(--linea); background:var(--panel); color:inherit;
+  font-family:inherit; font-size:17px; line-height:1.5; resize:vertical;
+}
+.tuya textarea:focus{ outline:1px solid var(--acento); border-color:transparent; }
+.tuya .nota{
+  font-family:system-ui,sans-serif; font-size:12px; color:var(--suave); margin:9px 0 16px;
+}
+.tuya button{
+  font-family:system-ui,sans-serif; font-size:13px; font-weight:550;
+  padding:10px 17px; border-radius:9px; border:1px solid var(--acento);
+  background:var(--acento); color:#141210; cursor:pointer;
+}
+.tuya button:hover{ filter:brightness(1.1); }
+.tuya.hecha .respuesta{
+  font-size:17px; font-style:italic; color:var(--suave);
+  border-left:2px solid var(--linea); padding-left:20px;
+}
+
+.pendiente{
+  font-family:system-ui,sans-serif; font-size:12px; letter-spacing:.05em;
+  color:var(--acento); margin:-28px 0 40px;
+}
+
+/* ---------------- Niveles ---------------- */
+.nivel{ padding:32px 0; border-top:1px solid var(--linea); }
+.nivel h2{ margin-bottom:4px; }
+.nivel .subtitulo{ font-size:19px; margin-bottom:2px; }
+.nivel .marcador{
+  font-family:system-ui,sans-serif; font-size:12.5px; color:var(--suave); margin:6px 0 18px;
+}
+.nivel.hecho .marcador{ color:var(--acento); }
+
+.nivel.sellado{ opacity:.72; }
+.lacre{
+  display:flex; align-items:center; gap:16px; margin-top:14px;
+  padding:26px 24px; border:1px dashed var(--linea); border-radius:12px;
+}
+.lacre .sello{ font-size:24px; color:var(--linea); }
+.lacre p{ font-family:system-ui,sans-serif; font-size:13px; color:var(--suave); }
