@@ -36,8 +36,11 @@ const T = {
     camiseta: "¿En camiseta?",
     cam_titulo: "Este sobre, en camiseta",
     cam_donde: "A la espalda y de 8 a 10 cm. En el pecho nadie se atreve a acercar el móvil; en una cola, la espalda de quien va delante se escanea sola. Oscuro sobre tela clara.",
-    cam_hazla: "Descargar el diseño",
-    cam_hazla_pie: "Vector de 100 mm. Vale en cualquier imprenta o web de camisetas.",
+    cam_medida: "¿De qué tamaño?",
+    cam_hazla: "Vector",
+    cam_hazla_pie: "Escala sin perder nada. Es lo que pide una imprenta.",
+    cam_png: "PNG a 300 ppp",
+    cam_png_pie: "Para webs de camisetas que no aceptan vector.",
     cam_pide: "Pedírmela",
     cam_pide_pie: "Sin tienda todavía: escríbeme y lo vemos.",
     coleccion: "Las trece",
@@ -98,8 +101,11 @@ const T = {
     camiseta: "On a shirt?",
     cam_titulo: "This envelope, on a shirt",
     cam_donde: "On the back, 8 to 10 cm. Nobody points a phone at a stranger's chest; in a queue, the back of the person ahead scans itself. Dark on light fabric.",
-    cam_hazla: "Download the artwork",
-    cam_hazla_pie: "100 mm vector. Works at any print shop or shirt site.",
+    cam_medida: "What size?",
+    cam_hazla: "Vector",
+    cam_hazla_pie: "Scales with no loss. This is what a print shop wants.",
+    cam_png: "PNG at 300 dpi",
+    cam_png_pie: "For shirt sites that don't take vector.",
     cam_pide: "Ask me for one",
     cam_pide_pie: "No shop yet: write to me and we'll sort it out.",
     coleccion: "The thirteen",
@@ -208,6 +214,7 @@ function bajarPng(url, id, px) {
     ctx.fillRect(0, 0, px, px);
     ctx.drawImage(img, 0, 0, px, px);
     c.toBlob(b => bajar(b, `qrveda-${id}-${px}px.png`), "image/png");
+    c.width = c.height = 0;   // un lienzo de varios miles de px ocupa memoria
   };
   img.src = "data:image/svg+xml;base64," +
             btoa(unescape(encodeURIComponent(svgDelCodigo(url, "#000", 4))));
@@ -539,8 +546,16 @@ function verCamiseta(id) {
     <div class="cuadro">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
     <p class="nota">${t("cam_donde")}</p>
     <div class="opciones">
-      <button data-cam="bajar">${t("cam_hazla")}</button>
+      <p class="rotulo">${t("cam_medida")}</p>
+      <div class="medidas">
+        ${[10, 15, 20, 25, 30].map((cm, i) =>
+          `<button class="cm${i === 3 ? " puesta" : ""}" data-cm="${cm}">${cm}</button>`).join("")}
+        <span>cm</span>
+      </div>
+      <button data-cam="svg">${t("cam_hazla")}</button>
       <p class="pie">${t("cam_hazla_pie")}</p>
+      <button data-cam="png">${t("cam_png")}</button>
+      <p class="pie" id="pngpie">${t("cam_png_pie")}</p>
       <a href="mailto:${datos.contacto}?subject=${asunto}&body=${cuerpo}">${t("cam_pide")}</a>
       <p class="pie">${t("cam_pide_pie")}</p>
     </div>
@@ -548,8 +563,28 @@ function verCamiseta(id) {
   const cerrar = () => capa.remove();
   capa.addEventListener("click", e => { if (e.target === capa) cerrar(); });
   addEventListener("keydown", e => { if (e.key === "Escape") cerrar(); }, { once: true });
-  capa.querySelector("[data-cam]").addEventListener("click", () => bajarSvg(enlaceCarta(id), id));
+  let cm = 25;
+  const pie = () => {
+    const px = Math.round(cm / 2.54 * 300);
+    capa.querySelector("#pngpie").textContent =
+      `${t("cam_png_pie")} — ${px} × ${px} px`;
+  };
+  capa.querySelectorAll("[data-cm]").forEach(b => b.addEventListener("click", () => {
+    cm = +b.dataset.cm;
+    capa.querySelectorAll("[data-cm]").forEach(x => x.classList.toggle("puesta", x === b));
+    pie();
+  }));
+
+  // El archivo sale ya a la medida elegida: así ninguna imprenta tiene que
+  // adivinar a qué tamaño va, ni rechazarlo por resolución.
+  capa.querySelector('[data-cam="svg"]').addEventListener("click", () =>
+    bajar(new Blob([svgDelCodigo(enlaceCarta(id), "#000", 4, cm + "cm")],
+                   { type: "image/svg+xml" }), `qrveda-${id}-${cm}cm.svg`));
+  capa.querySelector('[data-cam="png"]').addEventListener("click", () =>
+    bajarPng(enlaceCarta(id), id, Math.round(cm / 2.54 * 300)));
+
   document.body.appendChild(capa);
+  pie();
 }
 
 /* ---------------- Pintado ---------------- */
