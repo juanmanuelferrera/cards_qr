@@ -38,9 +38,14 @@ const T = {
     intro: "Trece sobres. Cada día se puede abrir uno.",
     intro2: "Los demás los tienen quienes ya los abrieron. Cada sobre lleva su código: si alguien te pasa el suyo, se abre.",
     su_codigo: "Su código",
+    clave_titulo: "¿Te han dado una clave?",
+    clave_pie: "Cuatro letras y números. Abre el sobre al que pertenece, sea su día o no.",
+    clave_abrir: "Abrir",
+    clave_mal: "Esa clave no es de ningún sobre",
+    tu_clave: "Clave",
     reparte_pie: "Solo se reparten los sobres que has abierto.",
     hoy_hecho: "El de hoy ya está abierto. Mañana hay otro.",
-    cerrado: "Este se abre el día que le toque, o con su tarjeta.",
+    cerrado: "Se abre el día que le toque, o con su clave.",
     imprimir_larga: "Puedes imprimir las tuyas y repartirlas.",
     copia: "Guardar con código",
     restaurar: "Tengo un código",
@@ -83,9 +88,14 @@ const T = {
     intro: "Thirteen envelopes. Each day you can open one.",
     intro2: "The others belong to whoever opened them. Each envelope carries its code: if someone passes you theirs, it opens.",
     su_codigo: "Its code",
+    clave_titulo: "Someone gave you a key?",
+    clave_pie: "Four letters and numbers. It opens the envelope it belongs to, whatever day it is.",
+    clave_abrir: "Open",
+    clave_mal: "That key doesn't match any envelope",
+    tu_clave: "Key",
     reparte_pie: "You can only pass on the envelopes you have opened.",
     hoy_hecho: "Today's is open. There's another tomorrow.",
-    cerrado: "This one opens on its day, or with its card.",
+    cerrado: "Opens on its day, or with its key.",
     imprimir_larga: "You can print your own and hand them out.",
     copia: "Save with a code",
     restaurar: "I have a code",
@@ -115,6 +125,7 @@ const buscar = id => datos.tarjetas.find(c => c.id === id);
 const enlaceCarta = id => location.origin + "/" + id;
 
 const paso = id => estado.progreso[id] || {};
+const conClave = id => (estado.claves || []).includes(id);
 // Una carta cuenta con las dos cosas hechas: contestarla y abrir el verso.
 const hallada = id => !!(paso(id).respuesta && paso(id).leido);
 const halladas = () => datos.tarjetas.filter(c => hallada(c.id)).length;
@@ -243,7 +254,7 @@ function niveles() {
       const c = buscar(id);
       const abierta = hallada(id);
       const empezada = !!paso(id).respuesta;
-      const abrible = abierta || empezada || id === hoy;
+      const abrible = abierta || empezada || conClave(id) || id === hoy;
       const clases = ["mini", abierta ? "hallada" : "", id === hoy ? "hoy" : "",
                       abrible ? "" : "cerrado"].join(" ");
       const dentro = abierta
@@ -302,6 +313,15 @@ function portada() {
     <p>${t("intro")}</p>
     <p>${t("intro2")}</p>
     <p>${t("imprimir_larga")} <a href="/imprimir/">${t("imprimir")}</a>.</p>
+  </section>
+  <section class="clave">
+    <h2>${t("clave_titulo")}</h2>
+    <div class="menu">
+      <input id="clave" maxlength="4" autocapitalize="characters" autocomplete="off"
+             spellcheck="false" placeholder="····">
+      <button id="abrirclave">${t("clave_abrir")}</button>
+    </div>
+    <p class="nota">${t("clave_pie")}</p>
   </section>
   <section class="respaldo">
     <p class="nota">${t("aviso_copia")}</p>
@@ -380,6 +400,7 @@ function verCodigo(id) {
       <button data-qr="svg">${t("svg")}</button>
       <button data-qr="png">${t("png")}</button>
     </div>
+    <p class="clave-suya"><span>${t("tu_clave")}</span><strong>${esc(buscar(id).clave)}</strong></p>
     <p class="nota">${t("reparte_pie")}</p>
   </div>`;
 
@@ -441,6 +462,22 @@ function pintar() {
 
   document.querySelectorAll("[data-ver]").forEach(b =>
     b.addEventListener("click", e => { e.preventDefault(); verCodigo(b.dataset.ver); }));
+
+  const cajaClave = document.getElementById("clave");
+  if (cajaClave) {
+    const probar = () => {
+      const v = cajaClave.value.trim().toUpperCase();
+      const c = datos.tarjetas.find(x => x.clave === v);
+      if (!c) { cajaClave.value = ""; cajaClave.placeholder = t("clave_mal"); return cajaClave.focus(); }
+      estado.claves = (estado.claves || []).concat(c.id);
+      guardar();
+      history.pushState({}, "", "/" + c.id);
+      pintar();
+      scrollTo(0, 0);
+    };
+    document.getElementById("abrirclave").addEventListener("click", probar);
+    cajaClave.addEventListener("keydown", e => { if (e.key === "Enter") probar(); });
+  }
 
   const boton = document.getElementById("compartir");
   if (boton) boton.addEventListener("click", compartir);
@@ -520,6 +557,7 @@ async function compartir() {
   estado.racha = g.racha || 0;
   estado.ultimoDia = g.ultimoDia || 0;
   estado.codigo = g.codigo || "";
+  estado.claves = g.claves || [];
 
   const hoy = diaDeHoy();
   if (estado.ultimoDia !== hoy) {

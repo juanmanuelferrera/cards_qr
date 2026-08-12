@@ -382,3 +382,38 @@ footer .lema{ display:block; margin-top:5px; font-style:italic; }
   50%    { transform:rotate(45deg) translate(3px,3px); opacity:.75; }
 }
 body.rodado .masabajo{ opacity:0; transition:opacity .3s; }
+
+/* ---------------- La clave de un sobre ---------------- */
+.clave{ padding:30px 0; border-top:1px solid var(--linea); }
+.clave h2{ margin-bottom:14px; }
+.clave .menu{ display:flex; gap:8px; }
+.clave input{
+  flex:0 1 190px; padding:11px 15px; border-radius:9px;
+  border:1px solid var(--linea); background:var(--panel); color:inherit;
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:19px;
+  letter-spacing:.28em; text-transform:uppercase;
+}
+.clave input:focus{ outline:1px solid var(--acento); border-color:transparent; }
+.clave input::placeholder{ letter-spacing:.1em; font-size:12px; text-transform:none; }
+.clave button{
+  font-family:system-ui,sans-serif; font-size:13px; font-weight:550;
+  padding:0 18px; border-radius:9px; border:1px solid var(--acento);
+  background:var(--acento); color:#141210; cursor:pointer;
+}
+.clave button:hover{ filter:brightness(1.1); }
+.clave .nota{
+  font-family:system-ui,sans-serif; font-size:12px; color:var(--suave);
+  margin-top:12px; max-width:46ch;
+}
+
+.visor .clave-suya{
+  display:flex; align-items:baseline; justify-content:center; gap:10px; margin-top:16px;
+}
+.visor .clave-suya span{
+  font-family:system-ui,sans-serif; font-size:10.5px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--suave);
+}
+.visor .clave-suya strong{
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:19px;
+  letter-spacing:.22em; color:var(--acento);
+}

@@ -70,7 +70,8 @@
     "es": "https://vedabase.cc/es/bg/2/13/",
     "en": "https://vedabase.cc/en/bg/2/13/"
    },
-   "clases": 11
+   "clases": 11,
+   "clave": "EBHN"
   },
   {
    "id": "2",
@@ -94,7 +95,8 @@
     "es": "https://vedabase.cc/es/bg/6/35/",
     "en": "https://vedabase.cc/en/bg/6/35/"
    },
-   "clases": 0
+   "clases": 0,
+   "clave": "DCDZ"
   },
   {
    "id": "3",
@@ -118,7 +120,8 @@
     "es": "https://vedabase.cc/es/bg/3/39/",
     "en": "https://vedabase.cc/en/bg/3/39/"
    },
-   "clases": 0
+   "clases": 0,
+   "clave": "ZB6E"
   },
   {
    "id": "4",
@@ -142,7 +145,8 @@
     "es": "https://vedabase.cc/es/bg/2/47/",
     "en": "https://vedabase.cc/en/bg/2/47/"
    },
-   "clases": 0
+   "clases": 0,
+   "clave": "JQZN"
   },
   {
    "id": "5",
@@ -166,7 +170,8 @@
     "es": "https://vedabase.cc/es/bg/8/6/",
     "en": "https://vedabase.cc/en/bg/8/6/"
    },
-   "clases": 0
+   "clases": 0,
+   "clave": "J7NS"
   },
   {
    "id": "6",
@@ -190,7 +195,8 @@
     "es": "https://vedabase.cc/es/bg/11/32/",
     "en": "https://vedabase.cc/en/bg/11/32/"
    },
-   "clases": 0
+   "clases": 0,
+   "clave": "2ENJ"
   },
   {
    "id": "7",
@@ -214,7 +220,8 @@
     "es": "https://vedabase.cc/es/bg/13/23/",
     "en": "https://vedabase.cc/en/bg/13/23/"
    },
-   "clases": 1
+   "clases": 1,
+   "clave": "JST7"
   },
   {
    "id": "8",
@@ -238,7 +245,8 @@
     "es": "https://vedabase.cc/es/bg/2/20/",
     "en": "https://vedabase.cc/en/bg/2/20/"
    },
-   "clases": 1
+   "clases": 1,
+   "clave": "MZY6"
   },
   {
    "id": "9",
@@ -262,7 +270,8 @@
     "es": "https://vedabase.cc/es/bg/2/62/",
     "en": "https://vedabase.cc/en/bg/2/62/"
    },
-   "clases": 0
+   "clases": 0,
+   "clave": "ZM97"
   },
   {
    "id": "10",
@@ -286,7 +295,8 @@
     "es": "https://vedabase.cc/es/bg/18/38/",
     "en": "https://vedabase.cc/en/bg/18/38/"
    },
-   "clases": 0
+   "clases": 0,
+   "clave": "CBYE"
   },
   {
    "id": "11",
@@ -310,7 +320,8 @@
     "es": "https://vedabase.cc/es/bg/15/8/",
     "en": "https://vedabase.cc/en/bg/15/8/"
    },
-   "clases": 0
+   "clases": 0,
+   "clave": "PFWH"
   },
   {
    "id": "12",
@@ -334,7 +345,8 @@
     "es": "https://vedabase.cc/es/bg/13/21/",
     "en": "https://vedabase.cc/en/bg/13/21/"
    },
-   "clases": 1
+   "clases": 1,
+   "clave": "ZG4A"
   },
   {
    "id": "13",
@@ -358,7 +370,8 @@
     "es": "https://vedabase.cc/es/bg/3/39/",
     "en": "https://vedabase.cc/en/bg/3/39/"
    },
-   "clases": 0
+   "clases": 0,
+   "clave": "53D2"
   }
  ],
  "lotes": [
