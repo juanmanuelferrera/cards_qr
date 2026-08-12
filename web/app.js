@@ -17,7 +17,10 @@ const T = {
     guardar: "Guardar y ver el verso",
     tu: "Lo que contestaste",
     leer: "Leerlo entero en vedabase",
-    pendiente: "Falta abrir el verso entero",
+    paso1: "Contéstala tú",
+    paso2: "Abre el verso",
+    ganar: "Abrir el verso y quedártela",
+    ganada: "Carta {n} conseguida",
     compartir: "Mandársela a alguien",
     copiado: "Copiado",
     codigo: "Su código",
@@ -54,7 +57,10 @@ const T = {
     guardar: "Save and see the verse",
     tu: "What you answered",
     leer: "Read it whole on vedabase",
-    pendiente: "Still to open the whole verse",
+    paso1: "Answer it yourself",
+    paso2: "Open the verse",
+    ganar: "Open the verse and keep it",
+    ganada: "Card {n} is yours",
     compartir: "Send it to someone",
     copiado: "Copied",
     codigo: "Its code",
@@ -244,6 +250,16 @@ function niveles() {
   }).join("");
 }
 
+function pasos(id) {
+  const p = paso(id);
+  const uno = p.respuesta ? "hecho" : "ahora";
+  const dos = p.respuesta ? (p.leido ? "hecho" : "ahora") : "";
+  return `<ol class="pasos">
+    <li class="${uno}"><span>1</span>${t("paso1")}</li>
+    <li class="${dos}"><span>2</span>${t("paso2")}</li>
+  </ol>`;
+}
+
 /* ---------------- Vistas ---------------- */
 function portada() {
   const c = cartaDelDia();
@@ -288,6 +304,7 @@ function carta(id) {
   // Primero contestas tú. El verso no aparece hasta entonces.
   if (!p.respuesta) {
     return `<section class="unacarta">
+      ${pasos(id)}
       ${cara(c)}
       <div class="tuya">
         <h2>${t("contesta")}</h2>
@@ -300,6 +317,7 @@ function carta(id) {
 
   const ref = `${c.cap}.${c.ver}`;
   return `<section class="unacarta">
+    ${pasos(id)}
     ${cara(c)}
     <div class="tuya hecha">
       <h2>${t("tu")}</h2>
@@ -310,10 +328,10 @@ function carta(id) {
       <cite>Bhagavad-gītā ${ref}</cite>
     </blockquote>
     <div class="acciones">
-      <a class="principal" href="${esc(c.url[idioma])}" data-leido>${t("leer")}</a>
+      <a class="principal${p.leido ? "" : " gana"}" href="${esc(c.url[idioma])}" data-leido>${p.leido ? t("leer") : t("ganar")}</a>
       <button id="compartir">${t("compartir")}</button>
     </div>
-    ${p.leido ? "" : `<p class="pendiente">${t("pendiente")}</p>`}
+    ${p.leido ? `<p class="conseguida">${t("ganada").replace("{n}", id)}</p>` : ""}
     <div class="codigo">
       <h2>${t("codigo")}</h2>
       <div class="lienzo">${svgDelCodigo(enlaceCarta(id), "#111")}</div>

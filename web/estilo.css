@@ -248,3 +248,36 @@ footer .lema{ display:block; margin-top:5px; font-style:italic; }
   letter-spacing:.2em; color:var(--acento); font-weight:600;
 }
 .respaldo .nota.fina{ margin:14px 0 0; font-size:11.5px; }
+
+/* ---------------- Los dos pasos ---------------- */
+.pasos{
+  display:flex; gap:10px; list-style:none; margin-bottom:20px; flex-wrap:wrap;
+}
+.pasos li{
+  display:flex; align-items:center; gap:8px;
+  font-family:system-ui,sans-serif; font-size:12px; letter-spacing:.04em;
+  color:var(--suave); opacity:.5;
+  padding:6px 12px 6px 6px; border:1px solid var(--linea); border-radius:99px;
+}
+.pasos li span{
+  display:grid; place-items:center; width:19px; height:19px; border-radius:50%;
+  border:1px solid var(--linea); font-size:11px; font-weight:700;
+}
+.pasos li.ahora{ opacity:1; color:var(--acento); border-color:var(--acento); }
+.pasos li.ahora span{ border-color:var(--acento); }
+.pasos li.hecho{ opacity:1; color:var(--suave); }
+.pasos li.hecho span{
+  background:var(--acento); border-color:var(--acento); color:#141210; font-size:0;
+}
+.pasos li.hecho span::after{ content:"✓"; font-size:11px; }
+
+.acciones .principal.gana{ animation:latir 2.6s ease-in-out infinite; }
+@keyframes latir{
+  0%,100%{ box-shadow:0 0 0 0 rgba(201,160,94,.5); }
+  50%    { box-shadow:0 0 0 7px rgba(201,160,94,0); }
+}
+
+.conseguida{
+  font-family:system-ui,sans-serif; font-size:12px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--acento); margin:-28px 0 40px;
+}
