@@ -473,19 +473,6 @@ function pedirClave() {
   caja.addEventListener("keydown", e => { if (e.key === "Enter") probar(); });
 }
 
-function pasos(id) {
-  const p = paso(id);
-  // Con el sobre ya ganado, el indicador ha cumplido y estorba.
-  if (p.respuesta && p.leido) return "";
-  // Una sola barra que se llena, como en cualquier formulario por pasos.
-  // Ni números ni etiquetas: lo que falta lo dice el botón.
-  const hecho = p.respuesta ? 50 : 0;
-  return `<div class="progreso" role="progressbar" aria-valuenow="${hecho}"
-       aria-valuemin="0" aria-valuemax="100">
-    <span style="width:${hecho}%"></span>
-  </div>`;
-}
-
 /* ---------------- Vistas ---------------- */
 function portada() {
   const c = cartaDelDia();
@@ -522,7 +509,6 @@ function carta(id) {
   // Primero contestas tú. El verso no aparece hasta entonces.
   if (!p.respuesta) {
     return `<section class="unacarta">
-      ${pasos(id)}
       ${cara(c)}
       <div class="tuya">
         <h2>${t("contesta")}</h2>
@@ -542,7 +528,6 @@ function carta(id) {
     </blockquote>` : "";
 
   return `<section class="unacarta">
-    ${pasos(id)}
     ${cara(c)}
     <div class="tuya hecha">
       <h2>${t("tu")}</h2>

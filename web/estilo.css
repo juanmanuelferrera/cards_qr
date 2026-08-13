@@ -268,15 +268,6 @@ details.respaldo > *:not(summary){ margin-top:14px; }
 
 
 
-/* ---------------- Por dónde vas ---------------- */
-.progreso{
-  height:2px; border-radius:2px; background:var(--linea);
-  margin-bottom:24px; overflow:hidden;
-}
-.progreso span{
-  display:block; height:100%; background:var(--acento);
-  transition:width .5s cubic-bezier(.4,0,.2,1);
-}
 
 .acciones .principal.gana{ animation:latir 2.6s ease-in-out infinite; }
 @keyframes latir{
@@ -293,15 +284,6 @@ details.respaldo > *:not(summary){ margin-top:14px; }
 
 
 
-/* ---------------- Por dónde vas ---------------- */
-.progreso{
-  height:2px; border-radius:2px; background:var(--linea);
-  margin-bottom:24px; overflow:hidden;
-}
-.progreso span{
-  display:block; height:100%; background:var(--acento);
-  transition:width .5s cubic-bezier(.4,0,.2,1);
-}
 
 .acciones .principal.gana{
   display:flex; flex-direction:column; align-items:flex-start; gap:1px;
