@@ -171,10 +171,7 @@
     <p class="ayuda">Se abre el diálogo de impresión. Elige <strong>Guardar como PDF</strong>, escala <strong>100 %</strong> y quita «ajustar al papel».</p>
 
     <div class="botones">
-      <button id="exportar">Guardar .json</button>
-      <button id="importar">Abrir .json</button>
-      <button id="reset">Restaurar las diez</button>
-      <input type="file" id="ficheroJson" accept="application/json" style="display:none">
+      <button class="mini" id="reset">Empezar de nuevo</button>
     </div>
     <div class="ok" id="mensaje"></div>
   </div>
@@ -335,15 +332,6 @@ function estado(){
 function guardar(){ try { localStorage.setItem(CLAVE, JSON.stringify(estado())); } catch (e) {} }
 
 async function cargar(){
-  try {
-    const g = JSON.parse(localStorage.getItem(CLAVE));
-    if (g && g.tarjetas && g.tarjetas.length === HUECOS){
-      tarjetas = g.tarjetas;
-      Object.entries(g.ajustes || {}).forEach(([k, v]) => { if ($(k)) $(k).value = v; });
-      return;
-    }
-  } catch (e) {}
-
   let mios = [];
   try { mios = abiertosDelJugador(await (await fetch("/datos.json")).json()); }
   catch (e) {}
@@ -352,6 +340,17 @@ async function cargar(){
   tarjetas = mios.length
     ? Array.from({ length: HUECOS }, (_, i) => mios[i % mios.length].slice())
     : Array.from({ length: HUECOS }, () => VACIA.slice());
+
+  // Lo que se había guardado antes solo vale si sigue siendo tuyo.
+  try {
+    const g = JSON.parse(localStorage.getItem(CLAVE));
+    const permitidas = new Set(mios.map(t => t[5]));
+    if (g && g.tarjetas && g.tarjetas.length === HUECOS &&
+        g.tarjetas.every(t => !t[5] || permitidas.has(t[5]))) {
+      tarjetas = g.tarjetas;
+      Object.entries(g.ajustes || {}).forEach(([k, v]) => { if ($(k)) $(k).value = v; });
+    }
+  } catch (e) {}
 
   const aviso = document.getElementById("aviso");
   if (aviso) {
@@ -408,33 +407,7 @@ $("cien").addEventListener("click", () => { zoom = 1; aplicarZoom(); });
 
 $("pdf").addEventListener("click", () => window.print());
 
-$("exportar").addEventListener("click", () => {
-  const blob = new Blob([JSON.stringify(estado(), null, 2)], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `tarjetas-${$("ruta").value}.json`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-});
 
-$("importar").addEventListener("click", () => $("ficheroJson").click());
-
-$("ficheroJson").addEventListener("change", e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  const lector = new FileReader();
-  lector.onload = () => {
-    try {
-      const d = JSON.parse(lector.result);
-      if (!d.tarjetas || d.tarjetas.length !== HUECOS) throw new Error("formato");
-      tarjetas = d.tarjetas;
-      Object.entries(d.ajustes || {}).forEach(([k, v]) => { if ($(k)) $(k).value = v; });
-      sel = 0; refrescar(); aviso("Cargado.");
-    } catch (err) { aviso("Ese archivo no vale."); }
-  };
-  lector.readAsText(f);
-  e.target.value = "";
-});
 
 $("reset").addEventListener("click", () => {
   if (!confirm("¿Descartar los cambios?")) return;
