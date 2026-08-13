@@ -361,6 +361,25 @@ async function compartirImagen(id) {
   bajar(f, f.name);
 }
 
+// Camiseta vista por detrás, con el código a escala. Una espalda de adulto
+// mide unos 50 cm de ancho, así que un código de 25 cm ocupa la mitad: el
+// dibujo enseña de verdad lo que se va a imprimir.
+function camisetaConCodigo(id, cm) {
+  const ANCHO_ESPALDA = 50;
+  const cuerpo = 116;                       // ancho del cuerpo en el dibujo
+  const lado = cuerpo * (cm / ANCHO_ESPALDA);
+  const x = 100 - lado / 2, y = 74 - lado / 2 + 14;
+  const codigo = svgDelCodigo(enlaceCarta(id), "#111", 3)
+    .replace("<svg ", `<svg x="${x}" y="${y}" width="${lado}" height="${lado}" `);
+
+  return `<svg class="prenda" viewBox="0 0 200 200" role="img" aria-hidden="true">
+    <path d="M58 18 L78 10 q22 12 44 0 l20 8 26 20-18 22-16-11v122a6 6 0 0 1-6 6H72a6 6 0 0 1-6-6V57l-16 11-18-22z"
+          fill="var(--prenda)" stroke="var(--prenda-linea)" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M78 10 q22 16 44 0" fill="none" stroke="var(--prenda-linea)" stroke-width="1.6"/>
+    ${codigo}
+  </svg>`;
+}
+
 /* ---------------- Piezas ---------------- */
 function cara(c) {
   const [l1, l2, preg] = c[idioma];
@@ -661,7 +680,7 @@ function verCamiseta(id) {
   capa.className = "capa";
   capa.innerHTML = `<div class="visor camiseta">
     <h2>${t("cam_titulo")}</h2>
-    <div class="cuadro">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
+    <div class="prueba">${camisetaConCodigo(id, 25)}</div>
     <p class="nota">${t("cam_donde")}</p>
     <div class="opciones">
       <p class="rotulo">${t("cam_medida")}</p>
@@ -690,6 +709,7 @@ function verCamiseta(id) {
   capa.querySelectorAll("[data-cm]").forEach(b => b.addEventListener("click", () => {
     cm = +b.dataset.cm;
     capa.querySelectorAll("[data-cm]").forEach(x => x.classList.toggle("puesta", x === b));
+    capa.querySelector(".prueba").innerHTML = camisetaConCodigo(id, cm);
     pie();
   }));
 

@@ -695,3 +695,12 @@ body.hayfondo #masabajo{ opacity:1; }
   border:1px solid var(--acento); color:var(--acento); font-weight:600;
 }
 .barra nav .conllave:hover{ background:var(--acento); color:#141210; }
+
+/* ---------------- La camiseta dibujada ---------------- */
+.prueba{ display:grid; place-items:center; padding:6px 0 2px; }
+.prenda{ width:190px; height:auto; filter:drop-shadow(0 4px 14px rgba(0,0,0,.3)); }
+
+:root{ --prenda:#f2ece0; --prenda-linea:#cdc3b1; }
+@media (prefers-color-scheme: light){
+  :root{ --prenda:#fff; --prenda-linea:#d6cbb6; }
+}
