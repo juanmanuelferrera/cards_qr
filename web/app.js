@@ -36,7 +36,7 @@ const T = {
     imagen: "Imagen para compartir",
     imagen_bajar: "Descargar la imagen",
     copiada_clave: "Clave copiada",
-    consejo: "Con esta clave, o con el QR, cualquiera abre este sobre. A ti no te lo quita.",
+    consejo: "La clave y el código abren lo mismo. Dárselos a alguien no te quita el sobre.",
     camiseta: "En camiseta",
     cam_titulo: "Este sobre, en camiseta",
     cam_donde: "A la espalda. Un QR se lee desde unas diez veces su tamaño: a 25 cm, desde dos metros y medio. Por debajo de 10 cm hay que acercarse mucho, y al pecho de un desconocido no se acerca nadie. Oscuro sobre tela clara y sin arrugas.",
@@ -106,7 +106,7 @@ const T = {
     imagen: "Image to share",
     imagen_bajar: "Download the image",
     copiada_clave: "Key copied",
-    consejo: "With this key, or the QR, anyone can open this envelope. You keep yours.",
+    consejo: "The key and the code open the same thing. Giving them away doesn\u2019t cost you the envelope.",
     camiseta: "On a shirt",
     cam_titulo: "This envelope, on a shirt",
     cam_donde: "On the back. A QR reads from about ten times its own size: at 25 cm, from two and a half metres. Under 10 cm you have to get close, and nobody gets close to a stranger's chest. Dark on light fabric, and flat.",
@@ -531,24 +531,19 @@ function carta(id) {
     ${p.leido ? `<p class="conseguida">${t("ganada").replace("{n}", id)}</p>` : ""}
     <div class="codigo">
       <h2>${t("codigo")}</h2>
-
-      <p class="via">${t("via_movil")}</p>
+      <div class="llave">
+        <div class="lienzo">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
+        <div class="letras">
+          <button class="clavegorda" data-qr="clave">${esc(c.clave)}</button>
+          <p class="consejo">${t("consejo")}</p>
+        </div>
+      </div>
       <div class="menu">
         <button data-qr="copiar">${t("copiar")}</button>
         <button data-qr="imagen">${navigator.canShare ? t("imagen") : t("imagen_bajar")}</button>
-      </div>
-
-      <p class="via">${t("via_voz")}</p>
-      <button class="clavegorda" data-qr="clave" title="${t("copiada_clave")}">${esc(c.clave)}</button>
-
-      <p class="via">${t("via_papel")}</p>
-      <div class="lienzo">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
-      <div class="menu">
         <a href="/imprimir/">${t("imprimir")}</a>
         <button data-camiseta="${id}">${t("camiseta")}</button>
       </div>
-
-      <p class="consejo">${t("consejo")}</p>
     </div>
   </section>
   ${niveles()}`;

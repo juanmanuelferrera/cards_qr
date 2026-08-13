@@ -407,13 +407,23 @@ body.rodado .masabajo{ opacity:0; transition:opacity .3s; }
 }
 
 /* La clave, en grande y antes que el QR: es lo que se pasa de viva voz. */
+/* La clave y el código son la misma cosa en dos formas: van juntos. */
+.llave{ display:flex; gap:20px; align-items:center; margin-bottom:20px; }
+.llave .lienzo{ flex:0 0 auto; width:118px; padding:9px; margin:0; }
+.llave .letras{ min-width:0; }
 .clavegorda{
-  display:block; margin:0 0 16px; padding:6px 0; cursor:pointer;
-  background:none; border:0; border-bottom:1px dashed var(--linea);
-  font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:30px;
-  letter-spacing:.3em; color:var(--acento); text-align:left;
+  display:block; margin:0; padding:0; cursor:pointer;
+  background:none; border:0; text-align:left;
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:31px;
+  letter-spacing:.26em; color:var(--acento); line-height:1;
 }
-.clavegorda:hover{ border-bottom-color:var(--acento); }
+.clavegorda:hover{ opacity:.72; }
+.llave .consejo{ margin-top:12px; }
+@media (max-width:460px){
+  .llave{ gap:16px; }
+  .llave .lienzo{ width:96px; }
+  .clavegorda{ font-size:25px; letter-spacing:.2em; }
+}
 
 
 
@@ -604,14 +614,6 @@ body.quieto{ overflow:hidden; }
   .sobre.rompiendo, .sobre.rompiendo *{ animation:none !important; }
 }
 
-/* Tres formas de pasarlo, de lo inmediato a lo que lleva trabajo. */
-.codigo .via{
-  font-family:system-ui,sans-serif; font-size:10.5px; letter-spacing:.18em;
-  text-transform:uppercase; color:var(--suave); margin:22px 0 9px;
-}
-.codigo .via:first-of-type{ margin-top:0; }
-.codigo .menu{ margin-top:0; }
-.codigo .lienzo{ margin-bottom:11px; }
 
 /* El respaldo, en el pie: se encuentra desde cualquier pantalla sin estorbar. */
 footer #guardar-col{
