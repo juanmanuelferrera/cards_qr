@@ -477,19 +477,12 @@ function pasos(id) {
   const p = paso(id);
   // Con el sobre ya ganado, el indicador ha cumplido y estorba.
   if (p.respuesta && p.leido) return "";
-  const uno = p.respuesta ? "hecho" : "ahora";
-  const dos = p.respuesta ? (p.leido ? "hecho" : "ahora") : "";
-  // Lista de arriba abajo: el orden se lee solo, sin líneas que lo expliquen.
-  return `<ol class="pasos">
-    <li class="paso ${uno}">
-      <span class="bola">${p.respuesta ? "✓" : "1"}</span>
-      <span class="rotulo">${t("paso1")}</span>
-    </li>
-    <li class="paso ${dos || "espera"}">
-      <span class="bola">${p.leido ? "✓" : "2"}</span>
-      <span class="rotulo">${t("paso2")}</span>
-    </li>
-  </ol>`;
+  // Dos tramos y tres píxeles de alto: no roba una línea de pantalla, y lo
+  // que falta ya lo dice el botón con todas sus letras.
+  return `<div class="progreso" role="img" aria-label="${p.respuesta ? 2 : 1}/2">
+    <span class="${p.respuesta ? "hecho" : "ahora"}"></span>
+    <span class="${p.leido ? "hecho" : (p.respuesta ? "ahora" : "")}"></span>
+  </div>`;
 }
 
 /* ---------------- Vistas ---------------- */

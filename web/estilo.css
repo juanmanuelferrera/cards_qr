@@ -266,29 +266,17 @@ details.respaldo > *:not(summary){ margin-top:14px; }
 
 
 
-/* ---------------- Los dos pasos ---------------- */
-.pasos{
-  list-style:none; margin:0 0 26px; padding:14px 16px;
-  border:1px solid var(--linea); border-radius:11px; background:var(--panel);
-  display:inline-block; min-width:210px;
-}
-.paso{ display:flex; align-items:center; gap:11px; padding:4px 0; }
-.bola{
-  flex:0 0 auto; display:grid; place-items:center;
-  width:22px; height:22px; border-radius:50%;
-  border:1.5px solid var(--linea); background:var(--fondo);
-  font:600 11px/1 system-ui,sans-serif; color:var(--suave);
-}
-.rotulo{
-  font-family:system-ui,sans-serif; font-size:13px; letter-spacing:.01em;
-  color:var(--suave);
-}
 
-.paso.hecho .bola{ background:var(--acento); border-color:var(--acento); color:#141210; }
-.paso.hecho .rotulo{ text-decoration:line-through; text-decoration-color:var(--linea); }
-.paso.ahora .bola{ border-color:var(--acento); color:var(--acento); }
-.paso.ahora .rotulo{ color:var(--acento); font-weight:600; }
-.paso.espera{ opacity:.42; }
+/* ---------------- Por dónde vas ---------------- */
+.progreso{ display:flex; gap:5px; margin-bottom:22px; }
+.progreso span{
+  flex:1 1 0; height:3px; border-radius:2px; background:var(--linea);
+  transition:background .3s;
+}
+.progreso span.hecho{ background:var(--acento); }
+.progreso span.ahora{
+  background:linear-gradient(90deg, var(--acento) 0 42%, var(--linea) 42%);
+}
 
 .acciones .principal.gana{ animation:latir 2.6s ease-in-out infinite; }
 @keyframes latir{
@@ -303,29 +291,17 @@ details.respaldo > *:not(summary){ margin-top:14px; }
 
 /* El botón que abre el sobre habla en dos alturas: qué haces y qué te llevas. */
 
-/* ---------------- Los dos pasos ---------------- */
-.pasos{
-  list-style:none; margin:0 0 26px; padding:14px 16px;
-  border:1px solid var(--linea); border-radius:11px; background:var(--panel);
-  display:inline-block; min-width:210px;
-}
-.paso{ display:flex; align-items:center; gap:11px; padding:4px 0; }
-.bola{
-  flex:0 0 auto; display:grid; place-items:center;
-  width:22px; height:22px; border-radius:50%;
-  border:1.5px solid var(--linea); background:var(--fondo);
-  font:600 11px/1 system-ui,sans-serif; color:var(--suave);
-}
-.rotulo{
-  font-family:system-ui,sans-serif; font-size:13px; letter-spacing:.01em;
-  color:var(--suave);
-}
 
-.paso.hecho .bola{ background:var(--acento); border-color:var(--acento); color:#141210; }
-.paso.hecho .rotulo{ text-decoration:line-through; text-decoration-color:var(--linea); }
-.paso.ahora .bola{ border-color:var(--acento); color:var(--acento); }
-.paso.ahora .rotulo{ color:var(--acento); font-weight:600; }
-.paso.espera{ opacity:.42; }
+/* ---------------- Por dónde vas ---------------- */
+.progreso{ display:flex; gap:5px; margin-bottom:22px; }
+.progreso span{
+  flex:1 1 0; height:3px; border-radius:2px; background:var(--linea);
+  transition:background .3s;
+}
+.progreso span.hecho{ background:var(--acento); }
+.progreso span.ahora{
+  background:linear-gradient(90deg, var(--acento) 0 42%, var(--linea) 42%);
+}
 
 .acciones .principal.gana{
   display:flex; flex-direction:column; align-items:flex-start; gap:1px;
