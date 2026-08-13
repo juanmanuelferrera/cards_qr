@@ -477,11 +477,12 @@ function pasos(id) {
   const p = paso(id);
   // Con el sobre ya ganado, el indicador ha cumplido y estorba.
   if (p.respuesta && p.leido) return "";
-  // Dos tramos y tres píxeles de alto: no roba una línea de pantalla, y lo
-  // que falta ya lo dice el botón con todas sus letras.
-  return `<div class="progreso" role="img" aria-label="${p.respuesta ? 2 : 1}/2">
-    <span class="${p.respuesta ? "hecho" : "ahora"}"></span>
-    <span class="${p.leido ? "hecho" : (p.respuesta ? "ahora" : "")}"></span>
+  // Una sola barra que se llena, como en cualquier formulario por pasos.
+  // Ni números ni etiquetas: lo que falta lo dice el botón.
+  const hecho = p.respuesta ? 50 : 0;
+  return `<div class="progreso" role="progressbar" aria-valuenow="${hecho}"
+       aria-valuemin="0" aria-valuemax="100">
+    <span style="width:${hecho}%"></span>
   </div>`;
 }
 

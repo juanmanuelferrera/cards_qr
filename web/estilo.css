@@ -267,15 +267,15 @@ details.respaldo > *:not(summary){ margin-top:14px; }
 
 
 
+
 /* ---------------- Por dónde vas ---------------- */
-.progreso{ display:flex; gap:5px; margin-bottom:22px; }
-.progreso span{
-  flex:1 1 0; height:3px; border-radius:2px; background:var(--linea);
-  transition:background .3s;
+.progreso{
+  height:2px; border-radius:2px; background:var(--linea);
+  margin-bottom:24px; overflow:hidden;
 }
-.progreso span.hecho{ background:var(--acento); }
-.progreso span.ahora{
-  background:linear-gradient(90deg, var(--acento) 0 42%, var(--linea) 42%);
+.progreso span{
+  display:block; height:100%; background:var(--acento);
+  transition:width .5s cubic-bezier(.4,0,.2,1);
 }
 
 .acciones .principal.gana{ animation:latir 2.6s ease-in-out infinite; }
@@ -292,15 +292,15 @@ details.respaldo > *:not(summary){ margin-top:14px; }
 /* El botón que abre el sobre habla en dos alturas: qué haces y qué te llevas. */
 
 
+
 /* ---------------- Por dónde vas ---------------- */
-.progreso{ display:flex; gap:5px; margin-bottom:22px; }
-.progreso span{
-  flex:1 1 0; height:3px; border-radius:2px; background:var(--linea);
-  transition:background .3s;
+.progreso{
+  height:2px; border-radius:2px; background:var(--linea);
+  margin-bottom:24px; overflow:hidden;
 }
-.progreso span.hecho{ background:var(--acento); }
-.progreso span.ahora{
-  background:linear-gradient(90deg, var(--acento) 0 42%, var(--linea) 42%);
+.progreso span{
+  display:block; height:100%; background:var(--acento);
+  transition:width .5s cubic-bezier(.4,0,.2,1);
 }
 
 .acciones .principal.gana{
