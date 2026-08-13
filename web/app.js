@@ -361,21 +361,24 @@ async function compartirImagen(id) {
   bajar(f, f.name);
 }
 
-// Camiseta vista por detrás, con el código a escala. Una espalda de adulto
-// mide unos 50 cm de ancho, así que un código de 25 cm ocupa la mitad: el
-// dibujo enseña de verdad lo que se va a imprimir.
+// Camiseta vista por detrás, con el código a escala. El cuerpo va dibujado
+// de x=60 a x=140 —ochenta unidades— y una espalda de adulto mide unos 50 cm,
+// así que la conversión es directa y el dibujo no exagera.
+const CUERPO = 80;            // ancho del cuerpo en el dibujo
+const ESPALDA_CM = 50;        // lo que mide de ancho una espalda de adulto
+
 function camisetaConCodigo(id, cm) {
-  const ANCHO_ESPALDA = 50;
-  const cuerpo = 116;                       // ancho del cuerpo en el dibujo
-  const lado = cuerpo * (cm / ANCHO_ESPALDA);
-  const x = 100 - lado / 2, y = 74 - lado / 2 + 14;
+  const lado = CUERPO * (cm / ESPALDA_CM);
+  const x = 100 - lado / 2;
+  const y = 96 - lado / 2;
   const codigo = svgDelCodigo(enlaceCarta(id), "#111", 3)
     .replace("<svg ", `<svg x="${x}" y="${y}" width="${lado}" height="${lado}" `);
 
   return `<svg class="prenda" viewBox="0 0 200 200" role="img" aria-hidden="true">
-    <path d="M58 18 L78 10 q22 12 44 0 l20 8 26 20-18 22-16-11v122a6 6 0 0 1-6 6H72a6 6 0 0 1-6-6V57l-16 11-18-22z"
-          fill="var(--prenda)" stroke="var(--prenda-linea)" stroke-width="1.6" stroke-linejoin="round"/>
-    <path d="M78 10 q22 16 44 0" fill="none" stroke="var(--prenda-linea)" stroke-width="1.6"/>
+    <path d="M70 24 L86 16 q14 9 28 0 l16 8 38 24-16 26-16-11v106a6 6 0 0 1-6 6H66a6 6 0 0 1-6-6V87l-16 11-16-26z"
+          fill="var(--prenda)" stroke="var(--prenda-linea)" stroke-width="1.6"
+          stroke-linejoin="round"/>
+    <path d="M86 16 q14 11 28 0" fill="none" stroke="var(--prenda-linea)" stroke-width="1.6"/>
     ${codigo}
   </svg>`;
 }
