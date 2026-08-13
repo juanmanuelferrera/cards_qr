@@ -541,6 +541,13 @@ function carta(id) {
   }
 
   const ref = `${c.cap}.${c.ver}`;
+  // El verso solo se queda escrito en la carta cuando ya lo has abierto: si
+  // apareciera antes, el paso 2 diría que falta algo que está a la vista.
+  const versoEscrito = p.leido ? `<blockquote>
+      <p>${esc(c.verso[idioma])}</p>
+      <cite>Bhagavad-gītā ${ref}</cite>
+    </blockquote>` : "";
+
   return `<section class="unacarta">
     ${pasos(id)}
     ${cara(c)}
@@ -548,10 +555,7 @@ function carta(id) {
       <h2>${t("tu")}</h2>
       <p class="respuesta">${esc(p.respuesta)}</p>
     </div>
-    <blockquote>
-      <p>${esc(c.verso[idioma])}</p>
-      <cite>Bhagavad-gītā ${ref}</cite>
-    </blockquote>
+    ${versoEscrito}
     <div class="acciones">
       <button class="principal${p.leido ? "" : " gana"}" data-leer="${id}">${
         p.leido ? t("leer")
