@@ -22,6 +22,11 @@
   /* ---------------- Panel izquierdo ---------------- */
   .panel{ background:var(--panel); border-right:1px solid var(--linea);
           padding:20px 22px 40px; overflow-y:auto; }
+  .volver{
+    display:inline-block; margin-bottom:14px; text-decoration:none;
+    font-size:12.5px; color:var(--suave);
+  }
+  .volver:hover{ color:var(--acento); }
   h1{ font-size:16px; font-weight:650; letter-spacing:-.01em; }
   h1 span{ font-weight:400; color:var(--suave); }
   h2{ font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--suave);
@@ -116,8 +121,10 @@
 <div class="app">
 
   <div class="panel">
+    <a class="volver" href="/">← qrveda</a>
     <h1>Tarjetas QR <span>— editor A4</span></h1>
-    <p class="ayuda">Pincha una tarjeta de la hoja y edítala aquí. Diez tarjetas, diez preguntas distintas.</p>
+    <p class="ayuda">Pincha una tarjeta de la hoja y edítala aquí.</p>
+    <p class="ayuda" id="aviso"></p>
 
     <h2>Tarjeta <span class="cual" id="cual"></span></h2>
     <div class="campos">
@@ -144,10 +151,10 @@
     <h2>Textos fijos y medidas</h2>
     <div class="campos">
       <div class="duo">
-        <label><small>Idioma y libro</small><input id="ruta" value="es/bg"></label>
+        <label><small>Número de sobre</small><input id="ruta" value="1"></label>
         <label><small>QR (mm)</small><input id="qrmm" type="number" step="0.5" min="10" max="34" value="30"></label>
       </div>
-      <label><small>Base de las URLs del libro</small><input id="base" value="https://vedabase.cc"></label>
+      <label><small>Base de las URLs del libro</small><input id="base" value="https://qr.vedicvault.org"></label>
     </div>
 
     <h2>Salida</h2>
@@ -188,18 +195,19 @@ const MODULO_MINIMO = 0.50;   // mm por celda; por debajo un móvil falla con po
 const HUECOS = 10;            // 2 x 5 en A4
 const CLAVE = "cards_qr_a4_v1";
 
-const PREDETERMINADAS = [
-  ["De niño tenías otro cuerpo.", "Y sigues diciendo «yo».", "¿Quién es ese?", 2, 13],
-  ["Llevas años intentando", "controlar tu cabeza.", "¿Quién manda ahí?", 6, 35],
-  ["Consigues lo que querías.", "A los tres días, otra cosa.", "¿Por qué nunca basta?", 3, 39],
-  ["Haces el trabajo.", "El resultado no depende de ti.", "¿Entonces qué es tuyo?", 2, 47],
-  ["Tu vida tendrá un", "último pensamiento.", "¿Cuál quieres que sea?", 8, 6],
-  ["Todo lo que ves hoy", "habrá desaparecido.", "¿Y tú?", 11, 32],
-  ["Algo dentro de ti", "te observa pensar.", "¿Quién es?", 13, 23],
-  ["Le tienes miedo a morir.", "Pero eso le pasa al cuerpo.", "¿Y a ti?", 2, 20],
-  ["Quieres algo.", "Acabas enfadado.", "¿Cómo se llega ahí?", 2, 62],
-  ["Lo que ayer te dio placer,", "hoy te pasa factura.", "¿Por qué acaba siempre igual?", 18, 38],
-];
+// Las tarjetas salen de los sobres que quien entra ha abierto. Enseñar aquí
+// las trece preguntas destriparía el juego: solo se reparte lo que es tuyo.
+const CLAVE_JUEGO = "qrveda";
+const VACIA = ["Escribe la primera línea.", "Y la segunda.", "¿Y la pregunta?", 2, 13, ""];
+
+function abiertosDelJugador(datos) {
+  let progreso = {};
+  try { progreso = (JSON.parse(localStorage.getItem(CLAVE_JUEGO)) || {}).progreso || {}; }
+  catch (e) {}
+  return datos.tarjetas
+    .filter(c => progreso[c.id] && progreso[c.id].respuesta && progreso[c.id].leido)
+    .map(c => [...c.es, c.cap, c.ver, "https://qr.vedicvault.org/" + c.id]);
+}
 
 const $ = id => document.getElementById(id);
 const AJUSTES = ["ruta","qrmm","base"];
@@ -235,7 +243,8 @@ function qr(texto, mm){
 const esc = t => String(t).replace(/[&<>]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;" }[c]));
 const mmQR = () => parseFloat($("qrmm").value) || 23.5;
 // vedabase.cc sirve una página por verso: /es/bg/2/13/ para BG 2.13.
-const urlAuto = t => `${$("base").value.replace(/\/$/, "")}/${$("ruta").value}/${t[3]}/${t[4]}/`;
+// El código lleva al sobre en qrveda, no al verso: la tarjeta invita al juego.
+const urlAuto = t => `${$("base").value.replace(/\/$/, "")}/${$("ruta").value}`;
 const urlVerso = t => (t[5] && t[5].trim()) ? t[5].trim() : urlAuto(t);
 
 function tarjetaHtml(t){
@@ -321,7 +330,7 @@ function estado(){
 }
 function guardar(){ try { localStorage.setItem(CLAVE, JSON.stringify(estado())); } catch (e) {} }
 
-function cargar(){
+async function cargar(){
   try {
     const g = JSON.parse(localStorage.getItem(CLAVE));
     if (g && g.tarjetas && g.tarjetas.length === HUECOS){
@@ -330,7 +339,22 @@ function cargar(){
       return;
     }
   } catch (e) {}
-  tarjetas = PREDETERMINADAS.map(t => t.slice());
+
+  let mios = [];
+  try { mios = abiertosDelJugador(await (await fetch("/datos.json")).json()); }
+  catch (e) {}
+
+  // La hoja tiene diez huecos: se rellenan girando por lo que uno tenga.
+  tarjetas = mios.length
+    ? Array.from({ length: HUECOS }, (_, i) => mios[i % mios.length].slice())
+    : Array.from({ length: HUECOS }, () => VACIA.slice());
+
+  const aviso = document.getElementById("aviso");
+  if (aviso) {
+    aviso.textContent = mios.length
+      ? `Tus ${mios.length} sobre(s) abierto(s), repetidos hasta llenar la hoja.`
+      : "Aún no has abierto ningún sobre. Escribe tus propias preguntas, o vuelve cuando tengas alguno.";
+  }
 }
 
 function refrescar(){ pintarHoja(); cargarCampos(); guardar(); }
@@ -426,9 +450,9 @@ $("ficheroJson").addEventListener("change", e => {
 });
 
 $("reset").addEventListener("click", () => {
-  if (!confirm("¿Descartar los cambios y volver a las diez preguntas originales?")) return;
-  tarjetas = PREDETERMINADAS.map(t => t.slice());
-  sel = 0; refrescar();
+  if (!confirm("¿Descartar los cambios?")) return;
+  localStorage.removeItem(CLAVE);
+  cargar().then(() => { sel = 0; refrescar(); });
 });
 
 document.addEventListener("keydown", e => {
@@ -438,10 +462,12 @@ document.addEventListener("keydown", e => {
 });
 
 // ---------------- Arranque ----------------
-cargar();
-refrescar();
-aplicarZoom();
-setTimeout(ajustar, 60);
+(async function () {
+  await cargar();
+  refrescar();
+  aplicarZoom();
+  setTimeout(ajustar, 60);
+})();
 </script>
 
 </body>
