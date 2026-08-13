@@ -479,13 +479,12 @@ function pasos(id) {
   if (p.respuesta && p.leido) return "";
   const uno = p.respuesta ? "hecho" : "ahora";
   const dos = p.respuesta ? (p.leido ? "hecho" : "ahora") : "";
-  // Paso a paso al uso: bolas unidas por una línea que se rellena al avanzar.
+  // Lista de arriba abajo: el orden se lee solo, sin líneas que lo expliquen.
   return `<ol class="pasos">
     <li class="paso ${uno}">
       <span class="bola">${p.respuesta ? "✓" : "1"}</span>
       <span class="rotulo">${t("paso1")}</span>
     </li>
-    <li class="raya ${p.respuesta ? "hecha" : ""}"></li>
     <li class="paso ${dos || "espera"}">
       <span class="bola">${p.leido ? "✓" : "2"}</span>
       <span class="rotulo">${t("paso2")}</span>

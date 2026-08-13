@@ -265,35 +265,30 @@ details.respaldo > *:not(summary){ margin-top:14px; }
 .respaldo .nota.fina{ margin:14px 0 0; font-size:11.5px; }
 
 
+
 /* ---------------- Los dos pasos ---------------- */
 .pasos{
-  display:flex; align-items:flex-start; list-style:none;
-  margin:0 0 26px; max-width:340px;
+  list-style:none; margin:0 0 26px; padding:14px 16px;
+  border:1px solid var(--linea); border-radius:11px; background:var(--panel);
+  display:inline-block; min-width:210px;
 }
-.paso{
-  flex:0 0 auto; display:flex; flex-direction:column; align-items:center;
-  gap:8px; width:104px;
-}
+.paso{ display:flex; align-items:center; gap:11px; padding:4px 0; }
 .bola{
-  display:grid; place-items:center; width:26px; height:26px; border-radius:50%;
+  flex:0 0 auto; display:grid; place-items:center;
+  width:22px; height:22px; border-radius:50%;
   border:1.5px solid var(--linea); background:var(--fondo);
-  font:600 12px/1 system-ui,sans-serif; color:var(--suave);
+  font:600 11px/1 system-ui,sans-serif; color:var(--suave);
 }
 .rotulo{
-  font-family:system-ui,sans-serif; font-size:11.5px; line-height:1.3;
-  letter-spacing:.03em; color:var(--suave); text-align:center;
+  font-family:system-ui,sans-serif; font-size:13px; letter-spacing:.01em;
+  color:var(--suave);
 }
-.raya{
-  flex:1 1 auto; height:1.5px; margin-top:12.25px;
-  background:var(--linea);
-}
-.raya.hecha{ background:var(--acento); }
 
 .paso.hecho .bola{ background:var(--acento); border-color:var(--acento); color:#141210; }
-.paso.hecho .rotulo{ color:var(--suave); }
-.paso.ahora .bola{ border-color:var(--acento); color:var(--acento); background:var(--fondo); }
+.paso.hecho .rotulo{ text-decoration:line-through; text-decoration-color:var(--linea); }
+.paso.ahora .bola{ border-color:var(--acento); color:var(--acento); }
 .paso.ahora .rotulo{ color:var(--acento); font-weight:600; }
-.paso.espera{ opacity:.45; }
+.paso.espera{ opacity:.42; }
 
 .acciones .principal.gana{ animation:latir 2.6s ease-in-out infinite; }
 @keyframes latir{
@@ -307,35 +302,30 @@ details.respaldo > *:not(summary){ margin-top:14px; }
 }
 
 /* El botón que abre el sobre habla en dos alturas: qué haces y qué te llevas. */
+
 /* ---------------- Los dos pasos ---------------- */
 .pasos{
-  display:flex; align-items:flex-start; list-style:none;
-  margin:0 0 26px; max-width:340px;
+  list-style:none; margin:0 0 26px; padding:14px 16px;
+  border:1px solid var(--linea); border-radius:11px; background:var(--panel);
+  display:inline-block; min-width:210px;
 }
-.paso{
-  flex:0 0 auto; display:flex; flex-direction:column; align-items:center;
-  gap:8px; width:104px;
-}
+.paso{ display:flex; align-items:center; gap:11px; padding:4px 0; }
 .bola{
-  display:grid; place-items:center; width:26px; height:26px; border-radius:50%;
+  flex:0 0 auto; display:grid; place-items:center;
+  width:22px; height:22px; border-radius:50%;
   border:1.5px solid var(--linea); background:var(--fondo);
-  font:600 12px/1 system-ui,sans-serif; color:var(--suave);
+  font:600 11px/1 system-ui,sans-serif; color:var(--suave);
 }
 .rotulo{
-  font-family:system-ui,sans-serif; font-size:11.5px; line-height:1.3;
-  letter-spacing:.03em; color:var(--suave); text-align:center;
+  font-family:system-ui,sans-serif; font-size:13px; letter-spacing:.01em;
+  color:var(--suave);
 }
-.raya{
-  flex:1 1 auto; height:1.5px; margin-top:12.25px;
-  background:var(--linea);
-}
-.raya.hecha{ background:var(--acento); }
 
 .paso.hecho .bola{ background:var(--acento); border-color:var(--acento); color:#141210; }
-.paso.hecho .rotulo{ color:var(--suave); }
-.paso.ahora .bola{ border-color:var(--acento); color:var(--acento); background:var(--fondo); }
+.paso.hecho .rotulo{ text-decoration:line-through; text-decoration-color:var(--linea); }
+.paso.ahora .bola{ border-color:var(--acento); color:var(--acento); }
 .paso.ahora .rotulo{ color:var(--acento); font-weight:600; }
-.paso.espera{ opacity:.45; }
+.paso.espera{ opacity:.42; }
 
 .acciones .principal.gana{
   display:flex; flex-direction:column; align-items:flex-start; gap:1px;
