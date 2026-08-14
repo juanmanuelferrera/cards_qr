@@ -3,117 +3,121 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tarjetas QR — editor A4</title>
+<title>Imprime tus tarjetas — qrveda</title>
 <script src="qrcode.min.js"></script>
 <style>
   :root{
-    --tinta:#171512; --suave:#6a6259; --acento:#8a6d3b;
-    --linea:#d9d2c6; --fondo:#e7e3dc; --panel:#fff; --aviso:#a8342a;
+    --tinta:#171512; --suave:#6d655b; --acento:#8a6d3b;
+    --linea:#d9d2c6; --fondo:#e7e3dc; --panel:#fff;
   }
   *{ box-sizing:border-box; margin:0; padding:0; }
   body{
     font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
     color:var(--tinta); background:var(--fondo); overflow:hidden;
   }
+  .app{ display:grid; grid-template-columns:380px 1fr; height:100vh; }
+  @media (max-width:860px){ .app{ grid-template-columns:1fr; overflow:auto; } }
 
-  .app{ display:grid; grid-template-columns:390px 1fr; height:100vh; }
-  @media (max-width:860px){ .app{ grid-template-columns:1fr; } }
-
-  /* ---------------- Panel izquierdo ---------------- */
-  .panel{ background:var(--panel); border-right:1px solid var(--linea);
-          padding:20px 22px 40px; overflow-y:auto; }
-  .volver{
-    display:inline-block; margin-bottom:14px; text-decoration:none;
-    font-size:12.5px; color:var(--suave);
+  .panel{
+    background:var(--panel); border-right:1px solid var(--linea);
+    padding:20px 22px 40px; overflow-y:auto;
   }
+  .volver{ display:inline-block; margin-bottom:16px; font-size:12.5px;
+           color:var(--suave); text-decoration:none; }
   .volver:hover{ color:var(--acento); }
   h1{ font-size:16px; font-weight:650; letter-spacing:-.01em; }
-  h1 span{ font-weight:400; color:var(--suave); }
-  h2{ font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--suave);
-      margin:20px 0 9px; font-weight:600; }
-  p.ayuda{ color:var(--suave); font-size:12.5px; margin-top:5px; }
+  h2{ font-size:11px; text-transform:uppercase; letter-spacing:.14em;
+      color:var(--suave); margin:24px 0 10px; font-weight:600; }
+  p.ayuda{ color:var(--suave); font-size:12.5px; margin-top:6px; }
 
-  label small{ display:block; font-size:11px; color:var(--suave); margin-bottom:3px; }
-  input,select{
-    font:inherit; width:100%; padding:7px 9px; border:1px solid var(--linea);
-    border-radius:6px; background:#fff; color:inherit;
+  /* ---------------- Tus sobres ---------------- */
+  .sobre{
+    display:flex; align-items:center; gap:12px; padding:11px 0;
+    border-bottom:1px solid var(--linea);
   }
-  input:focus{ outline:2px solid var(--acento); outline-offset:-1px; border-color:transparent; }
-  .campos{ display:grid; gap:6px; }
-  .duo{ display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-
-  button{
-    font:inherit; font-weight:550; padding:7px 12px; border:1px solid var(--linea);
-    border-radius:7px; background:#fff; cursor:pointer; color:inherit;
+  .sobre .texto{ flex:1; min-width:0; }
+  .sobre .preg{
+    font-family:"Iowan Old Style",Palatino,Georgia,serif; font-style:italic;
+    font-size:14.5px; color:var(--acento); line-height:1.25;
   }
-  button:hover{ border-color:var(--acento); color:var(--acento); }
-  button.fuerte{ background:var(--tinta); color:#fff; border-color:var(--tinta); }
-  button.fuerte:hover{ background:var(--acento); border-color:var(--acento); color:#fff; }
-  button.mini{ padding:4px 9px; font-size:12px; }
-  .botones{ display:flex; gap:7px; flex-wrap:wrap; margin-top:12px; }
+  .sobre .num{ font-size:11px; color:var(--suave); letter-spacing:.08em; }
 
-  /* Lo técnico existe, pero no se le pone delante a quien solo quiere imprimir. */
-  details.avanzado{ margin-top:22px; border-top:1px solid var(--linea); padding-top:14px; }
-  details.avanzado summary{
-    font-size:12px; color:var(--suave); cursor:pointer; list-style:none;
+  .cuantos{ display:flex; align-items:center; gap:2px; flex:0 0 auto; }
+  .cuantos button{
+    width:28px; height:28px; border-radius:7px; cursor:pointer;
+    border:1px solid var(--linea); background:var(--panel); color:var(--suave);
+    font:600 15px/1 system-ui,sans-serif;
   }
-  details.avanzado summary::-webkit-details-marker{ display:none; }
-  details.avanzado summary::before{ content:"+ "; color:var(--acento); }
-  details.avanzado[open] summary::before{ content:"− "; }
-  details.avanzado > *:not(summary){ margin-top:12px; }
+  .cuantos button:hover{ border-color:var(--acento); color:var(--acento); }
+  .cuantos .n{
+    width:32px; text-align:center; font-variant-numeric:tabular-nums;
+    font-size:14px; font-weight:600;
+  }
+  .cuantos .n.cero{ color:var(--linea); font-weight:400; }
 
-  .aviso{ color:var(--aviso); font-size:12.5px; margin-top:8px; }
-  .ok{ color:var(--suave); font-size:12.5px; margin-top:8px; }
-  .cual{ font-size:12px; color:var(--acento); font-weight:650; }
+  .total{
+    margin-top:16px; font-size:12.5px; color:var(--suave);
+  }
+  .total strong{ color:var(--tinta); }
 
-  /* ---------------- Lienzo ---------------- */
-  .zona{ position:relative; overflow:auto; padding:26px; }
+  button.fuerte{
+    width:100%; margin-top:16px; padding:12px; border-radius:9px; cursor:pointer;
+    border:1px solid var(--tinta); background:var(--tinta); color:#fff;
+    font:550 14px/1 system-ui,sans-serif;
+  }
+  button.fuerte:hover{ background:var(--acento); border-color:var(--acento); }
+  button.fuerte:disabled{ opacity:.4; cursor:default; }
+
   .barra{
     position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:8px;
     background:var(--fondo); padding-bottom:14px; flex-wrap:wrap;
   }
-  .barra .sep{ flex:1; }
-  .zoomval{ font-variant-numeric:tabular-nums; font-size:12.5px; color:var(--suave); min-width:44px; text-align:center; }
-
-  #lienzo{ transform-origin:0 0; width:210mm; height:297mm; }
-  #hoja{
-    position:relative; width:210mm; height:297mm; background:#fff;
-    box-shadow:0 3px 22px rgba(0,0,0,.16);
+  .barra button{
+    padding:4px 9px; font-size:12px; border-radius:7px; cursor:pointer;
+    border:1px solid var(--linea); background:var(--panel); color:inherit;
   }
-  #hoja .rejilla{
+  .barra button:hover{ border-color:var(--acento); color:var(--acento); }
+  .zoomval{ font-variant-numeric:tabular-nums; font-size:12.5px;
+            color:var(--suave); min-width:44px; text-align:center; }
+
+  details.avanzado{ margin-top:24px; border-top:1px solid var(--linea); padding-top:14px; }
+  details.avanzado summary{ font-size:12px; color:var(--suave); cursor:pointer; list-style:none; }
+  details.avanzado summary::-webkit-details-marker{ display:none; }
+  details.avanzado summary::before{ content:"+ "; color:var(--acento); }
+  details.avanzado[open] summary::before{ content:"− "; }
+  details.avanzado label{ display:block; margin-top:12px; }
+  details.avanzado small{ display:block; font-size:11px; color:var(--suave); margin-bottom:4px; }
+  details.avanzado input{
+    width:100%; padding:7px 9px; border:1px solid var(--linea);
+    border-radius:6px; background:var(--panel); color:inherit; font:inherit;
+  }
+
+  /* ---------------- El pliego ---------------- */
+  .zona{ position:relative; overflow:auto; padding:26px; }
+  #lienzo{ transform-origin:0 0; }
+  .hoja{
+    position:relative; width:210mm; height:297mm; background:#fff;
+    box-shadow:0 3px 22px rgba(0,0,0,.16); margin-bottom:24px;
+  }
+  .rejilla{
     position:absolute; left:10mm; top:11mm;
     display:grid; grid-template-columns:repeat(2,85mm); grid-template-rows:repeat(5,55mm);
   }
-  #hoja .m{ position:absolute; background:#000; }
-  #hoja .m.v{ width:.25pt; height:4mm; }
-  #hoja .m.h{ height:.25pt; width:4mm; }
+  .m{ position:absolute; background:#000; }
+  .m.v{ width:.25pt; height:4mm; }
+  .m.h{ height:.25pt; width:4mm; }
 
-  .hueco{ position:relative; cursor:pointer; }
-  .hueco .tapa{
-    position:absolute; inset:0; outline:1px dashed rgba(0,0,0,.16); outline-offset:-1px;
-  }
-  .hueco:hover .tapa{ outline:1.5px solid var(--acento); background:rgba(138,109,59,.05); }
-  .hueco.sel .tapa{ outline:2px solid var(--acento); background:rgba(138,109,59,.07); }
-  .hueco .n{
-    position:absolute; top:1mm; right:1.5mm; font:600 9px/1 system-ui,sans-serif;
-    color:var(--acento); background:#fff; padding:2px 4px; border-radius:3px;
-  }
-
-  /* ---------------- La tarjeta: mismas medidas que build.py ---------------- */
   .tarjeta{
-    width:85mm; height:55mm; padding:4.5mm 5.5mm 3.5mm;
-    background:#fff; overflow:hidden; color:var(--tinta);
-    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    width:85mm; height:55mm; padding:4.5mm 5.5mm 3.5mm; overflow:hidden;
+    background:#fff; color:#171512;
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
   }
   .tarjeta .titulo{ font-size:10.6pt; line-height:1.2; letter-spacing:-.005em; }
-  .tarjeta .pregunta{ font-style:italic; color:var(--acento); }
-  .tarjeta .codigos{ margin-top:3mm; text-align:center; }
-  .tarjeta .codigo{ display:inline-block; text-align:center; }
-  .tarjeta .codigo svg{ display:block; margin:0 auto 1mm; }
-  .tarjeta .que{ font-size:6.8pt; font-weight:600; letter-spacing:.03em; line-height:1.12; white-space:nowrap; }
-  .tarjeta .sub{ font-size:5.8pt; color:var(--suave); margin-top:.4mm; line-height:1.15; }
+  .tarjeta .pregunta{ font-style:italic; color:#8a6d3b; }
+  .tarjeta .codigos{ margin-top:2.5mm; text-align:center; }
+  .tarjeta .codigos svg{ display:block; margin:0 auto; }
+  .vacia{ outline:1px dashed var(--linea); outline-offset:-1px; }
 
-  /* ---------------- Impresión ---------------- */
   @page{ size:A4 portrait; margin:0; }
   @media print{
     body{ background:#fff; overflow:visible; }
@@ -121,311 +125,239 @@
     .panel, .barra{ display:none !important; }
     .zona{ padding:0; overflow:visible; }
     #lienzo{ transform:none !important; }
-    #hoja{ box-shadow:none; }
-    .hueco .tapa, .hueco .n{ display:none !important; }
+    .hoja{ box-shadow:none; margin:0; page-break-after:always; }
+    .hoja:last-child{ page-break-after:auto; }
+    .vacia{ outline:none; }
   }
 </style>
 </head>
 <body>
 
 <div class="app">
-
   <div class="panel">
     <a class="volver" href="/">← qrveda</a>
-    <h1>Tarjetas QR <span>— editor A4</span></h1>
-    <p class="ayuda">Pincha una tarjeta de la hoja y edítala aquí.</p>
-    <p class="ayuda" id="aviso"></p>
+    <h1>Imprime tus tarjetas</h1>
+    <p class="ayuda">Elige cuántas quieres de cada sobre. El texto y el código son los suyos: no se tocan.</p>
 
-    <h2>Tarjeta <span class="cual" id="cual"></span></h2>
-    <div class="campos">
-      <label><small>Primera línea</small><input id="l1"></label>
-      <label><small>Segunda línea</small><input id="l2"></label>
-      <label><small>La pregunta</small><input id="l3"></label>
-    </div>
-    <div class="botones">
-      <button class="mini" id="anterior">← Anterior</button>
-      <button class="mini" id="siguiente">Siguiente →</button>
-      <button class="mini" id="copiarTodas">Copiar a todas</button>
-    </div>
+    <h2>Tus sobres</h2>
+    <div id="lista"></div>
+    <p class="total" id="total"></p>
+
+    <button class="fuerte" id="pdf">Guardar PDF para imprenta</button>
+    <p class="ayuda">Se abre el diálogo de impresión. Elige <strong>Guardar como PDF</strong>, escala <strong>100 %</strong> y quita «ajustar al papel».</p>
 
     <details class="avanzado">
       <summary>Ajustes finos</summary>
-      <div class="campos">
-        <div class="duo">
-          <label><small>Capítulo</small><input id="cap" type="number" min="1" max="18"></label>
-          <label><small>Verso</small><input id="ver" type="number" min="1"></label>
-        </div>
-        <label><small>Adónde lleva el código</small><input id="url" spellcheck="false"></label>
-        <label><small>Tamaño del código (mm)</small><input id="qrmm" type="number" step="0.5" min="10" max="34" value="30"></label>
-      </div>
-      <div class="botones">
-        <button class="mini" id="probar">Abrir y comprobar</button>
-      </div>
-      <div id="diagnostico"></div>
+      <label><small>Tamaño del código (mm)</small>
+        <input id="qrmm" type="number" step="0.5" min="10" max="34" value="30"></label>
+      <p class="ayuda" id="densidad"></p>
     </details>
-
-    <h2>Salida</h2>
-    <div class="botones">
-      <button class="fuerte" id="pdf">Guardar PDF para imprenta</button>
-    </div>
-    <p class="ayuda">Se abre el diálogo de impresión. Elige <strong>Guardar como PDF</strong>, escala <strong>100 %</strong> y quita «ajustar al papel».</p>
-
-    <div class="botones">
-      <button class="mini" id="reset">Empezar de nuevo</button>
-    </div>
-    <div class="ok" id="mensaje"></div>
   </div>
 
   <div class="zona">
     <div class="barra">
-      <button class="mini" id="menos">−</button>
+      <button id="menos">−</button>
       <span class="zoomval" id="zoomval">100 %</span>
-      <button class="mini" id="mas">+</button>
-      <button class="mini" id="ajustar">Ajustar</button>
-      <button class="mini" id="cien">100 %</button>
-      <span class="sep"></span>
-      <span class="ayuda">Pincha una tarjeta para editarla</span>
+      <button id="mas">+</button>
+      <button id="ajustar">Ajustar</button>
+      <button id="cien">100 %</button>
     </div>
-    <div id="lienzo"><div id="hoja"></div></div>
+    <div id="lienzo"></div>
   </div>
-
 </div>
 
 <script>
 "use strict";
 
-const MODULO_MINIMO = 0.50;   // mm por celda; por debajo un móvil falla con poca luz
-const HUECOS = 10;            // 2 x 5 en A4
-const CLAVE = "cards_qr_a4_v1";
-
-// Las tarjetas salen de los sobres que quien entra ha abierto. Enseñar aquí
-// las trece preguntas destriparía el juego: solo se reparte lo que es tuyo.
+const SITIO = "https://qr.vedicvault.org";
 const CLAVE_JUEGO = "qrveda";
-const VACIA = ["Escribe la primera línea.", "Y la segunda.", "¿Y la pregunta?", 2, 13, ""];
-
-function abiertosDelJugador(datos) {
-  let progreso = {};
-  try { progreso = (JSON.parse(localStorage.getItem(CLAVE_JUEGO)) || {}).progreso || {}; }
-  catch (e) {}
-  return datos.tarjetas
-    .filter(c => progreso[c.id] && progreso[c.id].respuesta && progreso[c.id].leido)
-    .map(c => [...c.es, c.cap, c.ver, "https://qr.vedicvault.org/" + c.id]);
-}
+const CLAVE = "qrveda_imprenta";
+const HUECOS = 10;                 // 2 x 5 en A4
+const MODULO_MINIMO = 0.50;        // mm por celda; por debajo un móvil falla
 
 const $ = id => document.getElementById(id);
-const AJUSTES = ["qrmm"];
-const CAMPOS = { l1:0, l2:1, l3:2, cap:3, ver:4 };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
 
-let tarjetas = [];
-let sel = 0;
+let mios = [];        // los sobres abiertos
+let cuantas = {};     // cuántas tarjetas de cada uno
+let idioma = "es";
 let zoom = 1;
 
-// ---------------- QR ----------------
+/* ---------------- Los sobres del jugador ---------------- */
+async function cargarSobres() {
+  let guardado = {};
+  try { guardado = JSON.parse(localStorage.getItem(CLAVE_JUEGO)) || {}; } catch (e) {}
+  const progreso = guardado.progreso || {};
+  idioma = guardado.idioma === "en" ? "en" : "es";
+
+  const datos = await (await fetch("/datos.json")).json();
+  mios = datos.tarjetas.filter(c => progreso[c.id] && progreso[c.id].respuesta && progreso[c.id].leido);
+
+  try { cuantas = JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch (e) {}
+  // Sin nada elegido, se reparte la hoja entre los que tengas.
+  if (!Object.keys(cuantas).length && mios.length) {
+    const base = Math.floor(HUECOS / mios.length) || 1;
+    mios.forEach((c, i) => cuantas[c.id] = base + (i < HUECOS % mios.length ? 1 : 0));
+  }
+  // Lo guardado de otra vez puede hablar de sobres que ya no salen.
+  Object.keys(cuantas).forEach(id => { if (!mios.some(c => c.id === id)) delete cuantas[id]; });
+}
+
+const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(cuantas)); } catch (e) {} };
+const totalTarjetas = () => Object.values(cuantas).reduce((a, b) => a + b, 0);
+
+/* ---------------- El código ---------------- */
 const cacheQR = new Map();
 
-function qr(texto, mm){
-  const clave = texto + "|" + mm;
-  if (cacheQR.has(clave)) return cacheQR.get(clave);
-  const c = qrcode(0, "M");
-  c.addData(texto);
-  c.make();
-  const n = c.getModuleCount(), borde = 2, lado = n + borde * 2;
-  let d = "";
-  for (let f = 0; f < n; f++)
-    for (let col = 0; col < n; col++)
-      if (c.isDark(f, col)) d += `M${col + borde} ${f + borde}h1v1h-1z`;
-  const res = {
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${lado} ${lado}" style="width:${mm}mm;height:${mm}mm"><path fill="#111" d="${d}"/></svg>`,
-    modulos: lado
-  };
-  cacheQR.set(clave, res);
-  return res;
+function qrSvg(url, mm) {
+  const llave = url + "|" + mm;
+  if (!cacheQR.has(llave)) {
+    const q = qrcode(0, "M");
+    q.addData(url);
+    q.make();
+    const n = q.getModuleCount(), borde = 2, lado = n + borde * 2;
+    let d = "";
+    for (let f = 0; f < n; f++)
+      for (let c = 0; c < n; c++)
+        if (q.isDark(f, c)) d += `M${c + borde} ${f + borde}h1v1h-1z`;
+    cacheQR.set(llave, {
+      svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${lado} ${lado}" ` +
+           `style="width:${mm}mm;height:${mm}mm" shape-rendering="crispEdges">` +
+           `<path fill="#111" d="${d}"/></svg>`,
+      modulos: lado,
+    });
+  }
+  return cacheQR.get(llave);
 }
 
-// ---------------- Tarjeta ----------------
-const esc = t => String(t).replace(/[&<>]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;" }[c]));
-const mmQR = () => parseFloat($("qrmm").value) || 23.5;
-// vedabase.cc sirve una página por verso: /es/bg/2/13/ para BG 2.13.
-// El código lleva al sobre en qrveda, no al verso: la tarjeta invita al juego.
-const SITIO = "https://qr.vedicvault.org";
-const urlVerso = t => (t[5] && t[5].trim()) ? t[5].trim() : SITIO;
+/* ---------------- Panel ---------------- */
+function pintarLista() {
+  if (!mios.length) {
+    $("lista").innerHTML = `<p class="ayuda">Aún no has abierto ningún sobre.
+      Vuelve cuando tengas alguno y podrás imprimir sus tarjetas.</p>`;
+    $("total").textContent = "";
+    $("pdf").disabled = true;
+    return;
+  }
 
-function tarjetaHtml(t){
-  const mm = mmQR();
-  return `<div class="tarjeta">
-    <div class="titulo">${esc(t[0])}<br>${esc(t[1])}<br><span class="pregunta">${esc(t[2])}</span></div>
-    <div class="codigos">
-      <div class="codigo">${qr(urlVerso(t), mm).svg}</div>
-    </div>
-  </div>`;
+  $("lista").innerHTML = mios.map(c => {
+    const n = cuantas[c.id] || 0;
+    return `<div class="sobre">
+      <div class="texto">
+        <div class="preg">${esc(c[idioma][2])}</div>
+        <div class="num">Sobre ${c.id} · ${c.clave}</div>
+      </div>
+      <div class="cuantos">
+        <button data-menos="${c.id}" aria-label="menos">−</button>
+        <span class="n${n ? "" : " cero"}">${n}</span>
+        <button data-mas="${c.id}" aria-label="más">+</button>
+      </div>
+    </div>`;
+  }).join("");
+
+  const t = totalTarjetas();
+  const hojas = Math.max(1, Math.ceil(t / HUECOS));
+  $("total").innerHTML = `<strong>${t}</strong> tarjeta${t === 1 ? "" : "s"} · ${hojas} hoja${hojas === 1 ? "" : "s"} A4`;
+  $("pdf").disabled = t === 0;
 }
 
-// ---------------- Hoja ----------------
-function pintarHoja(){
-  const huecos = tarjetas.map((t, i) =>
-    `<div class="hueco${i === sel ? " sel" : ""}" data-i="${i}">${tarjetaHtml(t)}<div class="tapa"></div><div class="n">${i + 1}</div></div>`
-  ).join("");
-
-  let marcas = "";
-  for (let c = 0; c <= 2; c++){
+/* ---------------- El pliego ---------------- */
+function marcas() {
+  let piezas = "";
+  for (let c = 0; c <= 2; c++) {
     const x = 10 + c * 85;
-    marcas += `<div class="m v" style="left:${x}mm;top:${11 - 5.2}mm"></div>`;
-    marcas += `<div class="m v" style="left:${x}mm;top:${11 + 275 + 1.2}mm"></div>`;
+    piezas += `<div class="m v" style="left:${x}mm;top:5.8mm"></div>`;
+    piezas += `<div class="m h" style="top:${11 + 275 + 1.2}mm;left:${x}mm;width:.25pt;height:4mm"></div>`;
+    piezas += `<div class="m v" style="left:${x}mm;top:${11 + 275 + 1.2}mm"></div>`;
   }
-  for (let f = 0; f <= 5; f++){
+  for (let f = 0; f <= 5; f++) {
     const y = 11 + f * 55;
-    marcas += `<div class="m h" style="top:${y}mm;left:${10 - 5.2}mm"></div>`;
-    marcas += `<div class="m h" style="top:${y}mm;left:${10 + 170 + 1.2}mm"></div>`;
+    piezas += `<div class="m h" style="top:${y}mm;left:4.8mm"></div>`;
+    piezas += `<div class="m h" style="top:${y}mm;left:${10 + 170 + 1.2}mm"></div>`;
   }
-  $("hoja").innerHTML = `<div class="rejilla">${huecos}</div>${marcas}`;
+  return piezas;
 }
 
-// ---------------- Panel ----------------
-function cargarCampos(){
-  const t = tarjetas[sel];
-  Object.entries(CAMPOS).forEach(([id, i]) => $(id).value = t[i]);
-  $("cual").textContent = `${sel + 1} de ${HUECOS}`;
+function pintarPliego() {
+  const mm = parseFloat($("qrmm").value) || 30;
 
-  const manual = !!(t[5] && t[5].trim());
-  $("url").value = urlVerso(t);
+  // Una tarjeta por unidad pedida, en el orden de la lista.
+  const cola = [];
+  mios.forEach(c => { for (let i = 0; i < (cuantas[c.id] || 0); i++) cola.push(c); });
 
-  const mm = mmQR();
-  const peor = qr(urlVerso(t), mm).modulos;
-  const celda = mm / peor;
-  const dia = $("diagnostico");
-  if (celda < MODULO_MINIMO){
-    dia.className = "aviso";
-    dia.innerHTML = `<strong>${celda.toFixed(2)} mm por celda</strong> (${peor} módulos). Por debajo de ${MODULO_MINIMO} falla con poca luz: agranda el QR o acorta la URL.`;
-  } else {
-    dia.className = "ok";
-    dia.textContent = `${celda.toFixed(2)} mm por celda (${peor} módulos). Tamaño correcto.`;
+  let peor = 0;
+  const tarjeta = c => {
+    const { svg, modulos } = qrSvg(SITIO + "/" + c.id, mm);
+    peor = Math.max(peor, modulos);
+    const [l1, l2, preg] = c[idioma];
+    return `<div class="tarjeta">
+      <div class="titulo">${esc(l1)}<br>${esc(l2)}<br><span class="pregunta">${esc(preg)}</span></div>
+      <div class="codigos">${svg}</div>
+    </div>`;
+  };
+
+  const hojas = Math.max(1, Math.ceil(cola.length / HUECOS));
+  let salida = "";
+  for (let h = 0; h < hojas; h++) {
+    let rejilla = "";
+    for (let i = 0; i < HUECOS; i++) {
+      const c = cola[h * HUECOS + i];
+      rejilla += c ? tarjeta(c) : `<div class="tarjeta vacia"></div>`;
+    }
+    salida += `<div class="hoja"><div class="rejilla">${rejilla}</div>${marcas()}</div>`;
+  }
+  $("lienzo").innerHTML = salida;
+
+  if (peor) {
+    const celda = mm / peor;
+    $("densidad").textContent = celda < MODULO_MINIMO
+      ? `${celda.toFixed(2)} mm por celda: demasiado apretado, agrándalo.`
+      : `${celda.toFixed(2)} mm por celda. Tamaño correcto.`;
   }
 }
 
-function seleccionar(i){
-  sel = (i + HUECOS) % HUECOS;
-  document.querySelectorAll(".hueco").forEach((h, n) => h.classList.toggle("sel", n === sel));
-  cargarCampos();
-}
+function refrescar() { pintarLista(); pintarPliego(); guardar(); aplicarZoom(); }
 
-// ---------------- Zoom ----------------
-function aplicarZoom(){
-  $("lienzo").style.transform = `scale(${zoom})`;
-  $("lienzo").style.width  = `calc(210mm * ${zoom})`;
-  $("lienzo").style.height = `calc(297mm * ${zoom})`;
+/* ---------------- Zoom ---------------- */
+function aplicarZoom() {
+  const l = $("lienzo");
+  l.style.transform = `scale(${zoom})`;
+  l.style.width = `calc(210mm * ${zoom})`;
+  const alto = l.querySelectorAll(".hoja").length * 321;   // 297mm + margen
+  l.style.height = `calc(${alto}mm * ${zoom})`;
   $("zoomval").textContent = Math.round(zoom * 100) + " %";
 }
 
-function ajustar(){
+function ajustar() {
   const zona = document.querySelector(".zona");
-  const anchoA4 = $("hoja").getBoundingClientRect().width / zoom;
-  zoom = Math.max(0.25, Math.min(3, (zona.clientWidth - 62) / anchoA4));
+  const hoja = document.querySelector(".hoja");
+  if (!hoja) return;
+  zoom = Math.max(0.2, Math.min(3, (zona.clientWidth - 62) / (hoja.getBoundingClientRect().width / zoom)));
   aplicarZoom();
 }
 
-// ---------------- Guardado ----------------
-function estado(){
-  const ajustes = {};
-  AJUSTES.forEach(k => ajustes[k] = $(k).value);
-  return { ajustes, tarjetas };
-}
-function guardar(){ try { localStorage.setItem(CLAVE, JSON.stringify(estado())); } catch (e) {} }
-
-async function cargar(){
-  let mios = [];
-  try { mios = abiertosDelJugador(await (await fetch("/datos.json")).json()); }
-  catch (e) {}
-
-  // La hoja tiene diez huecos: se rellenan girando por lo que uno tenga.
-  tarjetas = mios.length
-    ? Array.from({ length: HUECOS }, (_, i) => mios[i % mios.length].slice())
-    : Array.from({ length: HUECOS }, () => VACIA.slice());
-
-  // Lo que se había guardado antes solo vale si sigue siendo tuyo.
-  try {
-    const g = JSON.parse(localStorage.getItem(CLAVE));
-    const permitidas = new Set(mios.map(t => t[5]));
-    if (g && g.tarjetas && g.tarjetas.length === HUECOS &&
-        g.tarjetas.every(t => !t[5] || permitidas.has(t[5]))) {
-      tarjetas = g.tarjetas;
-      Object.entries(g.ajustes || {}).forEach(([k, v]) => { if ($(k)) $(k).value = v; });
-    }
-  } catch (e) {}
-
-  const aviso = document.getElementById("aviso");
-  if (aviso) {
-    aviso.textContent = mios.length
-      ? `Tus ${mios.length} sobre(s) abierto(s), repetidos hasta llenar la hoja.`
-      : "Aún no has abierto ningún sobre. Escribe tus propias preguntas, o vuelve cuando tengas alguno.";
-  }
-}
-
-function refrescar(){ pintarHoja(); cargarCampos(); guardar(); }
-
-function aviso(txt){
-  $("mensaje").textContent = txt;
-  setTimeout(() => { if ($("mensaje").textContent === txt) $("mensaje").textContent = ""; }, 4000);
-}
-
-// ---------------- Eventos ----------------
-$("hoja").addEventListener("click", e => {
-  const h = e.target.closest(".hueco");
-  if (h) seleccionar(+h.dataset.i);
-});
-
-Object.entries(CAMPOS).forEach(([id, i]) => {
-  $(id).addEventListener("input", () => {
-    tarjetas[sel][i] = (i === 3 || i === 4) ? (parseInt($(id).value, 10) || 1) : $(id).value;
-    refrescar();
-  });
-});
-
-$("url").addEventListener("input", () => {
-  tarjetas[sel][5] = $("url").value.trim();
+/* ---------------- Eventos ---------------- */
+$("lista").addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  const id = b.dataset.mas || b.dataset.menos;
+  if (!id) return;
+  const n = cuantas[id] || 0;
+  cuantas[id] = b.dataset.mas ? Math.min(99, n + 1) : Math.max(0, n - 1);
   refrescar();
 });
 
-$("probar").addEventListener("click", () => {
-  window.open(urlVerso(tarjetas[sel]), "_blank", "noopener");
-});
-
-AJUSTES.forEach(k => $(k).addEventListener("input", refrescar));
-
-$("anterior").addEventListener("click", () => seleccionar(sel - 1));
-$("siguiente").addEventListener("click", () => seleccionar(sel + 1));
-
-$("copiarTodas").addEventListener("click", () => {
-  if (!confirm("¿Poner esta misma pregunta en las diez tarjetas?")) return;
-  tarjetas = tarjetas.map(() => tarjetas[sel].slice());
-  refrescar();
-});
-
-$("menos").addEventListener("click", () => { zoom = Math.max(0.25, zoom - 0.1); aplicarZoom(); });
-$("mas").addEventListener("click",   () => { zoom = Math.min(3, zoom + 0.1); aplicarZoom(); });
+$("qrmm").addEventListener("input", refrescar);
+$("pdf").addEventListener("click", () => window.print());
+$("menos").addEventListener("click", () => { zoom = Math.max(0.2, zoom - 0.1); aplicarZoom(); });
+$("mas").addEventListener("click", () => { zoom = Math.min(3, zoom + 0.1); aplicarZoom(); });
 $("ajustar").addEventListener("click", ajustar);
 $("cien").addEventListener("click", () => { zoom = 1; aplicarZoom(); });
 
-$("pdf").addEventListener("click", () => window.print());
-
-
-
-$("reset").addEventListener("click", () => {
-  if (!confirm("¿Descartar los cambios?")) return;
-  localStorage.removeItem(CLAVE);
-  cargar().then(() => { sel = 0; refrescar(); });
-});
-
-document.addEventListener("keydown", e => {
-  if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
-  if (e.key === "ArrowRight") seleccionar(sel + 1);
-  if (e.key === "ArrowLeft")  seleccionar(sel - 1);
-});
-
-// ---------------- Arranque ----------------
+/* ---------------- Arranque ---------------- */
 (async function () {
-  await cargar();
+  await cargarSobres();
   refrescar();
-  aplicarZoom();
   setTimeout(ajustar, 60);
 })();
 </script>
