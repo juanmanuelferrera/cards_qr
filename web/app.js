@@ -33,6 +33,7 @@ const T = {
     via_voz: "De viva voz",
     via_papel: "En papel o en tela",
     copiar: "Copiar el mensaje",
+    pasar: "Compartir",
     imagen: "Imagen para compartir",
     imagen_bajar: "Descargar la imagen",
     copiada_clave: "Clave copiada",
@@ -103,6 +104,7 @@ const T = {
     via_voz: "Out loud",
     via_papel: "On paper or fabric",
     copiar: "Copy the message",
+    pasar: "Share",
     imagen: "Image to share",
     imagen_bajar: "Download the image",
     copiada_clave: "Key copied",
@@ -383,6 +385,20 @@ function camisetaConCodigo(id, cm) {
   </svg>`;
 }
 
+// La vía más corta: en el móvil, la hoja del sistema lleva a WhatsApp en dos
+// toques. Copiar y pegar son cuatro, así que solo se usa si no hay hoja.
+async function pasarSobre(id, boton) {
+  const texto = mensajeDe(id);
+  if (navigator.share) {
+    try { return await navigator.share({ title: "qrveda", text: texto }); }
+    catch (e) { if (e.name === "AbortError") return; }
+  }
+  await navigator.clipboard.writeText(texto);
+  const antes = boton.textContent;
+  boton.textContent = t("copiado");
+  setTimeout(() => { boton.textContent = antes; }, 1800);
+}
+
 /* ---------------- Piezas ---------------- */
 function cara(c) {
   const [l1, l2, preg] = c[idioma];
@@ -551,7 +567,7 @@ function carta(id) {
         </div>
       </div>
       <div class="menu">
-        <button data-qr="copiar">${t("copiar")}</button>
+        <button data-qr="copiar">${navigator.share ? t("pasar") : t("copiar")}</button>
         <button data-qr="imagen">${navigator.canShare ? t("imagen") : t("imagen_bajar")}</button>
         <a href="/imprimir/">${t("imprimir")}</a>
         <button data-camiseta="${id}">${t("camiseta")}</button>
@@ -567,7 +583,7 @@ function verCodigo(id) {
   capa.innerHTML = `<div class="visor">
     <div class="cuadro">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
     <div class="menu">
-      <button data-qr="copiar">${t("copiar")}</button>
+      <button data-qr="copiar">${navigator.share ? t("pasar") : t("copiar")}</button>
       <button data-qr="clave">${t("tu_clave").replace("{n}", id).split(" ")[0]}</button>
     </div>
     <p class="clave-suya"><span>${t("tu_clave").replace("{n}", id)}</span><strong>${esc(buscar(id).clave)}</strong></p>
@@ -812,10 +828,10 @@ function pintar() {
 
   document.querySelectorAll("[data-qr]").forEach(b => b.addEventListener("click", async () => {
     if (b.dataset.qr === "imagen") return compartirImagen(id);
-    const esClave = b.dataset.qr === "clave";
-    await navigator.clipboard.writeText(esClave ? buscar(id).clave : mensajeDe(id));
+    if (b.dataset.qr === "copiar") return pasarSobre(id, b);
+    await navigator.clipboard.writeText(buscar(id).clave);
     const antes = b.textContent;
-    b.textContent = esClave ? "✓" : t("copiado");
+    b.textContent = "✓";
     setTimeout(() => { b.textContent = antes; }, 1600);
   }));
 }
