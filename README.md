@@ -58,8 +58,14 @@ Cuatro archivos, sin framework ni compilación:
 | `index.html` | el armazón |
 | `app.js` | rutas, colección, claves, idioma y descargas |
 | `estilo.css` | oscuro por defecto, claro si el sistema lo pide |
-| `datos.json` | las trece preguntas con su verso y su clave |
+| `datos.json` | solo el esqueleto: números de sobre y niveles |
+| `sobres/<id>.json` | la pregunta, el verso y la clave de cada sobre |
+| `versos/<cap>-<ver>.json` | el significado completo, que se pide al abrir |
 | `qrcode.min.js` | generador de códigos |
+
+Nada de eso viaja en la primera carga: cada sobre se pide cuando hace falta. Antes `datos.json` traía las trece preguntas y las trece claves, y bastaba con abrirlo para acabarse el juego.
+
+**Las claves no están en el navegador.** `functions/api/clave.js` las recalcula con el mismo hash que el generador de tarjetas, así que no hay lista que espiar.
 
 **Una URL por sobre, para los dos idiomas:** `qr.vedicvault.org/7`. El idioma se detecta del navegador y se cambia en la barra, así que un mismo código impreso sirve en español y en inglés.
 
@@ -82,6 +88,16 @@ wrangler pages deploy
 ```
 
 Lee `wrangler.toml`: carpeta `web/`, sin compilación, con el almacén KV de las copias. `_redirects` manda cualquier ruta a `index.html` salvo `/imprimir/`, y `_headers` desactiva la caché para que cada despliegue se vea al recargar.
+
+## Lo que hace el servidor
+
+Tres funciones, y ninguna guarda datos personales:
+
+| | |
+|---|---|
+| `functions/[sobre].js` | sirve cada sobre con sus etiquetas de vista previa, para que un enlace compartido enseñe su pregunta. Y devuelve 404 de verdad en lo que no existe |
+| `functions/api/clave.js` | comprueba una clave sin que las claves lleguen al navegador |
+| `functions/api/copia.js` | la copia de seguridad por código |
 
 ## La copia de seguridad
 

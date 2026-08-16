@@ -1,6 +1,6 @@
 {
- "audio": "https://vedabase.cc/media/audio/bhajan.mp3",
  "vedabase": "https://vedabase.cc",
+ "contacto": "joanmanelferrera@gmail.com",
  "idiomas": {
   "es": {
    "nombre": "Español",
@@ -47,320 +47,6 @@
    }
   }
  },
- "tarjetas": [
-  {
-   "id": "1",
-   "cap": 2,
-   "ver": 13,
-   "es": [
-    "De niño tenías otro cuerpo.",
-    "Y sigues diciendo «yo».",
-    "¿Quién es ese?"
-   ],
-   "en": [
-    "As a child you had another body.",
-    "And you still say “I”.",
-    "Who is that?"
-   ],
-   "clave": "EBHN",
-   "verso": {
-    "es": "Así como en este cuerpo, el alma corporificada continuamente pasa de la niñez a la juventud y a la vejez, en forma similar, el alma pasa a otro cuerpo a la hora de la muerte. El alma autorrealizada no se confunde por tal cambio.",
-    "en": "As the embodied soul continually passes, in this body, from boyhood to youth to old age, the soul similarly passes into another body at death. The self-realized soul is not bewildered by such a change."
-   },
-   "url": {
-    "es": "https://vedabase.cc/es/bg/2/13/",
-    "en": "https://vedabase.cc/en/bg/2/13/"
-   }
-  },
-  {
-   "id": "2",
-   "cap": 6,
-   "ver": 35,
-   "es": [
-    "Llevas años intentando",
-    "controlar tu cabeza.",
-    "¿Quién manda ahí?"
-   ],
-   "en": [
-    "You’ve spent years trying",
-    "to control your mind.",
-    "Who’s winning?"
-   ],
-   "clave": "DCDZ",
-   "verso": {
-    "es": "El Señor Bienaventurado dijo: ¡Oh hijo de Kuntī, el de los poderosos brazos! Indudablemente es muy difícil contener la mente inquieta, pero es posible mediante la práctica constante y el desapego.",
-    "en": "The Blessed Lord said: O mighty-armed son of Kuntī, it is undoubtedly very difficult to curb the restless mind, but it is possible by constant practice and by detachment."
-   },
-   "url": {
-    "es": "https://vedabase.cc/es/bg/6/35/",
-    "en": "https://vedabase.cc/en/bg/6/35/"
-   }
-  },
-  {
-   "id": "3",
-   "cap": 3,
-   "ver": 39,
-   "es": [
-    "Consigues lo que querías.",
-    "A los tres días, otra cosa.",
-    "¿Por qué nunca basta?"
-   ],
-   "en": [
-    "You get what you wanted.",
-    "Three days later, you want more.",
-    "Why is it never enough?"
-   ],
-   "clave": "ZB6E",
-   "verso": {
-    "es": "De este modo, la conciencia pura de un hombre es cubierta por su enemigo eterno en la forma de la lujuria, la cual nunca se satisface y arde como el fuego.",
-    "en": "Thus, a man's pure consciousness is covered by his eternal enemy in the form of lust, which is never satisfied and which burns like fire."
-   },
-   "url": {
-    "es": "https://vedabase.cc/es/bg/3/39/",
-    "en": "https://vedabase.cc/en/bg/3/39/"
-   }
-  },
-  {
-   "id": "4",
-   "cap": 2,
-   "ver": 47,
-   "es": [
-    "Haces el trabajo.",
-    "El resultado no depende de ti.",
-    "¿Entonces qué es tuyo?"
-   ],
-   "en": [
-    "You do the work.",
-    "The result isn’t up to you.",
-    "So what is yours?"
-   ],
-   "clave": "JQZN",
-   "verso": {
-    "es": "Tienes derecho a desempeñar tu deber prescrito, mas no a los frutos de la acción. Nunca consideres ser la causa de los resultados de tus actividades y jamás te apegues al incumplimiento de tu deber.",
-    "en": "You have a right to perform your prescribed duty, but you are not entitled to the fruits of action. Never consider yourself to be the cause of the results of your activities, and never be attached to not doing your duty."
-   },
-   "url": {
-    "es": "https://vedabase.cc/es/bg/2/47/",
-    "en": "https://vedabase.cc/en/bg/2/47/"
-   }
-  },
-  {
-   "id": "5",
-   "cap": 8,
-   "ver": 6,
-   "es": [
-    "Tu vida tendrá un",
-    "último pensamiento.",
-    "¿Cuál quieres que sea?"
-   ],
-   "en": [
-    "Your life will have",
-    "a last thought.",
-    "Which one do you want?"
-   ],
-   "clave": "J7NS",
-   "verso": {
-    "es": "Cualquiera que sea el estado de existencia que uno recuerde cuando abandona su cuerpo, ese estado alcanzará sin duda.",
-    "en": "Whatever state of being one remembers when he quits his body, that state he will attain without fail."
-   },
-   "url": {
-    "es": "https://vedabase.cc/es/bg/8/6/",
-    "en": "https://vedabase.cc/en/bg/8/6/"
-   }
-  },
-  {
-   "id": "6",
-   "cap": 11,
-   "ver": 32,
-   "es": [
-    "Todo lo que ves hoy",
-    "habrá desaparecido.",
-    "¿Y tú?"
-   ],
-   "en": [
-    "Everything you see today",
-    "will be gone.",
-    "And you?"
-   ],
-   "clave": "2ENJ",
-   "verso": {
-    "es": "El Señor Bienaventurado dijo: Yo soy el tiempo, destructor de los mundos y he venido a devorar a toda la gente. Con excepción de vosotros (los Pāṇḍavas), todos los soldados de ambos bandos que están aquí serán matados.",
-    "en": "The Blessed Lord said: Time I am, destroyer of the worlds, and I have come to engage all people. With the exception of you [the Pāṇḍavas], all the soldiers here on both sides will be slain."
-   },
-   "url": {
-    "es": "https://vedabase.cc/es/bg/11/32/",
-    "en": "https://vedabase.cc/en/bg/11/32/"
-   }
-  },
-  {
-   "id": "7",
-   "cap": 13,
-   "ver": 23,
-   "es": [
-    "Algo dentro de ti",
-    "te observa pensar.",
-    "¿Quién es?"
-   ],
-   "en": [
-    "Something in you",
-    "watches you think.",
-    "Who is it?"
-   ],
-   "clave": "JST7",
-   "verso": {
-    "es": "Sin embargo en este cuerpo existe alguien más, un disfrutador trascendental que es el Señor, el propietario supremo, quien existe como el supervisor y el sancionador y a quien se le conoce como la Superalma.",
-    "en": "Yet in this body there is another, a transcendental enjoyer who is the Lord, the supreme proprietor, who exists as the overseer and permitter, and who is known as the Supersoul."
-   },
-   "url": {
-    "es": "https://vedabase.cc/es/bg/13/23/",
-    "en": "https://vedabase.cc/en/bg/13/23/"
-   }
-  },
-  {
-   "id": "8",
-   "cap": 2,
-   "ver": 20,
-   "es": [
-    "Le tienes miedo a morir.",
-    "Pero eso le pasa al cuerpo.",
-    "¿Y a ti?"
-   ],
-   "en": [
-    "You’re afraid to die.",
-    "But that happens to the body.",
-    "What about you?"
-   ],
-   "clave": "MZY6",
-   "verso": {
-    "es": "Nunca hay nacimiento ni muerte para el alma. Ni habiendo sido una vez deja de ser jamás. Ella no nace, es eterna, siempre existente, inmortal y primordial. No se la mata cuando se mata el cuerpo.",
-    "en": "For the soul there is never birth nor death. Nor, having once been, does he ever cease to be. He is unborn, eternal, ever-existing, undying and primeval. He is not slain when the body is slain."
-   },
-   "url": {
-    "es": "https://vedabase.cc/es/bg/2/20/",
-    "en": "https://vedabase.cc/en/bg/2/20/"
-   }
-  },
-  {
-   "id": "9",
-   "cap": 2,
-   "ver": 62,
-   "es": [
-    "Quieres algo.",
-    "Acabas enfadado.",
-    "¿Cómo se llega ahí?"
-   ],
-   "en": [
-    "You want something.",
-    "You end up angry.",
-    "How did that happen?"
-   ],
-   "clave": "ZM97",
-   "verso": {
-    "es": "Al contemplar los objetos de los sentidos, una persona desarrolla apego por ellos y de este apego nace la lujuria y de la lujuria surge la ira.",
-    "en": "While contemplating the objects of the senses, a person develops attachment for them, and from such attachment lust develops, and from lust anger arises."
-   },
-   "url": {
-    "es": "https://vedabase.cc/es/bg/2/62/",
-    "en": "https://vedabase.cc/en/bg/2/62/"
-   }
-  },
-  {
-   "id": "10",
-   "cap": 18,
-   "ver": 38,
-   "es": [
-    "Lo que ayer te dio placer,",
-    "hoy te pasa factura.",
-    "¿Por qué acaba siempre igual?"
-   ],
-   "en": [
-    "What gave you pleasure once",
-    "costs you now.",
-    "Why does it always end the same?"
-   ],
-   "clave": "CBYE",
-   "verso": {
-    "es": "Aquella felicidad que se deriva del contacto de los sentidos con sus objetos y que parece néctar al principio, pero que al final es como veneno, se dice que es de la naturaleza de la pasión.",
-    "en": "That happiness which is derived from contact of the senses with their objects and which appears like nectar at first but poison at the end is said to be of the nature of passion."
-   },
-   "url": {
-    "es": "https://vedabase.cc/es/bg/18/38/",
-    "en": "https://vedabase.cc/en/bg/18/38/"
-   }
-  },
-  {
-   "id": "11",
-   "cap": 15,
-   "ver": 8,
-   "es": [
-    "Es la única cita",
-    "que no vas a poder cambiar.",
-    "¿Qué pasa cuando mueres?"
-   ],
-   "en": [
-    "It’s the one appointment",
-    "you can’t reschedule.",
-    "What happens when you die?"
-   ],
-   "clave": "PFWH",
-   "verso": {
-    "es": "La entidad viviente en el mundo material, lleva sus diferentes conceptos de vida de un cuerpo a otro, tal como el aire transporta los aromas.",
-    "en": "The living entity in the material world carries his different conceptions of life from one body to another as the air carries aromas."
-   },
-   "url": {
-    "es": "https://vedabase.cc/es/bg/15/8/",
-    "en": "https://vedabase.cc/en/bg/15/8/"
-   }
-  },
-  {
-   "id": "12",
-   "cap": 13,
-   "ver": 21,
-   "es": [
-    "Le pasan cosas malas",
-    "a la gente buena.",
-    "¿Por qué?"
-   ],
-   "en": [
-    "Bad things happen",
-    "to good people.",
-    "Why?"
-   ],
-   "clave": "ZG4A",
-   "verso": {
-    "es": "Se dice que la naturaleza es la causa de todas las actividades y efectos materiales, mientras que la entidad viviente es la causa de los diversos sufrimientos y goces de este mundo.",
-    "en": "Nature is said to be the cause of all material activities and effects, whereas the living entity is the cause of the various sufferings and enjoyments in this world."
-   },
-   "url": {
-    "es": "https://vedabase.cc/es/bg/13/21/",
-    "en": "https://vedabase.cc/en/bg/13/21/"
-   }
-  },
-  {
-   "id": "13",
-   "cap": 3,
-   "ver": 39,
-   "es": [
-    "Ya no te habla como antes.",
-    "Tú tampoco.",
-    "¿Por qué tu mujer te odia?"
-   ],
-   "en": [
-    "She doesn’t talk to you like before.",
-    "Neither do you.",
-    "Why does your wife hate you?"
-   ],
-   "clave": "53D2",
-   "verso": {
-    "es": "De este modo, la conciencia pura de un hombre es cubierta por su enemigo eterno en la forma de la lujuria, la cual nunca se satisface y arde como el fuego.",
-    "en": "Thus, a man's pure consciousness is covered by his eternal enemy in the form of lust, which is never satisfied and which burns like fire."
-   },
-   "url": {
-    "es": "https://vedabase.cc/es/bg/3/39/",
-    "en": "https://vedabase.cc/en/bg/3/39/"
-   }
-  }
- ],
  "lotes": [
   {
    "id": "sambandha",
@@ -416,5 +102,71 @@
    "tarjetas": []
   }
  ],
- "contacto": "joanmanelferrera@gmail.com"
+ "tarjetas": [
+  {
+   "id": "1",
+   "cap": 2,
+   "ver": 13
+  },
+  {
+   "id": "2",
+   "cap": 6,
+   "ver": 35
+  },
+  {
+   "id": "3",
+   "cap": 3,
+   "ver": 39
+  },
+  {
+   "id": "4",
+   "cap": 2,
+   "ver": 47
+  },
+  {
+   "id": "5",
+   "cap": 8,
+   "ver": 6
+  },
+  {
+   "id": "6",
+   "cap": 11,
+   "ver": 32
+  },
+  {
+   "id": "7",
+   "cap": 13,
+   "ver": 23
+  },
+  {
+   "id": "8",
+   "cap": 2,
+   "ver": 20
+  },
+  {
+   "id": "9",
+   "cap": 2,
+   "ver": 62
+  },
+  {
+   "id": "10",
+   "cap": 18,
+   "ver": 38
+  },
+  {
+   "id": "11",
+   "cap": 15,
+   "ver": 8
+  },
+  {
+   "id": "12",
+   "cap": 13,
+   "ver": 21
+  },
+  {
+   "id": "13",
+   "cap": 3,
+   "ver": 39
+  }
+ ]
 }

@@ -21,17 +21,11 @@ const T = {
     lector_fuente: "Texto de vedabase.cc",
     lector_cerrar: "Cerrar",
     lector_ir: "Abrirlo en vedabase.cc",
-    paso1: "Tu respuesta",
-    paso2: "El significado",
     ganar: "Leerlo con su significado",
     ganar_pie: "y el sobre {n} es tuyo",
     ganada: "Sobre {n} abierto",
-    compartir: "Mandársela a alguien",
     copiado: "Copiado",
     codigo: "Pásaselo a alguien",
-    via_movil: "Por el móvil",
-    via_voz: "De viva voz",
-    via_papel: "En papel o en tela",
     copiar: "Copiar el mensaje",
     pasar: "Compartir",
     imagen: "Imagen para compartir",
@@ -48,11 +42,9 @@ const T = {
     cam_png_pie: "Para webs de camisetas que no aceptan vector.",
     cam_pide: "Pedírmela",
     cam_pide_pie: "Sin tienda todavía: escríbeme y lo vemos.",
-    coleccion: "Las trece",
     encontradas: "{n} de {total}",
     racha: "{n} días seguidos",
     lote: "Nivel",
-    sellado: "Sellado",
     completo: "Completo",
     intro: "Trece sobres. Cada día se puede abrir uno.",
     intro2: "Los demás se abren con su clave. Si alguien te pasa la suya, la escribes aquí y el sobre es tuyo.",
@@ -75,7 +67,6 @@ const T = {
     tu_codigo: "Tu código de respaldo",
     pide_codigo: "Escribe tu código de respaldo",
     guardando: "Guardando…",
-    restaurado: "Recuperado",
     fallo: "No hay nada con ese código"
   },
   en: {
@@ -92,17 +83,11 @@ const T = {
     lector_fuente: "Text from vedabase.cc",
     lector_cerrar: "Close",
     lector_ir: "Open it on vedabase.cc",
-    paso1: "Your answer",
-    paso2: "The purport",
     ganar: "Read it with the purport",
     ganar_pie: "and envelope {n} is yours",
     ganada: "Envelope {n} opened",
-    compartir: "Send it to someone",
     copiado: "Copied",
     codigo: "Pass it on",
-    via_movil: "On the phone",
-    via_voz: "Out loud",
-    via_papel: "On paper or fabric",
     copiar: "Copy the message",
     pasar: "Share",
     imagen: "Image to share",
@@ -119,11 +104,9 @@ const T = {
     cam_png_pie: "For shirt sites that don't take vector.",
     cam_pide: "Ask me for one",
     cam_pide_pie: "No shop yet: write to me and we'll sort it out.",
-    coleccion: "The thirteen",
     encontradas: "{n} of {total}",
     racha: "{n} days in a row",
     lote: "Level",
-    sellado: "Sealed",
     completo: "Complete",
     intro: "Thirteen envelopes. Each day you can open one.",
     intro2: "The others open with their key. If someone passes you theirs, type it here and the envelope is yours.",
@@ -146,7 +129,6 @@ const T = {
     tu_codigo: "Your backup code",
     pide_codigo: "Type your backup code",
     guardando: "Saving…",
-    restaurado: "Restored",
     fallo: "Nothing found with that code"
   }
 };
@@ -162,8 +144,25 @@ const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(estado)
 /* ---------------- Utilidades ---------------- */
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
 const t = k => T[idioma][k];
-const diaDeHoy = () => Math.floor(Date.now() / DIA);
-const buscar = id => datos.tarjetas.find(c => c.id === id);
+// Medianoche local: con Date.now() a secas el sobre nuevo salía a la una
+// o a las dos de la madrugada en España.
+const diaDeHoy = () => {
+  const h = new Date();
+  return Math.floor((h - h.getTimezoneOffset() * 60000) / DIA);
+};
+const buscar = id => sobres[id] || datos.tarjetas.find(c => c.id === id);
+
+// Cada sobre vive en su propio fichero: la primera carga ya no trae las trece
+// preguntas ni los trece versos, así que no se regala el juego.
+const sobres = {};
+async function traer(id) {
+  if (!sobres[id]) {
+    try { sobres[id] = await (await fetch(`/sobres/${id}.json`)).json(); }
+    catch (e) { return null; }
+  }
+  return sobres[id];
+}
+const traerVarios = ids => Promise.all(ids.map(traer));
 const enlaceCarta = id => location.origin + "/" + id;
 
 const paso = id => estado.progreso[id] || {};
@@ -177,6 +176,10 @@ function cartaDelDia() {
   const pool = abiertas.length ? abiertas[0].tarjetas : datos.tarjetas.map(c => c.id);
   return buscar(pool[diaDeHoy() % pool.length]);
 }
+
+// Cuando aún no se ha traído su fichero, un sobre solo sabe su número: basta
+// para dibujarlo cerrado, que es como se ve hasta que se abre.
+const conTexto = c => c && Array.isArray(c[idioma]);
 
 /* ---------------- El código ---------------- */
 // borde: módulos de zona de silencio. En pantalla bastan 2; para imprimir,
@@ -429,7 +432,7 @@ function niveles() {
       const abrible = abierta || empezada || conClave(id) || id === hoy;
       const clases = ["mini", abierta ? "hallada" : "", id === hoy ? "hoy" : "",
                       abrible ? "" : "cerrado"].join(" ");
-      const dentro = abierta
+      const dentro = (abierta && conTexto(c))
         ? `<span class="carta-abierta"><span class="preg">${esc(c[idioma][2])}</span><span class="folio">${esc(id)}</span></span>`
         : sobreChico(esc(id));
       if (!abrible) return `<span class="${clases}" title="${t("cerrado")}">${dentro}</span>`;
@@ -474,16 +477,19 @@ function pedirClave() {
   const caja = capa.querySelector("#clave");
   caja.focus();
 
-  const probar = () => {
+  const probar = async () => {
     const v = caja.value.trim().toUpperCase();
-    const c = datos.tarjetas.find(x => x.clave === v);
-    if (!c) { caja.value = ""; caja.placeholder = t("clave_mal"); return caja.focus(); }
+    let id = null;
+    try { id = (await (await fetch("/api/clave?c=" + encodeURIComponent(v))).json()).id; }
+    catch (e) {}
+    if (!id) { caja.value = ""; caja.placeholder = t("clave_mal"); return caja.focus(); }
+    await traer(id);
     // Un sobre que ya tienes no merece repetir la ceremonia.
-    if (hallada(c.id) || conClave(c.id)) { cerrar(); return irA("/" + c.id); }
-    estado.claves = (estado.claves || []).concat(c.id);
+    if (hallada(id) || conClave(id)) { cerrar(); return irA("/" + id); }
+    estado.claves = (estado.claves || []).concat(id);
     guardar();
     cerrar();
-    derretirYEntrar(c.id);
+    derretirYEntrar(id);
   };
   capa.querySelector("#abrirclave").addEventListener("click", probar);
   caja.addEventListener("keydown", e => { if (e.key === "Enter") probar(); });
@@ -495,7 +501,7 @@ function portada() {
   const racha = estado.racha > 1
     ? `<p class="racha">${t("racha").replace("{n}", estado.racha)}</p>` : "";
 
-  const tarjeta = hallada(c.id)
+  const tarjeta = (hallada(c.id) && conTexto(c))
     ? `<a class="hoy-cara" href="/${c.id}">${cara(c)}<p class="ya">${t("hoy_hecho")}</p></a>`
     : `<a class="hoy-cara tapada" href="/${c.id}">
          ${sobreLacrado(esc(c.id))}
@@ -518,7 +524,7 @@ function portada() {
 
 function carta(id) {
   const c = buscar(id);
-  if (!c) return portada();
+  if (!conTexto(c)) return portada();
   const p = paso(id);
   document.title = `${c[idioma][2]} — qrveda`;
 
@@ -562,7 +568,7 @@ function carta(id) {
       <div class="llave">
         <div class="lienzo">${svgDelCodigo(enlaceCarta(id), "#111")}</div>
         <div class="letras">
-          <button class="clavegorda" data-qr="clave">${esc(c.clave)}</button>
+          <button class="clavegorda" data-qr="clave">${esc(c.clave || "")}</button>
           <p class="consejo">${t("consejo")}</p>
         </div>
       </div>
@@ -784,8 +790,11 @@ function pedirRespaldo() {
 }
 
 /* ---------------- Pintado ---------------- */
-function pintar() {
+async function pintar() {
   const id = location.pathname.replace(/\//g, "");
+  // Solo hace falta el sobre en pantalla y los ya conseguidos, que son los
+  // únicos cuya pregunta se enseña en la colección.
+  await traerVarios([id, ...datos.tarjetas.map(c => c.id).filter(hallada)].filter(Boolean));
   document.getElementById("app").innerHTML = id ? carta(id) : portada();
   document.documentElement.lang = idioma;
 
@@ -908,7 +917,7 @@ async function compartir() {
     }
     ir();
   });
-  addEventListener("popstate", pintar);
+  addEventListener("popstate", () => pintar());
   // El aviso de que hay más abajo aparece en cualquier pantalla y se apaga
   // al llegar al final. Antes solo estaba en la portada y solo al principio.
   const mirarFondo = () => {
@@ -920,5 +929,5 @@ async function compartir() {
   new MutationObserver(mirarFondo).observe(document.getElementById("app"), { childList: true });
   mirarFondo();
 
-  pintar();
+  await pintar();
 })();

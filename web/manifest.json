@@ -1,0 +1,14 @@
+{
+  "name": "qrveda",
+  "short_name": "qrveda",
+  "description": "Trece sobres lacrados. Una pregunta y el verso que la responde.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0e0d0c",
+  "theme_color": "#0e0d0c",
+  "icons": [
+    { "src": "/icono-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/icono-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
