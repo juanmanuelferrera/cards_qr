@@ -41,17 +41,17 @@ Sin cuentas, sin registro y sin recoger datos de nadie. La colección vive en el
 ## Qué hay en el repositorio
 
 ```
-data/      las preguntas, sus versos y sus claves
-web/       el sitio: html y javascript planos, sin dependencias
-functions/ la copia de seguridad por código (Cloudflare Pages Functions)
-gui/       el creador de tarjetas, servido también en /imprimir/
-src/       generadores de los PDF de imprenta y del caché de versos
+data/      la fuente: preguntas, versos y claves, de donde sale todo lo demás
+web/       el sitio, tal cual se despliega: html y javascript planos
+functions/ lo poco que hace el servidor (Cloudflare Pages Functions)
+gui/       la página de imprimir, servida también en /imprimir/
+src/       generadores de los PDF y del caché de versos
 dist/      PDF listos para mandar a la imprenta
 ```
 
 ## La web
 
-Cuatro archivos, sin framework ni compilación:
+Sin framework, sin compilación y sin dependencias:
 
 | | |
 |---|---|
@@ -69,9 +69,11 @@ Nada de eso viaja en la primera carga: cada sobre se pide cuando hace falta. Ant
 
 **Una URL por sobre, para los dos idiomas:** `qr.vedicvault.org/7`. El idioma se detecta del navegador y se cambia en la barra, así que un mismo código impreso sirve en español y en inglés.
 
-**El sobre del día** sale del número de día, no del azar.
+**El sobre del día** sale del número de día, no del azar, y cambia a medianoche local.
 
-**Los códigos** se descargan desde cada sobre ganado: vector de 100 mm para camisetas, PNG de 2000 px para imprentas que no aceptan vector, o el enlace. Hay también un botón discreto de camiseta con dos salidas —descargar el diseño y hacérsela donde quiera, o pedirla por correo—. Cuando haya demanda se cambia por una tienda. Para camisetas, a la espalda y de 25 a 30 cm. Un QR se lee desde unas diez veces su tamaño, así que 25 cm dan dos metros y medio — la distancia de una cola o un semáforo. Por debajo de 10 cm hay que acercarse, y al pecho de un desconocido no se acerca nadie.
+**Pasar un sobre** son dos toques en el móvil: la hoja de compartir del sistema con la pregunta y el enlace. También hay una imagen cuadrada para estados e historias, la clave para decirla de palabra, y el QR para papel o tela.
+
+**En camiseta** se elige el tamaño y el archivo sale ya a esa medida: vector con su ancho en centímetros, o PNG a 300 ppp. Se dibuja la prenda con el código a escala, porque una espalda mide unos 50 cm y así se ve lo que va a salir. A la espalda y de 25 a 30 cm: un QR se lee desde unas diez veces su tamaño, o sea que 25 cm dan dos metros y medio, la distancia de una cola. Por debajo de 10 cm hay que acercarse, y al pecho de un desconocido no se acerca nadie.
 
 ### Probarla en local
 
@@ -87,7 +89,7 @@ Abre <http://localhost:8899/>. Ese servidor aplica la misma regla que `web/_redi
 wrangler pages deploy
 ```
 
-Lee `wrangler.toml`: carpeta `web/`, sin compilación, con el almacén KV de las copias. `_redirects` manda cualquier ruta a `index.html` salvo `/imprimir/`, y `_headers` desactiva la caché para que cada despliegue se vea al recargar.
+Lee `wrangler.toml`: carpeta `web/`, sin compilación, con el almacén KV de las copias. `_headers` desactiva la caché para que cada despliegue se vea al recargar. Las rutas de los sobres las resuelve `functions/[sobre].js`; `_redirects` solo se ocupa de `/imprimir/`.
 
 ## Lo que hace el servidor
 
@@ -99,6 +101,10 @@ Tres funciones, y ninguna guarda datos personales:
 | `functions/api/clave.js` | comprueba una clave sin que las claves lleguen al navegador |
 | `functions/api/copia.js` | la copia de seguridad por código |
 
+## Icono e instalación
+
+Favicon en SVG, iconos PNG de 180, 192 y 512, y `manifest.json` en modo standalone. Añadirlo a la pantalla de inicio no es un adorno: es lo que salva la colección del borrado a los siete días de Safari.
+
 ## La copia de seguridad
 
 La colección vive en el navegador. Eso basta y evita cuentas, pero tiene tres agujeros: cada aparato va por su cuenta, se pierde al borrar datos de navegación, y **Safari en iOS borra el almacenamiento a los siete días sin visitar el sitio**.
@@ -109,9 +115,13 @@ Por eso el sitio pide almacenamiento persistente al cargar, y ofrece guardar la 
 
 `gui/index.html`, y en la web bajo `/imprimir/`. Doble clic, sin instalar nada y sin conexión.
 
-Enseña la hoja A4 entera con las diez tarjetas. Pinchas una y la editas: las dos líneas, la pregunta, el capítulo y el verso. La URL se rellena sola y se puede escribir a mano; **Abrir y comprobar** la abre en otra pestaña.
+No edita nada, y es a propósito: el texto de una tarjeta **es** la pregunta de su sobre, y dejar cambiarlo solo serviría para imprimir una tarjeta que dice una cosa y cuyo código abre otra.
 
-**Guardar PDF para imprenta** abre el diálogo de impresión: *Guardar como PDF*, escala 100 %, sin «ajustar al papel».
+Lo que hace es dejarte elegir. Lista tus sobres abiertos con su pregunta, su número y su clave, y al lado un **− 3 +** para decir cuántas tarjetas quieres de cada uno. Debajo, el total y las hojas que salen. La primera vez reparte la hoja entre los que tengas.
+
+A la derecha, el pliego A4 tal como saldrá, con zoom. **Guardar PDF para imprenta** abre el diálogo de impresión: *Guardar como PDF*, escala 100 %, sin «ajustar al papel».
+
+En **Ajustes finos** queda el tamaño del código, con el aviso de milímetros por celda. Y solo enseña lo que has abierto: si aún no tienes ninguno, lo dice y no lista nada.
 
 ## Las tarjetas
 
